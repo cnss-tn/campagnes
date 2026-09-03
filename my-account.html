@@ -27,12 +27,14 @@
               </a>
               <a href="interface1.html" class="btn btn-outline-secondary btn-sm composed-menu-btn">البرنامج</a>
               <a href="interface2.html" class="btn btn-outline-secondary btn-sm composed-menu-btn">الإحصائيات</a>
+              <a href="users_management.html" class="btn btn-outline-secondary btn-sm composed-menu-btn" id="nav-users" style="display:none">إدارة المستخدمين</a>
             </div>
           </div>
           <div class="composed-user-panel">
             <div class="composed-user-lines">
               <div id="user-info" class="composed-user-line">--</div>
             </div>
+            <a href="my-account.html" class="btn btn-outline-secondary btn-sm composed-menu-btn is-active" id="btn-account" aria-current="page">حساب المستعمل</a>
             <button type="button" class="btn btn-outline-secondary btn-sm composed-menu-btn p-0" id="btn-logout"><img src="images/off_icon.svg" alt="خروج" width="32" height="32" /></button>
           </div>
         </div>
@@ -118,6 +120,9 @@
     (function() {
         var user = JSON.parse(localStorage.getItem('currentUser') || '{}');
         var is_admin = (user.userType || '').trim().toLowerCase() === 'admin';
+        if (is_admin) document.body.classList.add('page-admin');
+        var navUsers = document.getElementById('nav-users');
+        if (navUsers) navUsers.style.display = is_admin ? '' : 'none';
         var links = document.querySelectorAll('.brand-mini-menu .composed-menu-btn:not(#nav-home)');
         var page = window.location.pathname.split('/').pop() || '';
         for (var i = 0; i < links.length; i++) {
@@ -126,6 +131,8 @@
                 links[i].href = is_admin ? 'interface3.html' : 'interface1.html';
             } else if (t === 'الإحصائيات') {
                 links[i].href = is_admin ? 'interface4.html' : 'interface2.html';
+            } else if (t === 'إدارة المستخدمين') {
+                links[i].href = 'users_management.html';
             }
             links[i].classList.remove('is-active');
             if (links[i].getAttribute('href') === page) {

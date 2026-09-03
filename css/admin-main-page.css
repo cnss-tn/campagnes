@@ -181,8 +181,12 @@
 /* ------------------------------------------------------------------ */
 .main-cards {
     display: flex;
-    gap: 2rem;
+    gap: 1.5rem;
     width: 100%;
+    flex-wrap: wrap;
+}
+.main-cards .main-card {
+    min-width: 200px;
 }
 
 .main-card {
@@ -313,6 +317,25 @@
 .main-card--stats .main-card__arrow {
     background: rgba(123, 45, 142, 0.08);
     color: #7b2d8e;
+}
+
+.main-card--users::before {
+    background: linear-gradient(160deg, rgba(124, 58, 237, 0.06), rgba(139, 92, 246, 0.03));
+}
+.main-card--users .main-card__glow {
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.14), transparent 70%);
+}
+.main-card--users .main-card__icon {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.14), rgba(139, 92, 246, 0.1));
+    color: #7c3aed;
+}
+.main-card--users .main-card__title { color: #5b21b6; }
+.main-card--users .main-card__arrow {
+    background: rgba(124, 58, 237, 0.08);
+    color: #7c3aed;
+}
+.main-card--users:hover {
+    box-shadow: 0 24px 48px -14px rgba(124, 58, 237, 0.22), 0 8px 20px rgba(124, 58, 237, 0.07);
 }
 
 /* Hover */

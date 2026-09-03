@@ -54,95 +54,19 @@
       </nav>
     </header>
 
-    <main class="container composed-main" dir="rtl">
+    <main class="container-fluid composed-main results-main-fluid" dir="rtl">
       <div class="row g-4 composed-bento">
-        <!-- Formulaire de Saisie -->
-        <div class="col-md-4 mt-0">
-          <div class="card card-custom card-composed h-100">
-            <div class="card-composed-accent" aria-hidden="true"></div>
-            <div class="card-composed-body p-4 p-lg-4">
-              <div class="composed-card-head mb-4">
-                <span class="composed-card-icon" aria-hidden="true"></span>
-                <div class="w-100">
-                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-                    <h2 class="h5 fw-bold mb-0">حملة جديدة</h2>
-                    <button type="button" id="btn-close-form" class="btn-close-form" aria-label="إلغاء" hidden>✕</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-campagne-reveal" id="form-campagne-reveal">
-                <div class="btn-cta-wave-halo">
-                  <button type="button" id="btn-open-campagne-form" class="btn-cta-wave" aria-expanded="false">
-                    <span class="btn-cta-wave__inner">
-                      <span class="btn-cta-wave__icon" aria-hidden="true">+</span>
-                      <span class="btn-cta-wave__label">إضافة حملة</span>
-                    </span>
-                  </button>
-                </div>
-              </div>
-
-              <div class="form-campagne-panel" id="form-campagne-panel" hidden>
-                <form id="form-programme" novalidate>
-                  <div class="mb-3">
-                    <label class="form-label">نوع الحملة</label>
-                    <select id="type_campagne" class="form-select" required>
-                      <option value="قطاعية">قطاعية</option>
-                      <option value="جغرافية">جغرافية</option>
-                      <option value="لا شيء">لا شيء</option>
-                    </select>
-                  </div>
-                  <div class="mb-3" id="zone-activite-block" hidden>
-                    <label class="form-label" id="zone-activite-label">نوع النشاط</label>
-                    <div id="zone-sectorielle-wrap" class="d-none" style="position: relative">
-                      <select id="activite_sectorielle" class="form-select">
-                        <option value="">تحميل...</option>
-                      </select>
-                      <button type="button" id="btn-custom-activity" class="btn-custom-activity-btn">+ نشاط جديد</button>
-                      <button type="button" id="sector-clear-badge" class="sector-clear-badge d-none">✕</button>
-                    </div>
-                    <div id="zone-sectorielle-custom-wrap" class="d-none" style="position: relative">
-                      <input type="text" id="activite_sectorielle_custom" class="form-control" placeholder="أدخل النشاط الجديد" />
-                      <button type="button" id="btn-back-to-list" class="btn-back-to-list" title="الرجوع إلى القائمة">✕</button>
-                    </div>
-                    <div id="zone-geographique-wrap" class="d-none">
-                      <input type="text" id="activite_zone_geo" class="form-control" placeholder="أدخل المنطقة الجغرافية" />
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col">
-                      <label class="form-label">تاريخ البدء</label>
-                      <input type="text" id="date_debut" class="form-control fp-date-input" placeholder="اختر..." autocomplete="off" required />
-                    </div>
-                    <div class="col">
-                      <label class="form-label">تاريخ الانتهاء</label>
-                      <input type="text" id="date_fin" class="form-control fp-date-input" placeholder="اختر..." autocomplete="off" required />
-                    </div>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">عدد المراقبين المشاركين</label>
-                    <input type="number" id="nb_controleurs" class="form-control" min="1" required />
-                  </div>
-                  <button type="submit" class="btn btn-primary w-100" id="btn-submit">
-                    <span id="btn-text">إضافة إلى البرنامج</span>
-                    <span class="spinner-border spinner-border-sm ms-2 d-none" id="btn-submit-spinner" role="status" aria-hidden="true"></span>
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tableau d'affichage -->
-        <div class="col-md-8 mt-0">
+        <!-- Tableau d'affichage - full width -->
+        <div class="col-12 mt-0">
           <div class="card card-custom card-composed card-composed--wide h-100">
             <div class="card-composed-accent card-composed-accent--secondary" aria-hidden="true"></div>
             <div class="card-composed-body p-4 p-lg-4 d-flex flex-column">
               <div class="composed-card-head mb-1">
                 <span class="composed-card-icon composed-card-icon--table" aria-hidden="true"></span>
                 <div class="w-100">
-                  <div class="d-flex flex-wrap align-items-start justify-content-between gap-2">
+                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
                     <h2 class="h5 fw-bold mb-0">برنامج حملات المكتب</h2>
+                    <button type="button" id="btn-open-campagne-form" class="btn btn-primary btn-sm users-add-btn mx-auto">+ إضافة حملة</button>
                     <div class="programmes-total text-start" id="prog-total"></div>
                   </div>
                 </div>
@@ -223,6 +147,65 @@
         </div>
       </div>
     </main>
+
+    <!-- Modal campagne form (popup like users_management - same width) -->
+    <div class="modal fade" id="modal-campagne-form" tabindex="-1" aria-labelledby="modal-campagne-title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content stats-modal-content" dir="rtl">
+          <div class="modal-header border-0 py-3 px-4">
+            <h5 class="modal-title fw-bold" id="modal-campagne-title">حملة جديدة</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+          </div>
+          <div class="modal-body pt-0 px-4 pb-4">
+            <form id="form-programme" novalidate>
+              <div class="mb-3">
+                <label class="form-label">نوع الحملة</label>
+                <select id="type_campagne" class="form-select" required>
+                  <option value="قطاعية">قطاعية</option>
+                  <option value="جغرافية">جغرافية</option>
+                  <option value="لا شيء">لا شيء</option>
+                </select>
+              </div>
+              <div class="mb-3" id="zone-activite-block" hidden>
+                <label class="form-label" id="zone-activite-label">نوع النشاط</label>
+                <div id="zone-sectorielle-wrap" class="d-none" style="position: relative">
+                  <select id="activite_sectorielle" class="form-select">
+                    <option value="">تحميل...</option>
+                  </select>
+                  <button type="button" id="btn-custom-activity" class="btn-custom-activity-btn">+ نشاط جديد</button>
+                  <button type="button" id="sector-clear-badge" class="sector-clear-badge d-none">✕</button>
+                </div>
+                <div id="zone-sectorielle-custom-wrap" class="d-none" style="position: relative">
+                  <input type="text" id="activite_sectorielle_custom" class="form-control" placeholder="أدخل النشاط الجديد" />
+                  <button type="button" id="btn-back-to-list" class="btn-back-to-list" title="الرجوع إلى القائمة">✕</button>
+                </div>
+                <div id="zone-geographique-wrap" class="d-none">
+                  <input type="text" id="activite_zone_geo" class="form-control" placeholder="أدخل المنطقة الجغرافية" />
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col">
+                  <label class="form-label">تاريخ البدء</label>
+                  <input type="text" id="date_debut" class="form-control fp-date-input" placeholder="اختر..." autocomplete="off" required />
+                </div>
+                <div class="col">
+                  <label class="form-label">تاريخ الانتهاء</label>
+                  <input type="text" id="date_fin" class="form-control fp-date-input" placeholder="اختر..." autocomplete="off" required />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">عدد المراقبين المشاركين</label>
+                <input type="number" id="nb_controleurs" class="form-control" min="1" required />
+              </div>
+              <button type="submit" class="btn btn-primary w-100" id="btn-submit">
+                <span id="btn-text">إضافة إلى البرنامج</span>
+                <span class="spinner-border spinner-border-sm ms-2 d-none" id="btn-submit-spinner" role="status" aria-hidden="true"></span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Modal statistiques campagne (données feuille Resultats) -->
     <div class="modal" id="modal-stats-campagne" tabindex="-1" aria-labelledby="modal-stats-title" aria-hidden="true">

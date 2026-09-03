@@ -155,9 +155,22 @@ body { background-color: var(--light-bg); font-family: 'Inter', sans-serif; }
 .page-results .btn-sm.composed-menu-btn.is-active {
     color: var(--cp-accent, #048f40);
 }
-/*interface3 + interface4*/
-.page-results .btn-sm.composed-menu-btn.is-active {
-    color: var(--cp-accent, #7c3aed);
+/*interface3 + interface4 + users_management (admin - purple) */
+.page-admin .btn-sm.composed-menu-btn.is-active,
+.page-users .btn-sm.composed-menu-btn.is-active,
+.page-admin .btn-sm.composed-menu-btn.is-active:hover {
+    color: #7c3aed !important;
+}
+.page-admin .btn-sm.composed-menu-btn:not(.is-active):hover,
+.page-users .btn-sm.composed-menu-btn:not(.is-active):hover,
+.page-admin .brand-mini-menu .composed-menu-btn:not(.is-active):hover,
+.page-users .brand-mini-menu .composed-menu-btn:not(.is-active):hover,
+#nav-users.btn-sm.composed-menu-btn:not(.is-active):hover {
+    color: #fff !important;
+}
+/* keep interface3/4 override */
+.page-results.page-admin .btn-sm.composed-menu-btn.is-active {
+    color: #7c3aed !important;
 }
 .composed-brand-logo {
     object-fit: contain;

@@ -21,6 +21,20 @@
 body.page-programme main.container.composed-main {
     padding-bottom: 0;
 }
+body.page-programme main.composed-main.results-main-fluid {
+    max-width: 82em;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 0;
+}
+.page-programme .card-composed-body {
+    padding: 1rem !important;
+}
+@media (max-width: 768px) {
+    body.page-programme main.composed-main.results-main-fluid {
+        max-width: 100%;
+    }
+}
 
 /* Form */
 .page-programme .form-label {
@@ -42,6 +56,14 @@ body.page-programme main.container.composed-main {
     border-color: var(--cp-accent);
     box-shadow: 0 0 0 3px var(--cp-focus-ring);
     background-color: #fff;
+}
+
+/* Ensure Choices.js selects have solid background within blurred cards */
+.page-programme .choices__inner {
+    background-color: #fff !important;
+}
+.page-programme .choices.is-open .choices__inner {
+    background-color: #fff !important;
 }
 .page-programme .btn-primary {
     border: none;
@@ -112,13 +134,119 @@ body.page-programme main.container.composed-main {
     color: #8fb018;
 }
 
-/* Flatpickr */
+/* Fix: نوع الحملة top border looks blurred/hidden when the activity block
+   ( sectorielle/geographic/rien ) is toggled and a backdrop-blur card repaints.
+   Keep the sharp 1px border and prevent the blur layer from bleeding/ clipping
+   the card's top edge. */
+.page-programme .card-composed {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+.page-programme .card-composed-body {
+    isolation: isolate;
+}
+.page-programme #form-programme .form-label,
+.page-programme #type_campagne,
+.page-programme #zone-activite-block {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    isolation: isolate;
+}
+
+/* Modal campagne - same width as users_management popup */
+.page-programme #modal-campagne-form .modal-dialog {
+    max-width: 560px;
+    width: 92%;
+}
+@media (min-width: 768px) {
+    .page-programme #modal-campagne-form .modal-dialog {
+        max-width: 600px;
+    }
+}
+@media (min-width: 992px) {
+    .page-programme #modal-campagne-form .modal-dialog {
+        max-width: 620px;
+    }
+}
+.page-programme #modal-campagne-form .stats-modal-content {
+    border-radius: 20px;
+}
+.page-programme #modal-campagne-form .modal-body {
+    max-height: 78vh;
+    overflow-y: auto;
+    padding-top: 0.5rem !important;
+}
+.page-programme #form-programme {
+    max-width: 88%;
+    margin: 0 auto;
+}
+.page-programme #form-programme .form-control,
+.page-programme #form-programme .choices__inner {
+    font-size: 0.82rem;
+}
+/* Dropdown inside modal above dates/عدد المراقبين */
+#modal-campagne-form #zone-activite-block {
+    position: relative;
+    z-index: 40;
+}
+#modal-campagne-form #zone-sectorielle-wrap {
+    position: relative;
+    z-index: 50;
+}
+#modal-campagne-form .choices__list--dropdown {
+    z-index: 9999 !important;
+    position: absolute !important;
+}
+/* Exit X - remove blue focus box and keep color consistent (was black/gray flicker) */
+.page-programme #modal-campagne-form .btn-close,
+#modal-campagne-form .btn-close {
+    opacity: 0.65 !important;
+    filter: none !important;
+    box-shadow: none !important;
+}
+.page-programme #modal-campagne-form .btn-close:focus,
+.page-programme #modal-campagne-form .btn-close:focus-visible,
+.page-programme #modal-campagne-form .btn-close:active,
+.page-programme #modal-campagne-form .btn-close:hover,
+#modal-campagne-form .btn-close:focus,
+#modal-campagne-form .btn-close:focus-visible,
+#modal-campagne-form .btn-close:hover,
+#modal-campagne-form .btn-close:active {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+    opacity: 0.65 !important;
+    filter: none !important;
+}
+/* Header add button like users_management */
+.page-programme .users-add-btn {
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 0.4rem 1.1rem;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(4, 143, 64, 0.28);
+}
+
+/* Flatpickr - centered in viewport middle */
 .page-programme .flatpickr-calendar {
     border-radius: 16px;
     border: 1px solid var(--cp-border-strong);
     box-shadow: var(--cp-shadow), 0 20px 50px -24px rgba(12, 53, 32, 0.28);
     font-family: inherit;
     overflow: hidden;
+}
+.page-programme .flatpickr-calendar.open {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 1080 !important;
+    max-height: 90vh;
+    overflow: auto;
 }
 .page-programme .flatpickr-months {
     border-radius: 16px 16px 0 0;

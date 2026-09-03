@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>إدارة المستخدمين - الإدارة</title>
+    <link rel="icon" href="images/cnss_logo.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <link rel="stylesheet" href="css/common.css" />
+    <link rel="stylesheet" href="css/users_management.css" />
+    <script>
+      try {
+        var u = JSON.parse(localStorage.getItem("currentUser"));
+        if (!u || !u.token) {
+          window.location.href = "index.html";
+        } else if ((u.userType || "").trim().toLowerCase() !== "admin") {
+          window.location.href = "main-page.html";
+        }
+      } catch (e) {
+        window.location.href = "index.html";
+      }
+    </script>
+  </head>
+  <body class="page-users page-admin">
+    <div class="composed-backdrop" aria-hidden="true"></div>
+    <div class="composed-grid-pattern" aria-hidden="true"></div>
+
+    <header class="composed-topbar">
+      <nav class="navbar composed-nav py-2" dir="rtl">
+        <div class="container composed-nav-inner">
+          <div class="composed-brand">
+            <img src="images/cnss_logo.svg" alt="" class="composed-brand-logo" width="34" height="34" decoding="async" />
+            <div class="brand-mini-menu" aria-label="Menu">
+              <a href="main-page.html" class="btn btn-outline-secondary btn-sm composed-menu-btn" id="nav-home">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+              </a>
+              <a href="interface3.html" class="btn btn-outline-secondary btn-sm composed-menu-btn">البرامج</a>
+              <a href="interface4.html" class="btn btn-outline-secondary btn-sm composed-menu-btn">الإحصائيات</a>
+              <a href="users_management.html" class="btn btn-outline-secondary btn-sm composed-menu-btn is-active" aria-current="page">إدارة المستخدمين</a>
+            </div>
+          </div>
+          <div class="composed-user-panel">
+            <div class="composed-user-lines">
+              <div id="user-info" class="composed-user-line">--</div>
+            </div>
+            <a href="my-account.html" class="btn btn-outline-secondary btn-sm composed-menu-btn" id="btn-account">حساب المستعمل</a>
+            <button type="button" class="btn btn-outline-secondary btn-sm composed-menu-btn p-0" id="btn-logout"><img src="images/off_icon.svg" alt="خروج" width="24" height="24" /></button>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-fluid composed-main results-main-fluid" dir="rtl">
+      <div class="row g-4 composed-bento">
+        <!-- Tableau d'affichage - full width -->
+        <div class="col-12 mt-0">
+          <div class="card card-custom card-composed card-composed--wide h-100">
+            <div class="card-composed-accent card-composed-accent--secondary" aria-hidden="true"></div>
+            <div class="card-composed-body p-4 p-lg-4 d-flex flex-column">
+              <div class="composed-card-head mb-1 users-card-head">
+                <span class="composed-card-icon composed-card-icon--table" aria-hidden="true"></span>
+                <div class="w-100">
+                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <h2 class="h5 fw-bold mb-0">قائمة المستخدمين</h2>
+                    <button type="button" id="btn-open-user-form" class="btn btn-primary btn-sm users-add-btn mx-auto">+ إضافة مستخدم</button>
+                    <div class="programmes-total text-start" id="users-total"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Filters -->
+              <section class="results-filters mt-2" aria-label="Filtres">
+                <div class="results-filters-shell">
+                  <div class="results-filters-section results-filters-section--primary">
+                    <div class="results-filters-row">
+                      <div class="results-filter-compact results-filter-compact--search">
+                        <label class="form-label mb-1" for="filter-search">بحث (المعرف / الاسم)</label>
+                        <input type="text" class="form-control form-control-sm" id="filter-search" placeholder="..." />
+                      </div>
+                      <div class="results-filter-compact results-filter-compact--type">
+                        <label class="form-label mb-1" for="filter-grade">الرتبة</label>
+                        <select class="form-select form-select-sm" id="filter-grade">
+                          <option value="" selected>الكل</option>
+                          <option value="CT">CT</option>
+                          <option value="CU">CU</option>
+                          <option value="CC">CC</option>
+                          <option value="DRC">DRC</option>
+                          <option value="CONTROLLEUR">CONTROLLEUR</option>
+                        </select>
+                      </div>
+                      <div class="results-filter-compact results-filter-compact--bureau">
+                        <label class="form-label mb-1" for="filter-bureau">المكتب</label>
+                        <select class="form-select form-select-sm" id="filter-bureau">
+                          <option value="" selected>الكل</option>
+                        </select>
+                      </div>
+                      <div class="results-filter-compact results-filter-compact--type">
+                        <label class="form-label mb-1" for="filter-usertype">النوع</label>
+                        <select class="form-select form-select-sm" id="filter-usertype">
+                          <option value="" selected>الكل</option>
+                          <option value="normal">normal</option>
+                          <option value="admin">admin</option>
+                        </select>
+                      </div>
+                      <div class="results-filter-actions">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-filters-reset">إلغاء</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="results-export-toolbar" aria-label="Téléchargements">
+                    <button type="button" class="btn btn-outline-success btn-sm" id="btn-export-xlsx">Excel</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" id="btn-export-pdf">PDF</button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="btn-import-xlsx"><span id="import-label">استيراد Excel</span><span class="spinner-border spinner-border-sm ms-2 d-none" id="import-spinner" role="status" aria-hidden="true"></span></button>
+                    <input type="file" id="input-import-xlsx" accept=".xlsx,.xls" hidden />
+                  </div>
+                </div>
+              </section>
+
+              <div class="table-responsive composed-table-wrap flex-grow-1">
+                <table class="table table-hover align-middle composed-table mb-0 text-center" dir="rtl">
+                  <thead>
+                    <tr>
+                      <th class="sort-trigger" data-col="0">المعرف <span class="sort-indicator"></span></th>
+                      <th class="sort-trigger" data-col="1">الاسم بالعربية <span class="sort-indicator"></span></th>
+                      <th class="sort-trigger" data-col="2">الاسم بالفرنسية <span class="sort-indicator"></span></th>
+                      <th class="sort-trigger" data-col="3">الرتبة <span class="sort-indicator"></span></th>
+                      <th class="sort-trigger" data-col="4">المكتب <span class="sort-indicator"></span></th>
+                      <th class="sort-trigger" data-col="5">النوع <span class="sort-indicator"></span></th>
+                      <th>إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="table-body">
+                    <tr id="users-loader-row">
+                      <td colspan="7" class="text-center py-4">
+                        <div class="spinner-border text-success" role="status" aria-label="تحميل"></div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="programmes-pagination d-none" id="users-pagination">
+                <div class="programmes-pagination-row">
+                  <button type="button" class="btn btn-outline-secondary btn-sm programmes-page-btn composed-menu-btn" id="users-prev">الصفحة السابقة</button>
+                  <div class="programmes-pages" id="users-pages"></div>
+                  <button type="button" class="btn btn-outline-secondary btn-sm programmes-page-btn composed-menu-btn" id="users-next">الصفحة التالية</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Modal form user (popup centered) -->
+    <div class="modal fade" id="modal-user-form" tabindex="-1" aria-labelledby="modal-user-title" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content stats-modal-content" dir="rtl">
+          <div class="modal-header border-0 py-3 px-4">
+            <h5 class="modal-title fw-bold" id="modal-user-title">مستخدم جديد</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+          </div>
+          <div class="modal-body pt-0 px-4 pb-4">
+            <form id="form-user" novalidate>
+              <div class="form-row-2 mb-3">
+                <div>
+                  <label class="form-label" for="user-matricule">المعرف (Matricule) *</label>
+                  <input type="number" id="user-matricule" class="form-control" placeholder="مثال: 126359" required min="1" />
+                </div>
+                <div>
+                  <label class="form-label" for="user-grade">الرتبة *</label>
+                  <select id="user-grade" class="form-select" required>
+                    <option value="">اختر...</option>
+                    <option value="CT">CT</option>
+                    <option value="CU">CU</option>
+                    <option value="CC">CC</option>
+                    <option value="DRC">DRC</option>
+                    <option value="CONTROLLEUR">CONTROLLEUR</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="user-ar-name">الاسم بالعربية *</label>
+                <input type="text" id="user-ar-name" class="form-control" placeholder="الاسم الكامل" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="user-fr-name">الاسم بالفرنسية *</label>
+                <input type="text" id="user-fr-name" class="form-control" placeholder="Nom complet" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="user-code-br">المكتب (Code Bureau) *</label>
+                <select id="user-code-br" class="form-select" required>
+                  <option value="">تحميل...</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="user-type">نوع المستخدم *</label>
+                <select id="user-type" class="form-select" required>
+                  <option value="normal">normal</option>
+                  <option value="admin">admin</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="user-pw">كلمة المرور <span id="pw-hint" class="text-muted" style="font-weight:400;font-size:0.72rem">(مطلوبة للإضافة)</span></label>
+                <input type="password" id="user-pw" class="form-control" placeholder="••••••••" autocomplete="new-password" />
+              </div>
+              <button type="submit" class="btn btn-primary w-100" id="btn-submit">
+                <span id="btn-text">إضافة المستخدم</span>
+                <span class="spinner-border spinner-border-sm ms-2 d-none" id="btn-submit-spinner" role="status" aria-hidden="true"></span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="js/api_1.js"></script>
+    <script src="js/users_management.js"></script>
+    <div class="on-user"><span class="dot"></span><span id="on-user-text">...</span></div>
+    <div class="dev-credit">تصميم وتطوير: إدارة المراقبة - أحمد الزكراوي</div>
+  </body>
+</html>

@@ -69,16 +69,16 @@ try { window.SESSION_TTL_MS = SESSION_TTL_MS; } catch {}
 /* ── Server time offset (for session based on server, not user machine) */
 let _serverTimeOffset = 0;
 
-async function _syncServerTime() {
+async function _syncServerTime(token) {
+    const t = token || getToken();
+    if (!t) return;
     try {
         const db = await _fbReady;
         const clientNow = Date.now();
-        const ref = db.collection('_meta').doc('servertime');
-        await ref.set({ ts: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
-        const snap = await ref.get();
-        const data = snap.data();
-        if (data && data.ts && data.ts.toDate) {
-            const serverNow = data.ts.toDate().getTime();
+        const snap = await db.collection('sessions').doc(t).get();
+        const ts = snap.readTime || (snap.data && snap.data().serverNow);
+        if (ts && ts.toDate) {
+            const serverNow = ts.toDate().getTime();
             _serverTimeOffset = serverNow - clientNow;
         }
     } catch {}
@@ -89,7 +89,7 @@ function getServerTime() {
 }
 try { window.getServerTime = getServerTime; } catch {}
 
-_syncServerTime();
+if (getToken()) _syncServerTime();
 
 function getCurrentUser() {
     try {
@@ -285,6 +285,31 @@ function _bureauToRow(doc) {
     ];
 }
 
+// Users: [Matricule, FR_Name, AR_Name, Grade, Code_BR, Pw, user_type]
+function _userToRow(doc) {
+    return [
+        doc.Matricule != null ? doc.Matricule : '',
+        doc.FR_Name || '',
+        doc.AR_Name || '',
+        doc.Grade || '',
+        doc.Code_BR != null ? doc.Code_BR : '',
+        doc.Pw || '',
+        doc.user_type || 'normal'
+    ];
+}
+
+function _rowToUser(row) {
+    return {
+        Matricule: row[0] != null && String(row[0]).trim() !== '' ? Number(row[0]) : '',
+        FR_Name: row[1] || '',
+        AR_Name: row[2] || '',
+        Grade: row[3] || '',
+        Code_BR: row[4] != null && String(row[4]).trim() !== '' ? Number(row[4]) : '',
+        Pw: row[5] || '',
+        user_type: row[6] || 'normal'
+    };
+}
+
 /* ── Network check helper ───────────────────────────────────────────── */
 async function _isOnline() {
     if (typeof navigator !== 'undefined' && navigator.onLine === false) return false;
@@ -380,6 +405,7 @@ async function postAction(action, payload = {}) {
             const codeBr = String(user.Code_BR || user.code_br || '').trim();
             const bureau = codeBr ? await _findBureau(codeBr) : null;
             const token = await _createToken(matricule, codeBr);
+            await _syncServerTime(token);
 
             return {
                 ok: true,
@@ -424,7 +450,14 @@ async function postAction(action, payload = {}) {
             const sess = await _getSession(getToken());
             if (!sess) return { ok: false, error: 'unauthorized' };
             const sname = String(payload.sheet || '').trim();
-            if (!['Programmes', 'Resultats', 'Bureaux'].includes(sname)) return { ok: false, error: 'invalid_sheet' };
+            if (!['Programmes', 'Resultats', 'Bureaux', 'Users'].includes(sname)) return { ok: false, error: 'invalid_sheet' };
+
+            if (sname === 'Users') {
+                const adminUser = await _findUser(sess.matricule);
+                if (!adminUser || String(adminUser.user_type || '').trim().toLowerCase() !== 'admin') return { ok: false, error: 'unauthorized' };
+                const docs = await _getAllDocs('users');
+                return { ok: true, rows: docs.map(_userToRow) };
+            }
 
             const docs = await _getAllDocs(sname.toLowerCase());
             let rows;
@@ -433,6 +466,80 @@ async function postAction(action, payload = {}) {
             else rows = docs.map(_bureauToRow);
 
             return { ok: true, rows: rows };
+        }
+
+        /* ── adminSaveUser (create / update) ── */
+        if (action === 'adminSaveUser') {
+            const sess = await _getSession(getToken());
+            if (!sess || !sess.matricule) return { ok: false, error: 'unauthorized' };
+            const adminUser = await _findUser(sess.matricule);
+            if (!adminUser || String(adminUser.user_type || '').trim().toLowerCase() !== 'admin') return { ok: false, error: 'unauthorized' };
+
+            const matricule = String(payload.matricule || '').trim();
+            const frName = String(payload.frName || '').trim();
+            const arName = String(payload.arName || '').trim();
+            const grade = String(payload.grade || '').trim();
+            const codeBr = String(payload.codeBr || '').trim();
+            const pwRaw = String(payload.pw || '');
+            const userType = String(payload.userType || 'normal').trim().toLowerCase() === 'admin' ? 'admin' : 'normal';
+            const isEdit = !!payload.isEdit;
+
+            if (!matricule || !frName || !arName || !grade || !codeBr) return { ok: false, error: 'missing_fields' };
+            if (!isEdit && !pwRaw.trim()) return { ok: false, error: 'missing_fields' };
+
+            const existing = await _findUser(matricule);
+            if (!isEdit && existing) return { ok: false, error: 'duplicate_matricule' };
+            if (isEdit && !existing) return { ok: false, error: 'user_not_found' };
+
+            let pwHash = existing ? (existing.Pw || '') : '';
+            if (pwRaw && pwRaw.trim() !== '') {
+                pwHash = await _passwordHash(matricule, pwRaw.trim());
+            }
+            if (!pwHash) return { ok: false, error: 'missing_fields' };
+
+            const docData = {
+                Matricule: Number(matricule),
+                FR_Name: frName,
+                AR_Name: arName,
+                Grade: grade,
+                Code_BR: Number(codeBr),
+                Pw: pwHash,
+                user_type: userType
+            };
+
+            const db = await _fbReady;
+            const targetId = isEdit && existing && existing.id ? existing.id : String(matricule);
+            await db.collection('users').doc(targetId).set(docData, { merge: true });
+            // cleanup duplicates caused by previous bug (auto-id vs matricule-id with same Matricule)
+            try {
+                const snap = await db.collection('users').where('Matricule', '==', Number(matricule)).get();
+                for (const d of snap.docs) {
+                    if (d.id !== targetId) {
+                        await db.collection('users').doc(d.id).delete().catch(() => {});
+                    }
+                }
+            } catch {}
+            return { ok: true };
+        }
+
+        /* ── adminDeleteUser ── */
+        if (action === 'adminDeleteUser') {
+            const sess = await _getSession(getToken());
+            if (!sess || !sess.matricule) return { ok: false, error: 'unauthorized' };
+            const adminUser = await _findUser(sess.matricule);
+            if (!adminUser || String(adminUser.user_type || '').trim().toLowerCase() !== 'admin') return { ok: false, error: 'unauthorized' };
+            const matricule = String(payload.matricule || '').trim();
+            if (!matricule) return { ok: false, error: 'missing_fields' };
+            if (String(sess.matricule).trim() === matricule) return { ok: false, error: 'cannot_delete_self' };
+            const target = await _findUser(matricule);
+            if (!target) return { ok: false, error: 'user_not_found' };
+            const db = await _fbReady;
+            // delete by doc id (matricule) and also by found id if different
+            await db.collection('users').doc(String(matricule)).delete().catch(() => {});
+            if (target.id && String(target.id) !== String(matricule)) {
+                await db.collection('users').doc(target.id).delete().catch(() => {});
+            }
+            return { ok: true };
         }
 
         /* ── getSheet (user-scoped) ── */
@@ -487,6 +594,13 @@ async function postAction(action, payload = {}) {
     }
 }
 
+/* ── Admin helpers exposed ─────────────────────────────────────────── */
+try {
+    window._passwordHash = _passwordHash;
+    window._findUser = _findUser;
+    window._userToRow = _userToRow;
+} catch {}
+
 /* ── Main API: saveData (drop-in replacement) ───────────────────────── */
 async function saveData(sheetName, arrayValues) {
     if (isSessionExpired()) { logoutToLogin(); return false; }
@@ -519,6 +633,22 @@ async function saveData(sheetName, arrayValues) {
                 await db.collection('resultats').doc(ref.id).update({ ID_Resultat: ref.id });
             }
             return true;
+        }
+
+        if (sheetName === 'Users') {
+            // Admin-only: delegate to postAction adminSaveUser (keeps hashing & checks)
+            const row = _rowToUser(arrayValues);
+            const res = await postAction('adminSaveUser', {
+                matricule: String(row.Matricule),
+                frName: row.FR_Name,
+                arName: row.AR_Name,
+                grade: row.Grade,
+                codeBr: String(row.Code_BR),
+                pw: row.Pw && String(row.Pw).indexOf('sha256:') === 0 ? '' : String(row.Pw || ''),
+                userType: row.user_type,
+                isEdit: !!arrayValues._isEdit
+            });
+            return !!(res && res.ok);
         }
 
         return false;
@@ -572,22 +702,14 @@ function _getServerYear() {
     } catch {}
     return (async () => {
         try {
-            const db = await _fbReady;
-            const snap = await db.collection('_meta').doc('servertime').get();
-            let year = null;
-            if (snap.readTime && snap.readTime.toDate) {
-                year = snap.readTime.toDate().getFullYear();
-            }
-            if (year === null && snap.exists) {
-                const d = snap.data();
-                if (d && d.ts && d.ts.toDate) year = d.ts.toDate().getFullYear();
-            }
-            if (year !== null) {
-                try { localStorage.setItem('_serverYear', String(year)); } catch {}
-                return year;
-            }
-        } catch {}
-        return new Date().getFullYear();
+            if (getToken()) await _syncServerTime();
+            const now = new Date(getServerTime());
+            const year = now.getFullYear();
+            try { localStorage.setItem('_serverYear', String(year)); } catch {}
+            return year;
+        } catch {
+            return new Date().getFullYear();
+        }
     })();
 }
 

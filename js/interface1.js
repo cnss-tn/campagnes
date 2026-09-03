@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const form = document.getElementById('form-programme');
     const tableBody = document.getElementById('table-body');
-    const reveal = document.getElementById('form-campagne-reveal');
-    const panel = document.getElementById('form-campagne-panel');
+    const modalCampagneEl = document.getElementById('modal-campagne-form');
+    let modalCampagne = null;
+    try { modalCampagne = typeof bootstrap !== 'undefined' ? bootstrap.Modal.getOrCreateInstance(modalCampagneEl) : null; } catch {}
     const btnOpenForm = document.getElementById('btn-open-campagne-form');
-    const btnCloseForm = document.getElementById('btn-close-form');
     const typeCampagne = document.getElementById('type_campagne');
     const zoneBlock = document.getElementById('zone-activite-block');
     const wrapSectorielle = document.getElementById('zone-sectorielle-wrap');
@@ -513,6 +513,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             minDate: yearMin,
             maxDate: yearMax,
             placeholder: "اختر...",
+            position: "auto",
+            static: false,
             onChange: (dates) => {
                 if (dates[0]) {
                     fpFin.set('minDate', dates[0]);
@@ -532,6 +534,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             minDate: yearMin,
             maxDate: yearMax,
             placeholder: "اختر...",
+            position: "auto",
+            static: false,
             onYearChange: (sel, dt, inst) => { if (inst.currentYear !== curYear) inst.changeYear(curYear); },
             onMonthChange: (sel, dt, inst) => { if (inst.currentYear !== curYear) inst.changeYear(curYear); },
         });
@@ -684,13 +688,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         ];
     }
 
-    btnOpenForm.addEventListener('click', () => {
+    btnOpenForm?.addEventListener('click', () => {
         initFormPickersOnce();
-        reveal.hidden = true;
-        panel.hidden = false;
-        btnOpenForm.setAttribute('aria-expanded', 'true');
-        if (btnCloseForm) btnCloseForm.hidden = false;
-
+        if (modalCampagne) modalCampagne.show();
+        else if (modalCampagneEl) modalCampagneEl.style.display = 'block';
         requestAnimationFrame(() => {
             if (typeof choicesCampagne?.refresh === 'function') choicesCampagne.refresh();
             if (typeof choicesSector?.refresh === 'function') choicesSector.refresh();
@@ -699,12 +700,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    function closeCampagneForm() {
-        panel.hidden = true;
-        reveal.hidden = false;
-        btnOpenForm.setAttribute('aria-expanded', 'false');
-        if (btnCloseForm) btnCloseForm.hidden = true;
-
+    function resetCampagneForm() {
         form.reset();
         if (fpDebut) { fpDebut.destroy(); fpDebut = null; }
         if (fpFin) { fpFin.destroy(); fpFin = null; }
@@ -723,8 +719,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         formPickersReady = false;
     }
 
-    if (btnCloseForm) {
-        btnCloseForm.addEventListener('click', closeCampagneForm);
+    function closeCampagneForm() {
+        if (modalCampagne) {
+            try { modalCampagne.hide(); } catch {}
+        } else if (modalCampagneEl) {
+            modalCampagneEl.style.display = 'none';
+        }
+    }
+
+    if (modalCampagneEl) {
+        modalCampagneEl.addEventListener('hidden.bs.modal', () => {
+            resetCampagneForm();
+        });
+        modalCampagneEl.addEventListener('shown.bs.modal', () => {
+            // ensure Choices / flatpickr redraw inside modal
+            if (typeof choicesCampagne?.refresh === 'function') choicesCampagne.refresh();
+            if (typeof choicesSector?.refresh === 'function') choicesSector.refresh();
+            if (typeof fpDebut?.redraw === 'function') fpDebut.redraw();
+            if (typeof fpFin?.redraw === 'function') fpFin.redraw();
+        });
     }
 
 
@@ -749,6 +762,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             const ok = await saveData('Resultats', payload);
             btnStatsSave.disabled = false;
             if (ok) {
+                const updatedId = currentProgrammeRow ? String(currentProgrammeRow[0] || '').trim() : '';
+                if (updatedId) {
+                    goToLastPageOnce = true;
+                    goToNewCampagneId = updatedId;
+                }
                 statsModal?.hide();
     await loadTable();
             } else {
@@ -995,15 +1013,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (success) {
             goToLastPageOnce = true;
             goToNewCampagneId = newEntry[0];
-            form.reset();
-            fpDebut.clear();
-            fpFin.clear();
-            fpFin.set('minDate', new Date(new Date().getFullYear(), 0, 1));
-            choicesCampagne.setChoiceByValue(typeCampagne.value);
-            updateZoneActiviteUI();
-            updateSectorClearBadge();
             btnText.textContent = 'إضافة إلى البرنامج';
             btnSpinner.classList.add('d-none');
+            closeCampagneForm();
             await loadTable();
         } else {
             alert('خطأ أثناء إضافة البرنامج. حاول مرة أخرى');
