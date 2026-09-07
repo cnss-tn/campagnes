@@ -1,0 +1,314 @@
+/* pw-force-change.css — extends my-account.css, replaces personal info with warning */
+.page-force .force-warning-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.page-force .account-split {
+  align-items: stretch !important;
+}
+.page-force .account-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-force .force-warning-card {
+  background: #ffffff;
+  border: 1.8px dashed rgba(220, 53, 69, 0.45);
+  border-radius: 16px;
+  padding: 1.25rem 1.15rem;
+  box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.06);
+  flex: 1;
+  height: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-force .force-warning-icon {
+  font-size: 1.75rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.page-force .force-warning-title {
+  font-weight: 900;
+  font-size: 1.05rem;
+  color: #842029;
+  text-align: center;
+  margin-bottom: 1rem;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%);
+  border: 1.5px dashed #e63946;
+  border-radius: 12px;
+  padding: 0.55rem 1rem;
+  box-shadow: 0 4px 14px -8px rgba(220, 53, 69, 0.25);
+  position: relative;
+}
+.page-force .force-warning-title::before {
+  content: "⚠️";
+  margin-left: 0.5rem;
+  font-size: 1.15rem;
+  vertical-align: middle;
+}
+
+.page-force .force-warning-text {
+  font-size: 0.86rem;
+  line-height: 1.7;
+  color: #212529;
+}
+
+.page-force .force-warning-text p {
+  margin-bottom: 0.6rem;
+}
+
+.page-force .force-warning-list {
+  margin: 0.6rem 0 0.8rem 0;
+  padding-right: 1.2rem;
+  list-style: disc;
+}
+
+.page-force .force-warning-list li {
+  margin-bottom: 0.3rem;
+  font-size: 0.82rem;
+}
+
+.page-force .force-warning-list code {
+  background: rgba(0,0,0,0.06);
+  padding: 0.1rem 0.3rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+}
+
+.page-force .force-warning-matricule {
+  background: #fff;
+  border: 1px dashed rgba(212,160,23,0.35);
+  border-radius: 10px;
+  padding: 0.55rem 0.85rem;
+  text-align: center;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.page-force .force-warning-matricule strong {
+  color: #b8860b;
+  font-size: 1rem;
+}
+
+/* Make form same dimensions as warning — equal height, equal width, centered without enlarging fields */
+.page-force .account-panel:last-child {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+}
+.page-force #form-change-password {
+  background: #fff;
+  border: 1px solid rgba(4,143,64,0.08);
+  border-radius: 16px;
+  padding: 1.25rem 1.15rem;
+  box-shadow: 0 6px 20px -14px rgba(4,143,64,0.25);
+  flex: 1;
+  height: 100%;
+  min-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: stretch;
+  margin: 0;
+  box-sizing: border-box;
+}
+/* inputs: reduced more width, centered — not enlarged, uses margins */
+.page-force #form-change-password .form-control {
+  max-width: 70%;
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+.page-force #form-change-password .form-label,
+.page-force #form-change-password .form-text {
+  max-width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+.page-force #form-change-password .form-text {
+  text-align: right;
+}
+.page-force #change-password-panel {
+  width: 100%;
+}
+
+.page-force #btn-change-password {
+  background: #048f40;
+  border-color: #048f40;
+  font-weight: 700;
+  min-width: 14rem;
+  box-shadow: 0 4px 14px -6px rgba(4,143,64,0.5);
+}
+
+.page-force #btn-change-password:hover {
+  background: #037a36;
+  border-color: #037a36;
+}
+
+.page-force .account-title h1 {
+  color: #7a4a00;
+}
+
+/* ── Top green accent removed per request ── */
+.page-force .card-composed-accent {
+  display: none !important;
+}
+.page-force .account-card {
+  overflow: hidden !important;
+  border-top: 1px solid var(--cp-border) !important;
+}
+
+/* ── Layout: only central card, no topbar — logout floating in body ── */
+body.page-force {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+body.page-force .force-logout-btn {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 10;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 2em !important;
+  box-shadow: none !important;
+  width: auto;
+  height: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+body.page-force .force-logout-btn:hover,
+body.page-force .force-logout-btn:active,
+body.page-force .force-logout-btn:focus,
+body.page-force .force-logout-btn:focus-visible,
+body.page-force .force-logout-btn.active,
+body.page-force .force-logout-btn:focus-within {
+  background: #6c757d !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 2em !important;
+}
+body.page-force .force-logout-btn img {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+body.page-force .composed-main {
+  flex: 1 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 2.75rem !important;
+  padding-bottom: 2.75rem !important;
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+  min-height: calc(100vh - 80px);
+}
+body.page-force main {
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+  width: 100%;
+}
+.page-force .account-card {
+  max-height: none !important;
+  height: auto !important;
+  display: block !important;
+  overflow: hidden !important;
+}
+.page-force .card-composed-body {
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+  padding: 1.5rem 1.25rem !important;
+}
+.page-force .force-warning-card {
+  padding: 0.9rem 1rem;
+}
+.page-force .force-warning-text {
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+.page-force .account-panel:last-child {
+  position: relative !important;
+  padding-top: 2.2rem !important;
+}
+.page-force #account-alert {
+  position: absolute !important;
+  top: 0.05rem !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 92% !important;
+  max-width: 76% !important;
+  font-size: 0.80rem !important;
+  line-height: 1.5 !important;
+  padding: 0.55rem 0.85rem !important;
+  margin: 0 !important;
+  border-radius: 12px !important;
+  border-width: 1px !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10) !important;
+  z-index: 3;
+}
+.page-force #account-alert.d-none {
+  display: none !important;
+}
+.page-force #account-alert.alert-success {
+  background: #e6f4ea !important;
+  border-color: rgba(4,143,64,0.18) !important;
+  color: #0f5132 !important;
+}
+.page-force #account-alert.alert-danger {
+  background: #f8d7da !important;
+  border-color: rgba(220,53,69,0.18) !important;
+  color: #842029 !important;
+}
+.page-force #account-alert.alert-warning {
+  background: #fff3cd !important;
+  border-color: rgba(212,160,23,0.22) !important;
+  color: #664d03 !important;
+}
+.page-force #form-change-password .mb-3 {
+  margin-bottom: 0.95rem !important;
+}
+/* more margin before button — éloigné au maximum du form */
+.page-force #form-change-password .d-flex.justify-content-center {
+  margin-top: 2.8rem !important;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .page-force .force-warning-card {
+    padding: 1rem;
+  }
+  body.page-force .composed-main {
+    padding-bottom: 3rem !important;
+  }
+  .page-force .account-split {
+    align-items: start !important;
+  }
+  .page-force .force-warning-card,
+  .page-force #form-change-password {
+    height: auto !important;
+    min-height: auto !important;
+  }
+}

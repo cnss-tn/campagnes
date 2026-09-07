@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تغيير كلمة المرور - إلزامي</title>
+    <link rel="icon" href="images/cnss_logo.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/common.css" />
+    <link rel="stylesheet" href="css/interface1.css" />
+    <link rel="stylesheet" href="css/my-account.css" />
+    <link rel="stylesheet" href="css/pw-force-change.css" />
+  </head>
+  <body class="page-programme page-account page-force">
+    <div class="composed-backdrop" aria-hidden="true"></div>
+    <div class="composed-grid-pattern" aria-hidden="true"></div>
+
+    <button type="button" class="btn btn-outline-secondary btn-sm composed-menu-btn p-0 force-logout-btn" id="btn-logout" title="خروج" aria-label="خروج"><img src="images/off_icon.svg" alt="خروج" width="24" height="24" /></button>
+
+    <main class="container composed-main" dir="rtl">
+      <div class="row g-4 justify-content-center">
+        <div class="col-lg-10 mt-0">
+          <div class="card card-composed account-card">
+            <div class="card-composed-accent" aria-hidden="true"></div>
+            <div class="card-composed-body p-4 p-lg-4">
+              <div class="account-split">
+                <!-- LEFT: warning replaces personal info -->
+                <section class="account-panel force-warning-panel">
+                  <div class="force-warning-card">
+                    <div class="force-warning-title">تنبيه</div>
+                    <div class="force-warning-text">
+                      <p>كلمة المرور الحالية الخاصة بك هي كلمة مرور أولية بسيطة تساوي <strong>رقمك الآلي (Matricule)</strong> وهذا يشكّل خطراً أمنياً.</p>
+                      <p>إذن يجب عليك تغيير كلمة المرور الآن ومرة واحدة إلى <strong>كلمة مرور شخصية قوية</strong> قبل المتابعة إلى التطبيق.</p>
+                      <ul class="force-warning-list">
+                        <li>لا تستخدم <strong>الرقم الآلي</strong> ككلمة مرور</li>
+                        <li>اختر كلمة مرور لا تقل عن <strong>4 أحرف</strong> (يُفضّل أحرف + أرقام)</li>
+                        <li>بعد التغيير <strong>لن يُطلب منك ذلك مجدداً</strong></li>
+                      </ul>
+                      <p>كما يجب أن تقوم بكتابة <strong>بريدك الإلكتروني الشخصي</strong>؛ ففي كل تسجيل دخول إلى التطبيق سيُطلب منك تأكيد شخصيتك عبر <strong>رقم سري</strong> يُرسل إلى بريدك الإلكتروني الشخصي لحماية حسابك والتطبيق من <strong>الاستعمال الغير مرخص والاختراق</strong>.</p>
+                      <div class="alert alert-warning py-2 px-3 mt-3 mb-0" style="font-size: 0.82rem"><strong>ملاحظة:</strong> لن تتمكن من استعمال التطبيق قبل تغيير كلمة المرور وإدخال بريدك الإلكتروني الشخصي.</div>
+                      <div class="alert alert-info py-2 px-3 mt-2 mb-0" style="font-size: 0.8rem; background: rgba(13, 110, 253, 0.08); border-color: rgba(13, 110, 253, 0.18); color: #0a3a6b">كل جلسة (Session) تدوم <strong>4 ساعات</strong>، بانتهاء هذا الوقت يتم تسجيل خروجك آليا ويجب عليك إعادة تسجيل الدخول للمتابعة.</div>
+                    </div>
+                  </div>
+                </section>
+
+                <div class="vr account-divider" aria-hidden="true"></div>
+
+                <section class="account-panel">
+                  <div class="alert d-none" id="account-alert" role="alert"></div>
+
+                  <form id="form-change-password" novalidate>
+                    <div id="change-password-panel">
+                      <div class="mb-3">
+                        <label class="form-label" for="old-pw">كلمة المرور القديمة</label>
+                        <input type="password" class="form-control" id="old-pw" autocomplete="current-password" required />
+                        <div class="form-text" style="font-size: 0.72rem">حالياً هي نفس رقم التسجيل</div>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label" for="new-pw">كلمة المرور الجديدة</label>
+                        <input type="password" class="form-control" id="new-pw" autocomplete="new-password" required />
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label" for="new-pw-2">تأكيد كلمة المرور الجديدة</label>
+                        <input type="password" class="form-control" id="new-pw-2" autocomplete="new-password" required />
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label" for="user-email">البريد الإلكتروني الشخصي <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="user-email" autocomplete="email" placeholder="" required dir="ltr" style="text-align: left" />
+                      </div>
+                      <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary" id="btn-change-password">تأكيد وتغيير كلمة المرور</button>
+                      </div>
+                    </div>
+
+                    <div class="change-password-loader d-none" id="change-password-loader" aria-live="polite">
+                      <div class="spinner-border text-success" role="status" aria-label="Chargement">
+                        <span class="visually-hidden">تحديث</span>
+                      </div>
+                      <div class="small text-muted fw-semibold mt-3">تحديث...</div>
+                    </div>
+                  </form>
+                </section>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="js/api_1.js"></script>
+    <script src="js/pw-force-change.js"></script>
+    <script>
+      (function () {
+        var user = JSON.parse(localStorage.getItem("currentUser") || "{}");
+        var is_admin = (user.userType || "").trim().toLowerCase() === "admin";
+        if (is_admin) document.body.classList.add("page-admin");
+      })();
+    </script>
+    <div class="on-user"><span class="dot"></span><span id="on-user-text">...</span></div>
+    <div class="dev-credit">تصميم وتطوير: إدارة المراقبة - أحمد الزكراوي</div>
+  </body>
+</html>

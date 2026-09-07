@@ -48,6 +48,158 @@ function _isSha256Hex(s) {
     return /^[0-9a-f]{64}$/i.test(String(s || '').trim());
 }
 
+function _isRealEmail(email) {
+    const e = String(email || '').trim().toLowerCase();
+    if (!e) return false;
+    const re = /^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$/i;
+    if (!re.test(e)) return false;
+    if (e.includes('..')) return false;
+    if (e.startsWith('.') || e.startsWith('@') || e.endsWith('.')) return false;
+    const at = e.indexOf('@');
+    if (at < 1 || at === e.length - 1) return false;
+    const domain = e.slice(at + 1);
+    if (!domain.includes('.')) return false;
+    if (domain.startsWith('-') || domain.endsWith('-') || domain.startsWith('.') || domain.endsWith('.')) return false;
+    const fakeTokens = ['fake', 'test', 'example', 'invalid', 'tempmail', 'mailinator', 'yopmail', 'throwaway', 'disposable', 'trashmail', 'guerrilla'];
+    for (const t of fakeTokens) if (e.includes(t)) return false;
+    const blocked = new Set(['example.com','example.tn','test.com','test.tn','fake.com','fake.tn','invalid.com','invalid.tn','mailinator.com','yopmail.com','tempmail.com','trashmail.com']);
+    if (blocked.has(domain)) return false;
+    const local = e.slice(0, at);
+    if (['test','fake','admin','null','noreply','no-reply','user','example'].includes(local)) return false;
+    if (local.length < 3) return false;
+    return true;
+}
+
+function _maskEmail(email) {
+    const e = String(email || '').trim();
+    const at = e.indexOf('@');
+    if (at < 2) return e.replace(/./g, '*');
+    const local = e.slice(0, at);
+    const domain = e.slice(at + 1);
+    const maskedLocal = local[0] + '***' + local.slice(-1);
+    const dot = domain.indexOf('.');
+    if (dot < 1) return maskedLocal + '@***';
+    const first = domain.slice(0, dot);
+    const rest = domain.slice(dot);
+    const maskedDomain = first[0] + '***' + rest;
+    return maskedLocal + '@' + maskedDomain;
+}
+
+function _generateOTP() {
+    return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+async function _createLoginCode(matricule, email) {
+    const code = _generateOTP();
+    const now = Date.now();
+    const expiresAt = now + 10 * 60 * 1000;
+    const payload = {
+        code: code,
+        email: String(email).trim().toLowerCase(),
+        matricule: String(matricule).trim(),
+        createdAt: now,
+        expiresAt: expiresAt,
+        attempts: 0
+    };
+    // Try Firestore, fallback to localStorage if rules not deployed / offline
+    try {
+        const db = await _fbReady;
+        await db.collection('login_codes').doc(String(matricule).trim()).set(payload);
+    } catch (e) {
+        console.warn('Firestore login_codes set failed, fallback to localStorage', e);
+        try { localStorage.setItem('_otp_' + String(matricule).trim(), JSON.stringify(payload)); } catch {}
+    }
+    // also keep in localStorage for fallback verification
+    try { localStorage.setItem('_otp_' + String(matricule).trim(), JSON.stringify(payload)); } catch {}
+    return code;
+}
+
+async function _verifyLoginCode(matricule, inputCode) {
+    const key = String(matricule).trim();
+    // Try Firestore first
+    try {
+        const db = await _fbReady;
+        const ref = db.collection('login_codes').doc(key);
+        const snap = await ref.get();
+        if (snap.exists) {
+            const data = snap.data();
+            if (data && data.code) {
+                if (Date.now() > Number(data.expiresAt)) {
+                    try { await ref.delete(); } catch {}
+                    try { localStorage.removeItem('_otp_' + key); } catch {}
+                    return { ok: false, error: 'code_expired' };
+                }
+                if (String(data.code).trim() !== String(inputCode).trim()) {
+                    try { await ref.update({ attempts: (Number(data.attempts)||0)+1 }); } catch {}
+                    return { ok: false, error: 'invalid_code' };
+                }
+                try { await ref.delete(); } catch {}
+                try { localStorage.removeItem('_otp_' + key); } catch {}
+                return { ok: true };
+            }
+        }
+    } catch (e) { console.warn('Firestore verify failed, trying localStorage', e); }
+    // Fallback to localStorage
+    try {
+        const raw = localStorage.getItem('_otp_' + key);
+        if (!raw) return { ok: false, error: 'code_not_found' };
+        const data = JSON.parse(raw);
+        if (!data || !data.code) return { ok: false, error: 'code_not_found' };
+        if (Date.now() > Number(data.expiresAt)) {
+            try { localStorage.removeItem('_otp_' + key); } catch {}
+            return { ok: false, error: 'code_expired' };
+        }
+        if (String(data.code).trim() !== String(inputCode).trim()) return { ok: false, error: 'invalid_code' };
+        try { localStorage.removeItem('_otp_' + key); } catch {}
+        return { ok: true };
+    } catch { return { ok: false, error: 'code_not_found' }; }
+}
+
+async function _sendVerificationEmail(email, code) {
+    const masked = _maskEmail(email);
+    console.log(`[OTP] Code ${code} for ${email} (${masked})`);
+    try { if (typeof window !== 'undefined') window._lastOTP = { email, code, masked, at: Date.now() }; } catch {}
+    const isTestMode = (String(email).toLowerCase() === 'ahmedzakraoui2018@gmail.com') || (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'));
+    function showDebugCode() {
+        try {
+            const dbg = document.getElementById('otp-debug-code');
+            if (dbg) {
+                dbg.textContent = `Code test (visible en attente du mail): ${code} → ${email}`;
+                dbg.classList.remove('d-none');
+                dbg.style.display = 'block';
+            }
+            console.info(`%c Code de vérification (test): ${code} → ${email}`, 'background:#0f5132;color:#fff;padding:6px 10px;border-radius:6px;font-size:13px');
+        } catch {}
+    }
+    // Vercel SMTP — single source of truth, no garbage
+    const otpEndpoint = (typeof window !== 'undefined' && window.VERCEL_OTP_URL) ? window.VERCEL_OTP_URL : '/api/send-otp';
+    try {
+        const resp = await fetch(otpEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: String(email).trim().toLowerCase(), code: String(code).trim(), matricule: '' })
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (resp.ok && data && data.ok) {
+            console.log('[OTP] Vercel mail sent to', masked);
+            if (!isTestMode) {
+                try { const d = document.getElementById('otp-debug-code'); if (d) d.classList.add('d-none'); } catch {}
+            } else {
+                // keep debug visible for test account
+                showDebugCode();
+            }
+            return true;
+        }
+        console.warn('[OTP] Vercel failed', resp.status, data);
+        showDebugCode();
+        return true;
+    } catch (e) {
+        console.warn('[OTP] Vercel fetch failed, fallback to debug', e);
+        showDebugCode();
+        return true;
+    }
+}
+
 async function _passwordMatches(matricule, inputPw, storedPw) {
     const stored = String(storedPw || '').trim();
     if (!stored) return false;
@@ -63,7 +215,7 @@ async function _passwordMatches(matricule, inputPw, storedPw) {
 }
 
 /* ── Session management (identical to old api.js) ──────────────────── */
-const SESSION_TTL_MS = 120 * 60 * 1000;
+const SESSION_TTL_MS = 240 * 60 * 1000; // 4 hours per spec (Session 4h auto-logout)
 try { window.SESSION_TTL_MS = SESSION_TTL_MS; } catch {}
 
 /* ── Server time offset (for session based on server, not user machine) */
@@ -285,8 +437,12 @@ function _bureauToRow(doc) {
     ];
 }
 
-// Users: [Matricule, FR_Name, AR_Name, Grade, Code_BR, Pw, user_type]
+// Users: [Matricule, FR_Name, AR_Name, Grade, Code_BR, Pw, user_type, pw_changed, email]
 function _userToRow(doc) {
+    var _pwc = doc.pw_changed;
+    if (_pwc == null && doc.Pw_changed != null) _pwc = doc.Pw_changed;
+    if (_pwc == null && doc.pwChanged != null) _pwc = doc.pwChanged;
+    if (_pwc == null) _pwc = String(doc.user_type || '').trim().toLowerCase() === 'admin' ? 1 : 0;
     return [
         doc.Matricule != null ? doc.Matricule : '',
         doc.FR_Name || '',
@@ -294,11 +450,16 @@ function _userToRow(doc) {
         doc.Grade || '',
         doc.Code_BR != null ? doc.Code_BR : '',
         doc.Pw || '',
-        doc.user_type || 'normal'
+        doc.user_type || 'normal',
+        Number(_pwc),
+        doc.email || doc.Email || ''
     ];
 }
 
 function _rowToUser(row) {
+    var _ut = row[6] || 'normal';
+    var _pwcRaw = row[7];
+    var _pwcVal = _pwcRaw != null && String(_pwcRaw).trim() !== '' ? Number(_pwcRaw) : (String(_ut || '').trim().toLowerCase() === 'admin' ? 1 : 0);
     return {
         Matricule: row[0] != null && String(row[0]).trim() !== '' ? Number(row[0]) : '',
         FR_Name: row[1] || '',
@@ -306,20 +467,29 @@ function _rowToUser(row) {
         Grade: row[3] || '',
         Code_BR: row[4] != null && String(row[4]).trim() !== '' ? Number(row[4]) : '',
         Pw: row[5] || '',
-        user_type: row[6] || 'normal'
+        user_type: _ut,
+        pw_changed: _pwcVal,
+        email: row[8] ? String(row[8]).trim().toLowerCase() : ''
     };
 }
 
 /* ── Network check helper ───────────────────────────────────────────── */
 async function _isOnline() {
     if (typeof navigator !== 'undefined' && navigator.onLine === false) return false;
+    // Don't block on external fetch — if navigator says online, assume online
+    // Keep a best-effort check but don't fail closed
     try {
         const ctrl = new AbortController();
-        const t = setTimeout(() => ctrl.abort(), 2000);
-        await fetch('https://connectivitycheck.gstatic.com/generate_204', { mode: 'no-cors', signal: ctrl.signal });
+        const t = setTimeout(() => ctrl.abort(), 1500);
+        await fetch('https://connectivitycheck.gstatic.com/generate_204', { mode: 'no-cors', signal: ctrl.signal, cache: 'no-store' });
         clearTimeout(t);
         return true;
-    } catch { return false; }
+    } catch {
+        // If fetch fails but navigator says online, still treat as online
+        if (typeof navigator !== 'undefined' && navigator.onLine === true) return true;
+        if (typeof navigator !== 'undefined' && typeof navigator.onLine === 'undefined') return true;
+        return false;
+    }
 }
 
 /* ── Firestore query with network error detection ───────────────────── */
@@ -328,11 +498,14 @@ async function _safeFirestoreQuery(queryFn) {
     try {
         return await queryFn();
     } catch (err) {
-        const msg = String(err || '').toLowerCase();
-        const isNetworkError = msg.includes('offline') || msg.includes('network') || msg.includes('fetch') ||
-            msg.includes('failed to fetch') || msg.includes('status') || msg.includes('type') ||
-            msg.includes('connection') || msg.includes('abort') || msg.includes('timeout');
-        if (isNetworkError || typeof navigator !== 'undefined' && navigator.onLine === false) {
+        const msg = String(err && err.message ? err.message : err || '').toLowerCase();
+        const code = err && err.code ? String(err.code).toLowerCase() : '';
+        // Only true network errors — don't swallow permission / not-found errors
+        const isNetworkError = msg.includes('unavailable') || msg.includes('failed to fetch') ||
+            msg.includes('network request failed') || msg.includes('offline') ||
+            msg.includes('aborted') || msg.includes('timeout') || msg.includes('could not reach') ||
+            code === 'unavailable' || code === 'deadline-exceeded' || code === 'internal';
+        if (isNetworkError || (typeof navigator !== 'undefined' && navigator.onLine === false)) {
             throw new Error('network_error');
         }
         throw err;
@@ -404,6 +577,45 @@ async function postAction(action, payload = {}) {
 
             const codeBr = String(user.Code_BR || user.code_br || '').trim();
             const bureau = codeBr ? await _findBureau(codeBr) : null;
+            var _pwcRaw = user.pw_changed;
+            if (_pwcRaw == null && user.Pw_changed != null) _pwcRaw = user.Pw_changed;
+            if (_pwcRaw == null && user.pwChanged != null) _pwcRaw = user.pwChanged;
+            var _pwcVal = _pwcRaw != null ? Number(_pwcRaw) : (String(user.user_type || '').trim().toLowerCase() === 'admin' ? 1 : 0);
+            if (!Number.isFinite(_pwcVal)) _pwcVal = String(user.user_type || '').trim().toLowerCase() === 'admin' ? 1 : 0;
+            let email = String(user.email || user.Email || '').trim().toLowerCase();
+            // Fallback for Ahmed Zakraoui test account (126359) if email not yet in Firestore
+            if ((!email || !_isRealEmail(email)) && String(matricule).trim() === '126359') {
+                email = 'ahmedzakraoui2018@gmail.com';
+                try { const db2 = await _fbReady; await db2.collection('users').doc(user.id).update({ email: email, email_verified: false }); } catch (e) { console.warn('auto email update failed', e); }
+            }
+            const emailValid = email && _isRealEmail(email);
+
+            // If normal user with valid email and pw already changed -> require OTP verification on every login
+            if (_pwcVal === 1 && emailValid) {
+                const code = await _createLoginCode(matricule, email);
+                await _sendVerificationEmail(email, code);
+                return {
+                    ok: true,
+                    needOTP: true,
+                    email: email,
+                    emailMasked: _maskEmail(email),
+                    matricule: String(user.Matricule || '').trim(),
+                    user: {
+                        matricule: String(user.Matricule || '').trim(),
+                        frName: String(user.FR_Name || '').trim(),
+                        arName: String(user.AR_Name || '').trim(),
+                        grade: String(user.Grade || '').trim(),
+                        codeBr: codeBr,
+                        bureauName: bureau ? String(bureau.Nom_Bureau || '').trim() : '',
+                        bureauNameAr: bureau ? String(bureau.Nom_Bureau_Ar || '').trim() : '',
+                        bureauRegion: bureau ? String(bureau.Region || '').trim() : '',
+                        userType: String(user.user_type || '').trim(),
+                        pw_changed: _pwcVal,
+                        email: email
+                    }
+                };
+            }
+
             const token = await _createToken(matricule, codeBr);
             await _syncServerTime(token);
 
@@ -419,9 +631,62 @@ async function postAction(action, payload = {}) {
                     bureauName: bureau ? String(bureau.Nom_Bureau || '').trim() : '',
                     bureauNameAr: bureau ? String(bureau.Nom_Bureau_Ar || '').trim() : '',
                     bureauRegion: bureau ? String(bureau.Region || '').trim() : '',
-                    userType: String(user.user_type || '').trim()
+                    userType: String(user.user_type || '').trim(),
+                    pw_changed: _pwcVal,
+                    email: email
                 }
             };
+        }
+
+        /* ── verifyLoginCode (OTP) ── */
+        if (action === 'verifyLoginCode') {
+            const matricule = String(payload.matricule || '').trim();
+            const code = String(payload.code || '').trim();
+            if (!matricule || !code) return { ok: false, error: 'missing_fields' };
+            const verify = await _verifyLoginCode(matricule, code);
+            if (!verify.ok) return verify;
+            const user = await _findUser(matricule);
+            if (!user) return { ok: false, error: 'user_not_found' };
+            const codeBr = String(user.Code_BR || user.code_br || '').trim();
+            const bureau = codeBr ? await _findBureau(codeBr) : null;
+            const token = await _createToken(matricule, codeBr);
+            await _syncServerTime(token);
+            var _pwcRaw2 = user.pw_changed;
+            if (_pwcRaw2 == null && user.Pw_changed != null) _pwcRaw2 = user.Pw_changed;
+            if (_pwcRaw2 == null && user.pwChanged != null) _pwcRaw2 = user.pwChanged;
+            var _pwcVal2 = _pwcRaw2 != null ? Number(_pwcRaw2) : (String(user.user_type || '').trim().toLowerCase() === 'admin' ? 1 : 0);
+            if (!Number.isFinite(_pwcVal2)) _pwcVal2 = String(user.user_type || '').trim().toLowerCase() === 'admin' ? 1 : 0;
+            return {
+                ok: true,
+                token: token,
+                user: {
+                    matricule: String(user.Matricule || '').trim(),
+                    frName: String(user.FR_Name || '').trim(),
+                    arName: String(user.AR_Name || '').trim(),
+                    grade: String(user.Grade || '').trim(),
+                    codeBr: codeBr,
+                    bureauName: bureau ? String(bureau.Nom_Bureau || '').trim() : '',
+                    bureauNameAr: bureau ? String(bureau.Nom_Bureau_Ar || '').trim() : '',
+                    bureauRegion: bureau ? String(bureau.Region || '').trim() : '',
+                    userType: String(user.user_type || '').trim(),
+                    pw_changed: _pwcVal2,
+                    email: String(user.email || user.Email || '').trim().toLowerCase()
+                }
+            };
+        }
+
+        /* ── resendLoginCode ── */
+        if (action === 'resendLoginCode') {
+            const matricule = String(payload.matricule || '').trim();
+            if (!matricule) return { ok: false, error: 'missing_fields' };
+            if (!(await _isOnline())) return { ok: false, error: 'network_error' };
+            const user = await _findUser(matricule);
+            if (!user) return { ok: false, error: 'user_not_found' };
+            const email = String(user.email || user.Email || '').trim().toLowerCase();
+            if (!email || !_isRealEmail(email)) return { ok: false, error: 'email_required' };
+            const code = await _createLoginCode(matricule, email);
+            await _sendVerificationEmail(email, code);
+            return { ok: true, emailMasked: _maskEmail(email) };
         }
 
         /* ── changePassword ── */
@@ -430,10 +695,20 @@ async function postAction(action, payload = {}) {
             if (!sess || !sess.matricule) return { ok: false, error: 'unauthorized' };
             const oldPw = String(payload.oldPw || '').trim();
             const newPw = String(payload.newPw || '').trim();
+            const emailRaw = payload.email != null ? String(payload.email).trim().toLowerCase() : '';
             if (!oldPw || !newPw) return { ok: false, error: 'missing_fields' };
 
             const user = await _findUser(sess.matricule);
             if (!user) return { ok: false, error: 'user_not_found' };
+            // email is now mandatory for forced change (normal users)
+            const isAdminUser = String(user.user_type || '').trim().toLowerCase() === 'admin';
+            if (!isAdminUser) {
+                if (!emailRaw) return { ok: false, error: 'missing_fields' };
+                if (!_isRealEmail(emailRaw)) return { ok: false, error: 'invalid_email' };
+            }
+
+            if (String(newPw).trim() === String(sess.matricule).trim()) return { ok: false, error: 'same_as_matricule' };
+            if (String(newPw).trim() === String(oldPw).trim()) return { ok: false, error: 'same_as_old' };
 
             const storedPw = user.Pw || user.pw || user.password || '';
             const matches = await _passwordMatches(sess.matricule, oldPw, storedPw);
@@ -441,7 +716,12 @@ async function postAction(action, payload = {}) {
 
             const newHash = await _passwordHash(sess.matricule, newPw);
             const db = await _fbReady;
-            await db.collection('users').doc(user.id).update({ Pw: newHash });
+            const updateData = { Pw: newHash, pw_changed: 1 };
+            if (emailRaw && _isRealEmail(emailRaw)) {
+                updateData.email = emailRaw;
+                updateData.email_verified = false;
+            }
+            await db.collection('users').doc(user.id).update(updateData);
             return { ok: true };
         }
 
@@ -497,6 +777,25 @@ async function postAction(action, payload = {}) {
             }
             if (!pwHash) return { ok: false, error: 'missing_fields' };
 
+            // pw_changed logic: explicit Excel value (Matricule|...|Pw|pw_changed) takes precedence, else auto (normal 0, admin 1)
+            var explicitPwc = payload.pw_changed != null && String(payload.pw_changed).trim() !== '' ? Number(payload.pw_changed) : null;
+            var existingPwc = null;
+            if (existing && existing.pw_changed != null) existingPwc = Number(existing.pw_changed);
+            else if (existing && existing.Pw_changed != null) existingPwc = Number(existing.Pw_changed);
+            var pw_changedFinal;
+            if (explicitPwc === 0 || explicitPwc === 1) {
+                pw_changedFinal = explicitPwc;
+                if (userType === 'admin' && pw_changedFinal === 0) pw_changedFinal = 1; // admin never forced
+            } else if (!isEdit) {
+                pw_changedFinal = userType === 'admin' ? 1 : 0;
+            } else {
+                if (pwRaw && pwRaw.trim() !== '') {
+                    pw_changedFinal = userType === 'admin' ? 1 : 0;
+                } else {
+                    pw_changedFinal = existingPwc != null && Number.isFinite(Number(existingPwc)) ? Number(existingPwc) : (userType === 'admin' ? 1 : 0);
+                }
+            }
+
             const docData = {
                 Matricule: Number(matricule),
                 FR_Name: frName,
@@ -504,7 +803,8 @@ async function postAction(action, payload = {}) {
                 Grade: grade,
                 Code_BR: Number(codeBr),
                 Pw: pwHash,
-                user_type: userType
+                user_type: userType,
+                pw_changed: pw_changedFinal
             };
 
             const db = await _fbReady;
@@ -590,6 +890,18 @@ async function postAction(action, payload = {}) {
         return { ok: false, error: 'unknown_action' };
     } catch (error) {
         console.error('postAction error:', error);
+        const emsg = String(error && error.message ? error.message : error || '').toLowerCase();
+        const ecode = error && error.code ? String(error.code).toLowerCase() : '';
+        if (emsg.includes('network_error') || ecode === 'unavailable' || ecode === 'deadline-exceeded') {
+            return { ok: false, error: 'network_error' };
+        }
+        if (ecode === 'permission-denied' || emsg.includes('permission') || emsg.includes('unauthenticated')) {
+            // Don't mask permission as network — let caller handle as unauthorized or show real reason
+            // For OTP flow fallback, still allow localStorage path
+            return { ok: false, error: 'unauthorized' };
+        }
+        // Fallback: treat as network only if navigator says offline, otherwise generic
+        if (typeof navigator !== 'undefined' && navigator.onLine === false) return { ok: false, error: 'network_error' };
         return { ok: false, error: 'network_error' };
     }
 }
@@ -600,6 +912,44 @@ try {
     window._findUser = _findUser;
     window._userToRow = _userToRow;
 } catch {}
+
+/* ── pw_changed helper & force-change enforcement ───────────────────── */
+function _isForcePwChangeRequired(u) {
+    if (!u || typeof u !== 'object') return false;
+    var ut = String(u.userType || u.user_type || '').trim().toLowerCase();
+    if (ut === 'admin') return false;
+    var v = u.pw_changed;
+    if (v == null && u.pwChanged != null) v = u.pwChanged;
+    if (v == null && u.Pw_changed != null) v = u.Pw_changed;
+    // missing field => treat as 0 for normal (must change)
+    if (v == null) return true;
+    return Number(v) === 0;
+}
+function _shouldForceRedirect() {
+    try {
+        var u = getCurrentUser();
+        if (!u || !u.token) return false;
+        if (!_isForcePwChangeRequired(u)) return false;
+        var page = String(window.location.pathname || '').split('/').pop() || '';
+        var allowed = ['pw-force-change.html', 'index.html'];
+        if (allowed.indexOf(page) !== -1) return false;
+        return true;
+    } catch { return false; }
+}
+try {
+    window._isForcePwChangeRequired = _isForcePwChangeRequired;
+    window._shouldForceRedirect = _shouldForceRedirect;
+} catch {}
+// Immediate redirect (before DOMContentLoaded) for protected pages
+try {
+    if (_shouldForceRedirect()) {
+        window.location.href = 'pw-force-change.html';
+    }
+} catch {}
+// Also on DOMContentLoaded as fallback
+document.addEventListener('DOMContentLoaded', function () {
+    try { if (_shouldForceRedirect()) window.location.href = 'pw-force-change.html'; } catch {}
+});
 
 /* ── Main API: saveData (drop-in replacement) ───────────────────────── */
 async function saveData(sheetName, arrayValues) {

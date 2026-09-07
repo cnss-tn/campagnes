@@ -793,6 +793,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Force pw change for normal users with pw_changed==0
+    var _pwc1 = user.pw_changed; if (_pwc1 == null && user.pwChanged != null) _pwc1 = user.pwChanged;
+    if (_pwc1 == null) _pwc1 = 0;
+    if (Number(_pwc1) === 0) { window.location.href = 'pw-force-change.html'; return; }
+
     // Auto logout when session TTL is reached (token expires server-side after ~6h)
     if (typeof window !== 'undefined' && typeof window.isSessionExpired === 'function' && window.isSessionExpired()) {
         if (typeof window.logoutToLogin === 'function') window.logoutToLogin();

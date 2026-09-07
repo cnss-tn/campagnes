@@ -135,14 +135,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (usersTotal) usersTotal.textContent = usersMessage;
         if (tableBody) {
             tableBody.innerHTML = usersMessage
-                ? `<tr><td colspan="7" class="text-center text-danger fw-semibold">${usersMessage}</td></tr>`
+                ? `<tr><td colspan="8" class="text-center text-danger fw-semibold">${usersMessage}</td></tr>`
                 : '';
         }
     }
 
     function sortFilteredRows() {
-        // _userToRow: [Matricule, FR_Name, AR_Name, Grade, Code_BR, Pw, user_type]
-        // UI sort triggers: 0 matricule, 1 AR_Name, 2 FR_Name, 3 Grade, 4 Code_BR, 5 user_type
+        // _userToRow: [Matricule, FR_Name, AR_Name, Grade, Code_BR, Pw, user_type, pw_changed, email]
+        // UI sort triggers: 0 matricule, 1 AR_Name, 2 FR_Name, 3 email, 4 Grade, 5 Code_BR, 6 user_type
         const dir = sortDir === 'asc' ? 1 : -1;
         usersFilteredRows.sort((a, b) => {
             let va, vb;
@@ -159,15 +159,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                 vb = String(b[1] || '').toLowerCase();
                 return va.localeCompare(vb) * dir;
             }
-            if (sortColIdx === 3) { // grade
+            if (sortColIdx === 3) { // email
+                va = String(a[8] || '').toLowerCase();
+                vb = String(b[8] || '').toLowerCase();
+                return va.localeCompare(vb) * dir;
+            }
+            if (sortColIdx === 4) { // grade
                 va = String(a[3] || '');
                 vb = String(b[3] || '');
                 return va.localeCompare(vb) * dir;
             }
-            if (sortColIdx === 4) { // bureau code
+            if (sortColIdx === 5) { // bureau code
                 return (Number(a[4]) - Number(b[4])) * dir;
             }
-            if (sortColIdx === 5) { // user_type (النوع)
+            if (sortColIdx === 6) { // user_type (النوع)
                 va = String(a[6] || '').toLowerCase();
                 vb = String(b[6] || '').toLowerCase();
                 return va.localeCompare(vb) * dir;
@@ -189,7 +194,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const mat = String(row[0] || '').toLowerCase();
                 const fr = String(row[1] || '').toLowerCase();
                 const ar = String(row[2] || '').toLowerCase();
-                if (!mat.includes(search) && !fr.includes(search) && !ar.includes(search)) return false;
+                const email = String(row[8] || '').toLowerCase();
+                if (!mat.includes(search) && !fr.includes(search) && !ar.includes(search) && !email.includes(search)) return false;
             }
             return true;
         });
@@ -250,7 +256,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         tableBody.innerHTML = '';
         if (!slice.length) {
-            tableBody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">قائمة فارغة</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">قائمة فارغة</td></tr>';
             updatePaginationUI();
             return;
         }
@@ -263,10 +269,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             const typeVal = String(row[6] || 'normal').trim().toLowerCase();
             const badgeCls = typeVal === 'admin' ? 'user-type-badge user-type-badge--admin' : 'user-type-badge user-type-badge--normal';
             const bLabel = bureauLabel(row[4]);
+            const emailVal = String(row[8] || '').trim();
             tr.innerHTML = `
                 <td><strong>${matricule}</strong></td>
                 <td><span style="display:block;margin-right:34%;text-align:right;direction:rtl;white-space:normal;word-break:break-word;font-weight:700;font-size:0.82rem">${row[2] || ''}</span></td>
                 <td><span style="display:block;margin-left:34%;text-align:left;direction:ltr;white-space:normal;word-break:break-word;font-size:0.78rem;color:#4a4458">${row[1] || ''}</span></td>
+                <td><span style="display:block;direction:ltr;text-align:right;white-space:normal;word-break:break-all;font-size:0.76rem;color:#1e0f29">${emailVal || '<span class=\"text-muted\">—</span>'}</span></td>
                 <td><span class="badge" style="background:rgba(124,58,237,0.1);color:#7c3aed;border:1px solid rgba(124,58,237,0.18);font-size:0.75rem">${row[3] || ''}</span></td>
                 <td><span style="display:block;margin-right:25%;text-align:right;direction:rtl;white-space:normal;word-break:break-word;font-size:0.75rem">${bLabel}</span></td>
                 <td><span class="${badgeCls}">${typeVal}</span></td>
@@ -348,7 +356,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         tableBody.innerHTML = '';
         const loaderTr = document.createElement('tr');
         loaderTr.id = 'users-loader-row';
-        loaderTr.innerHTML = '<td colspan="7" class="text-center py-4"><div class="spinner-border text-success" role="status" aria-label="Chargement"></div></td>';
+        loaderTr.innerHTML = '<td colspan="8" class="text-center py-4"><div class="spinner-border text-success" role="status" aria-label="Chargement"></div></td>';
         tableBody.appendChild(loaderTr);
 
         if (typeof navigator !== 'undefined' && navigator.onLine === false) {
@@ -559,19 +567,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnPrev?.addEventListener('click', () => renderUsersPage(usersPage - 1));
     btnNext?.addEventListener('click', () => renderUsersPage(usersPage + 1));
 
-    // Export XLSX - without Pw (Pw only for import)
+    // Export XLSX - without Pw (Pw only for import), includes email after Nom FR
     btnExportXlsx?.addEventListener('click', () => {
         const XLSX = typeof window !== 'undefined' ? window.XLSX : null;
         if (!XLSX) { alert('XLSX library not loaded.'); return; }
         const data = usersFilteredRows;
-        const headers = ['Matricule', 'Nom AR', 'Nom FR', 'Grade', 'Code Bureau', 'Bureau', 'Type'];
+        const headers = ['Matricule', 'Nom AR', 'Nom FR', 'Email', 'Grade', 'Code Bureau', 'Bureau', 'Type'];
         const aoa = [
             headers,
             ...data.map((r) => {
                 const code = String(r[4] || '').trim();
                 const b = bureauxMap.get(code);
                 const bName = b ? (b.ar || b.fr) : '';
-                return [r[0] ?? '', r[2] ?? '', r[1] ?? '', r[3] ?? '', code, bName, r[6] ?? ''];
+                return [r[0] ?? '', r[2] ?? '', r[1] ?? '', r[8] ?? '', r[3] ?? '', code, bName, r[6] ?? ''];
             }),
         ];
         const wb = XLSX.utils.book_new();
@@ -623,9 +631,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         const idxGrade = findIdx(['grade']);
         const idxCodeBr = findIdx(['code bureau', 'code_br', 'code']);
         const idxType = findIdx(['type', 'user_type']);
-        const idxPw = findIdx(['pw', 'password', 'mot de passe', 'كلمة المرور', 'كلمة السر']);
-        if (idxMat < 0 || idxAr < 0 || idxFr < 0 || idxGrade < 0 || idxCodeBr < 0 || idxPw < 0) {
-            alert('رأس الجدول غير مطابق. يجب أن يحتوي على: Matricule, Nom AR, Nom FR, Grade, Code Bureau, Type, Pw (كلمة المرور في الأخير)');
+        // pw_changed MUST be detected before pw — 'pw' substring would match 'pw_changed'
+        const idxPwChanged = header.findIndex(h => h.includes('pw_changed') || h.includes('pwchanged') || (h.includes('pw') && h.includes('chang')));
+        const idxPwFinal = (() => {
+            for (let i = 0; i < header.length; i++) {
+                if (i === idxPwChanged) continue;
+                const h = header[i];
+                if (h === 'pw') return i;
+                if (h.includes('password') && !h.includes('chang')) return i;
+                if (h.includes('mot de passe')) return i;
+                if (h.includes('كلمة المرور') || h.includes('كلمة السر')) return i;
+            }
+            return -1;
+        })();
+        if (idxMat < 0 || idxAr < 0 || idxFr < 0 || idxGrade < 0 || idxCodeBr < 0 || idxPwFinal < 0 || idxPwChanged < 0) {
+            alert('رأس الجدول غير مطابق. يجب أن يحتوي على: Matricule, Nom AR, Nom FR, Grade, Code Bureau, Type, Pw, pw_changed (pw_changed في الأخير بعد Pw)');
             return;
         }
         const hasPw = true;
@@ -643,7 +663,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             const codeBr = String(row[idxCodeBr] || '').trim();
             const userTypeRaw = idxType >= 0 ? String(row[idxType] || '').trim().toLowerCase() : 'normal';
             const userType = userTypeRaw === 'admin' ? 'admin' : 'normal';
-            const pw = hasPw ? String(row[idxPw] || '').trim() : '';
+            const pw = hasPw ? String(row[idxPwFinal] || '').trim() : '';
+            const pw_changedRaw = String(row[idxPwChanged] || '').trim();
+            let pw_changed = null;
+            if (pw_changedRaw !== '') {
+                if (pw_changedRaw === '0' || pw_changedRaw === '1') pw_changed = Number(pw_changedRaw);
+                else if (/^[01]$/.test(pw_changedRaw)) pw_changed = Number(pw_changedRaw);
+                else { errors.push(`سطر ${r + 1}: pw_changed يجب أن يكون 0 أو 1 (في الأخير بعد Pw)`); continue; }
+            } else {
+                // missing -> default: normal 0, admin 1 (forced change required for normals)
+                pw_changed = userType === 'admin' ? 1 : 0;
+            }
             if (!matricule || !arName || !frName || !grade || !codeBr) {
                 errors.push(`سطر ${r + 1}: خانات ناقصة`);
                 continue;
@@ -655,13 +685,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!/^\d+$/.test(matricule)) { errors.push(`سطر ${r + 1}: Matricule غير صالح`); continue; }
             if (seen.has(matricule)) { errors.push(`سطر ${r + 1}: Matricule مكرر ${matricule}`); continue; }
             if (!['CT','CU','CC','DRC','CONTROLLEUR'].includes(grade)) { errors.push(`سطر ${r + 1}: Grade غير صالح`); continue; }
+            if (pw_changed !== 0 && pw_changed !== 1) { errors.push(`سطر ${r + 1}: pw_changed غير صالح`); continue; }
             seen.add(matricule);
-            toImport.push({ matricule, arName, frName, grade, codeBr, userType, pw });
+            toImport.push({ matricule, arName, frName, grade, codeBr, userType, pw, pw_changed });
         }
         if (errors.length) { alert('أخطاء في الملف:\n' + errors.slice(0, 10).join('\n') + (errors.length > 10 ? '\n...' : '')); return; }
         if (toImport.length === 0) { alert('لا توجد بيانات للاستيراد'); return; }
         const existingCount = usersAllRows.length;
-        if (!confirm(`سيتم حذف ${existingCount} مستخدمًا (ما عدا حسابك) واستيراد ${toImport.length} من الملف.\nهل أنت متأكد؟\nهيكل الملف: ... , Type, Pw (كلمة المرور في الأخير وسيتم تشفيرها)`)) return;
+        if (!confirm(`سيتم حذف ${existingCount} مستخدمًا (ما عدا حسابك) واستيراد ${toImport.length} من الملف.\nهل أنت متأكد؟\nهيكل الملف: Matricule | Nom AR | Nom FR | Grade | Code Bureau | Type | Pw | pw_changed (pw_changed في الأخير بعد Pw: 0=يجب التغيير، 1=تم)`)) return;
         btnImportXlsx.disabled = true;
         if (importSpinner) importSpinner.classList.remove('d-none');
         if (importLabel) importLabel.textContent = 'جاري الاستيراد...';
@@ -676,7 +707,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (!res || !res.ok) failCount++;
                 } catch { failCount++; }
             }
-            // 2) Import (upsert - password = Pw column, crypted via adminSaveUser)
+            // 2) Import (upsert - password = Pw column, crypted via adminSaveUser; pw_changed is last col after Pw)
             for (const u of toImport) {
                 const isSelf = u.matricule === myMatricule;
                 const payload = {
@@ -687,6 +718,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     codeBr: u.codeBr,
                     pw: u.pw,
                     userType: u.userType,
+                    pw_changed: u.pw_changed,
                     isEdit: false
                 };
                 // If importing self, use isEdit to avoid duplicate check against self that still exists
@@ -712,18 +744,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Export PDF via print window
+    // Export PDF via print window — includes email after Nom FR
     btnExportPdf?.addEventListener('click', () => {
         const rows = usersFilteredRows;
         const filenameBase = `users_${new Date().toISOString().slice(0, 10)}`;
-        const theadCustom = `<thead><tr><th>المعرف</th><th>الاسم بالعربية</th><th>الاسم بالفرنسية</th><th>الرتبة</th><th>المكتب</th><th>النوع</th></tr></thead>`;
+        const theadCustom = `<thead><tr><th>المعرف</th><th>الاسم بالعربية</th><th>الاسم بالفرنسية</th><th>البريد الإلكتروني</th><th>الرتبة</th><th>المكتب</th><th>النوع</th></tr></thead>`;
         const tbodyHtml = rows.length === 0
-            ? `<tbody><tr><td colspan="6" style="text-align:center;color:#777;">لا توجد نتائج</td></tr></tbody>`
+            ? `<tbody><tr><td colspan="7" style="text-align:center;color:#777;">لا توجد نتائج</td></tr></tbody>`
             : `<tbody>${rows.map((r) => {
                 const code = String(r[4] || '').trim();
                 const b = bureauxMap.get(code);
                 const bName = b ? (b.ar || b.fr) : code;
-                return `<tr><td>${r[0] ?? ''}</td><td>${r[2] ?? ''}</td><td>${r[1] ?? ''}</td><td>${r[3] ?? ''}</td><td>${bName}</td><td>${r[6] ?? ''}</td></tr>`;
+                return `<tr><td>${r[0] ?? ''}</td><td>${r[2] ?? ''}</td><td>${r[1] ?? ''}</td><td>${r[8] ?? ''}</td><td>${r[3] ?? ''}</td><td>${bName}</td><td>${r[6] ?? ''}</td></tr>`;
             }).join('')}</tbody>`;
         const tableHtml = `<table dir="rtl" style="width:100%;border-collapse:collapse;table-layout:fixed"><style>th,td{border:1px solid #999;padding:4px 6px;font-size:9pt;text-align:center;word-wrap:break-word}thead th{background:#f2f2f2;font-weight:700}</style>${theadCustom}${tbodyHtml}</table>`;
         const totalCount = rows.length;

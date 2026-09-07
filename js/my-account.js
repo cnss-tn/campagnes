@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const matriculeEl = document.getElementById('acc-matricule');
     const gradeEl = document.getElementById('acc-grade');
     const bureauEl = document.getElementById('acc-bureau');
+    const emailEl = document.getElementById('acc-email');
     const subtitleEl = document.getElementById('account-subtitle');
     const logoutBtn = document.getElementById('btn-logout');
     const backBtn = document.getElementById('btn-back');
@@ -53,6 +54,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // Force pw change for normal users with pw_changed==0 -> redirect to force page
+    var _isAdminMy = user.userType && String(user.userType).trim().toLowerCase() === 'admin';
+    if (!_isAdminMy) {
+        var _pwcMy = user.pw_changed; if (_pwcMy == null && user.pwChanged != null) _pwcMy = user.pwChanged;
+        if (_pwcMy == null) _pwcMy = 0;
+        if (Number(_pwcMy) === 0) { window.location.href = 'pw-force-change.html'; return; }
+    }
+
     // Apply admin theme if user is admin
     if (user.userType && String(user.userType).trim().toLowerCase() === 'admin') {
         document.body.classList.add('page-admin');
@@ -82,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (user.bureauName) bureauParts.push(String(user.bureauName).trim());
     if (user.codeBr) bureauParts.push(`(${String(user.codeBr).trim()})`);
     if (bureauEl) bureauEl.textContent = bureauParts.length ? bureauParts.join(' ') : '--';
+    if (emailEl) emailEl.textContent = user.email ? String(user.email).trim().toLowerCase() : '--';
     if (subtitleEl) subtitleEl.textContent = user.bureauRegion ? String(user.bureauRegion).trim() : '--';
 
     logoutBtn?.addEventListener('click', () => {
@@ -116,6 +126,15 @@ document.addEventListener('DOMContentLoaded', () => {
             showAlert('warning', 'كلمة المرور الجديدة يجب أن تكون على الأقل 4 أحرف');
             return;
         }
+        var matStr = String(user.matricule || '').trim();
+        if (matStr && newPw.trim() === matStr) {
+            showAlert('warning', 'كلمة المرور الجديدة لا يجب أن تكون نفس رقم التسجيل (المعرف)');
+            return;
+        }
+        if (newPw.trim() === oldPw.trim()) {
+            showAlert('warning', 'كلمة المرور الجديدة يجب أن تكون مختلفة عن القديمة');
+            return;
+        }
 
         setLoading(true);
         const res = await postAction('changePassword', { oldPw, newPw }).catch(() => null);
@@ -123,7 +142,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!res || !res.ok) {
             const err = res && res.error ? String(res.error) : 'unknown_error';
-            showAlert('danger', err === 'invalid_old_password' ? "كلمة المرور القديمة غير صحيحة" : 'حدث خطأ أثناء تغيير كلمة المرور. حاول مرة أخرى.');
+            let msg = 'حدث خطأ أثناء تغيير كلمة المرور. حاول مرة أخرى.';
+            if (err === 'invalid_old_password') msg = "كلمة المرور القديمة غير صحيحة";
+            else if (err === 'same_as_matricule') msg = 'كلمة المرور الجديدة لا يجب أن تكون نفس رقم التسجيل (المعرف)';
+            else if (err === 'same_as_old') msg = 'كلمة المرور الجديدة يجب أن تكون مختلفة عن القديمة';
+            else if (err === 'invalid_email') msg = 'البريد الإلكتروني غير صالح أو وهمي';
+            showAlert('danger', msg);
             if (panelEl) panelEl.classList.remove('d-none');
             if (loaderEl) loaderEl.classList.add('d-none');
             return;

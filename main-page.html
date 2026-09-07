@@ -19,6 +19,10 @@
           window.location.href = "index.html";
         } else if ((u.userType || "").trim().toLowerCase() === "admin") {
           window.location.href = "admin-main-page.html";
+        } else {
+          var _pwc = u.pw_changed; if (_pwc == null && u.pwChanged != null) _pwc = u.pwChanged;
+          if (_pwc == null) _pwc = 0;
+          if (Number(_pwc) === 0) window.location.href = "pw-force-change.html";
         }
       } catch (e) {
         window.location.href = "index.html";
@@ -102,6 +106,9 @@
           window.location.href = "admin-main-page.html";
           return;
         }
+        var _pwcMain = user.pw_changed; if (_pwcMain == null && user.pwChanged != null) _pwcMain = user.pwChanged;
+        if (_pwcMain == null) _pwcMain = 0;
+        if (Number(_pwcMain) === 0) { window.location.href = 'pw-force-change.html'; return; }
         if (typeof window !== "undefined" && typeof window.isSessionExpired === "function" && window.isSessionExpired()) {
           if (typeof window.logoutToLogin === "function") window.logoutToLogin();
           else window.location.href = "index.html";

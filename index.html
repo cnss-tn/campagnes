@@ -22,7 +22,7 @@
           <div class="card login-card">
             <div class="login-card-accent" aria-hidden="true"></div>
             <div class="card-body p-4 p-lg-4">
-              <div class="text-center mb-4">
+              <div class="text-center mb-4" id="login-header">
                 <img src="images/cnss_logo.svg" width="52" height="52" alt="" class="login-logo mb-4" />
                 <div>
                   <h1 class="h6 fw-semibold mb-1" style="font-family: &quot;Tajawal&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif">برمجة ومتابعة الحملات</h1>
@@ -48,12 +48,45 @@
                   </button>
                 </div>
               </form>
+
+              <div id="otp-card" class="d-none">
+                <div class="text-center mb-3">
+                  <h2 class="h6 fw-bold mb-2">تأكيد الدخول الآمن</h2>
+                  <div class="small text-muted" style="font-size:0.78rem; line-height:1.6; margin-top:1.6rem; margin-bottom:0.9rem; padding:0.6rem 0;">
+                    أدخل الرمز الذي تم إرساله إلى بريدك الإلكتروني <strong id="otp-masked-email" dir="ltr">...</strong>
+                  </div>
+                  <div class="alert alert-warning d-none py-2" id="otp-debug-code" role="alert" style="font-size:0.82rem; direction:ltr;"></div>
+                  <div class="alert alert-danger d-none py-2" id="otp-error" role="alert" style="font-size:0.82rem"></div>
+                  <div class="alert alert-success d-none py-2" id="otp-success" role="alert" style="font-size:0.82rem"></div>
+                </div>
+                <form id="otp-form" novalidate>
+                  <div class="mx-auto" style="max-width: 15rem">
+                    <div class="mb-3">
+                      <label for="otp-code" class="visually-hidden">رمز التحقق</label>
+                      <input type="text" class="form-control text-center" id="otp-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="------" style="letter-spacing:0.45em; font-size:1.45rem; font-weight:700;" autocomplete="one-time-code" required dir="ltr" />
+                      <div class="form-text text-center" style="font-size:0.72rem">صالح لمدة 10 دقائق</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm d-block mx-auto" id="otp-submit" style="min-width:10rem">
+                      <span id="otp-submit-text">تأكيد</span>
+                      <span class="spinner-border spinner-border-sm ms-2 d-none" id="otp-spinner" role="status" aria-hidden="true"></span>
+                    </button>
+                    <div class="text-center mt-3">
+                      <button type="button" class="btn btn-link btn-sm p-0 text-muted text-decoration-none" id="otp-resend" style="font-size:0.72rem">إعادة الإرسال</button>
+                      <div class="mt-2"><button type="button" class="btn btn-link btn-sm p-0 text-muted text-decoration-none" id="otp-back" style="font-size:0.72rem">العودة لتسجيل الدخول</button></div>
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </main>
 
+    <script>
+      // Vercel OTP — GitHub Pages (cnss0740) → Vercel campagnes.vercel.app
+      window.VERCEL_OTP_URL = "https://campagnes.vercel.app/api/send-otp";
+    </script>
     <script src="js/api_1.js"></script>
     <script src="js/login.js"></script>
     <div class="dev-credit">تصميم وتطوير: إدارة المراقبة - أحمد الزكراوي</div>

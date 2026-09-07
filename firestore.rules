@@ -16,5 +16,8 @@ service cloud.firestore {
     match /resultats/{id} {
       allow read, write: if true;
     }
+    match /login_codes/{matricule} {
+      allow read, write: if true;
+    }
   }
 }

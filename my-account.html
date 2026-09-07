@@ -11,6 +11,21 @@
     <link rel="stylesheet" href="css/common.css" />
     <link rel="stylesheet" href="css/interface1.css" />
     <link rel="stylesheet" href="css/my-account.css" />
+    <script>
+      // force pw change guard (normal users with pw_changed==0 must go to pw-force-change.html)
+      try {
+        var _u = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        if (_u && _u.token) {
+          var _isAdmin = String(_u.userType || '').trim().toLowerCase() === 'admin';
+          var _pwc = _u.pw_changed; if (_pwc == null && _u.pwChanged != null) _pwc = _u.pwChanged;
+          if (_pwc == null) _pwc = _isAdmin ? 1 : 0;
+          if (!_isAdmin && Number(_pwc) === 0) {
+            var _page = (window.location.pathname.split('/').pop()||'');
+            if (_page !== 'pw-force-change.html' && _page !== 'index.html') window.location.href = 'pw-force-change.html';
+          }
+        }
+      } catch(e) {}
+    </script>
   </head>
   <body class="page-programme page-account">
     <div class="composed-backdrop" aria-hidden="true"></div>
@@ -67,9 +82,13 @@
                       <div class="account-info-label">الوظيفة</div>
                       <div class="account-info-value" id="acc-grade">--</div>
                     </div>
-                    <div class="account-info-item pb-4">
+                    <div class="account-info-item">
                       <div class="account-info-label">المكتب</div>
                       <div class="account-info-value" id="acc-bureau">--</div>
+                    </div>
+                    <div class="account-info-item pb-4">
+                      <div class="account-info-label">البريد الإلكتروني</div>
+                      <div class="account-info-value" id="acc-email" dir="ltr" style="text-align:right;">--</div>
                     </div>
                   </div>
                 </section>

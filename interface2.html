@@ -19,6 +19,10 @@
           window.location.href = "index.html";
         } else if ((u.userType || "").trim().toLowerCase() === "admin") {
           window.location.href = "admin-main-page.html";
+        } else {
+          var _pwc = u.pw_changed; if (_pwc == null && u.pwChanged != null) _pwc = u.pwChanged;
+          if (_pwc == null) _pwc = 0;
+          if (Number(_pwc) === 0) window.location.href = "pw-force-change.html";
         }
       } catch (e) {
         window.location.href = "index.html";

@@ -17,8 +17,14 @@
         var u = JSON.parse(localStorage.getItem("currentUser"));
         if (!u || !u.token) {
           window.location.href = "index.html";
-        } else if ((u.userType || "").trim().toLowerCase() !== "admin") {
-          window.location.href = "main-page.html";
+        } else {
+          var _isAdmin = String(u.userType || "").trim().toLowerCase() === "admin";
+          var _pwc = u.pw_changed; if (_pwc == null && u.pwChanged != null) _pwc = u.pwChanged; if (_pwc == null) _pwc = _isAdmin ? 1 : 0;
+          if (!_isAdmin && Number(_pwc) === 0) {
+            window.location.href = "pw-force-change.html";
+          } else if ((u.userType || "").trim().toLowerCase() !== "admin") {
+            window.location.href = "main-page.html";
+          }
         }
       } catch (e) {
         window.location.href = "index.html";
@@ -127,15 +133,16 @@
                       <th class="sort-trigger" data-col="0">المعرف <span class="sort-indicator"></span></th>
                       <th class="sort-trigger" data-col="1">الاسم بالعربية <span class="sort-indicator"></span></th>
                       <th class="sort-trigger" data-col="2">الاسم بالفرنسية <span class="sort-indicator"></span></th>
-                      <th class="sort-trigger" data-col="3">الرتبة <span class="sort-indicator"></span></th>
-                      <th class="sort-trigger" data-col="4">المكتب <span class="sort-indicator"></span></th>
-                      <th class="sort-trigger" data-col="5">النوع <span class="sort-indicator"></span></th>
+                      <th class="sort-trigger" data-col="3">البريد الإلكتروني <span class="sort-indicator"></span></th>
+                      <th class="sort-trigger" data-col="4">الرتبة <span class="sort-indicator"></span></th>
+                      <th class="sort-trigger" data-col="5">المكتب <span class="sort-indicator"></span></th>
+                      <th class="sort-trigger" data-col="6">النوع <span class="sort-indicator"></span></th>
                       <th>إجراءات</th>
                     </tr>
                   </thead>
                   <tbody id="table-body">
                     <tr id="users-loader-row">
-                      <td colspan="7" class="text-center py-4">
+                      <td colspan="8" class="text-center py-4">
                         <div class="spinner-border text-success" role="status" aria-label="تحميل"></div>
                       </td>
                     </tr>
