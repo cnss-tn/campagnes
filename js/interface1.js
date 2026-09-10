@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (progTotal) progTotal.textContent = programmesMessage;
         if (tableBody) {
             tableBody.innerHTML = programmesMessage
-                ? `<tr><td colspan="4" class="text-center text-danger fw-semibold">${programmesMessage}</td></tr>`
+                ? `<tr><td colspan="5" class="text-center text-danger fw-semibold">${programmesMessage}</td></tr>`
                 : '';
         }
     }
@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         tableBody.innerHTML = '';
         if (!slice.length) {
-            tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">قائمة فارغة</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">قائمة فارغة</td></tr>';
             updatePaginationUI();
             return;
         }
@@ -255,6 +255,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <td>${window.renderZoneActivity(row[3])}</td>
                 <td><small dir="ltr">${row[4]} ⟻ ${row[5]}</small></td>
                 <td class="text-center">${row[6]}</td>
+                <td><button type="button" class="user-action-btn user-action-delete" data-id="${programmeId}">حذف</button></td>
             `;
             tr.addEventListener('click', () => openStatsModal(row));
             tr.addEventListener('keydown', (e) => {
@@ -263,6 +264,27 @@ document.addEventListener('DOMContentLoaded', async () => {
                     openStatsModal(row);
                 }
             });
+            const delBtn = tr.querySelector('[data-id]');
+            if (delBtn) {
+                delBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const isRealized = programmeIdsWithResultats.has(programmeId);
+                    const msg = isRealized ? 'هل أنت متأكد من حذف هذه الحملة المنجزة التي أُدخلت نتائجها ؟' : 'هل أنت متأكد من حذف هذه الحملة ؟';
+                    if (!confirm(msg)) return;
+                    delBtn.disabled = true;
+                    const res = await postAction('deleteProgramme', { idProgramme: programmeId }).catch(() => null);
+                    delBtn.disabled = false;
+                    if (res && res.ok) {
+                        await loadTable();
+                    } else {
+                        let m = 'تعذر حذف الحملة';
+                        if (res && res.error === 'unauthorized') m = 'غير مصرح — حملة تابعة لمكتب آخر';
+                        else if (res && res.error === 'not_found') m = 'الحملة غير موجودة';
+                        else if (res && res.error === 'network_error') m = 'لا يوجد اتصال بالإنترنت';
+                        alert(m);
+                    }
+                });
+            }
             tableBody.appendChild(tr);
         });
 
@@ -912,7 +934,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         tableBody.innerHTML = '';
         const loaderTr = document.createElement('tr');
         loaderTr.id = 'programmes-loader-row';
-        loaderTr.innerHTML = '<td colspan="4" class="text-center py-4"><div class="spinner-border text-success" role="status" aria-label="Chargement"></div></td>';
+        loaderTr.innerHTML = '<td colspan="5" class="text-center py-4"><div class="spinner-border text-success" role="status" aria-label="Chargement"></div></td>';
         tableBody.appendChild(loaderTr);
         if (typeof navigator !== 'undefined' && navigator.onLine === false) {
             setProgrammesMessage('Pas de connexion internet');

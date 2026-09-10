@@ -157,18 +157,17 @@ async function _verifyLoginCode(matricule, inputCode) {
 
 async function _sendVerificationEmail(email, code) {
     const masked = _maskEmail(email);
-    console.log(`[OTP] Code ${code} for ${email} (${masked})`);
-    try { if (typeof window !== 'undefined') window._lastOTP = { email, code, masked, at: Date.now() }; } catch {}
-    const isTestMode = (String(email).toLowerCase() === 'ahmedzakraoui2018@gmail.com') || (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'));
+    console.log(`[OTP] Sending code to ${masked}`);
+    const isTestMode = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'));
     function showDebugCode() {
+        if (!isTestMode) return;
         try {
             const dbg = document.getElementById('otp-debug-code');
             if (dbg) {
-                dbg.textContent = `Code test (visible en attente du mail): ${code} → ${email}`;
+                dbg.textContent = `Code test (localhost): ${code}`;
                 dbg.classList.remove('d-none');
                 dbg.style.display = 'block';
             }
-            console.info(`%c Code de vérification (test): ${code} → ${email}`, 'background:#0f5132;color:#fff;padding:6px 10px;border-radius:6px;font-size:13px');
         } catch {}
     }
     // Vercel SMTP — single source of truth, no garbage
@@ -760,9 +759,11 @@ async function postAction(action, payload = {}) {
             const arName = String(payload.arName || '').trim();
             const grade = String(payload.grade || '').trim();
             const codeBr = String(payload.codeBr || '').trim();
+            const emailRaw = payload.email != null ? String(payload.email).trim().toLowerCase() : null;
             const pwRaw = String(payload.pw || '');
             const userType = String(payload.userType || 'normal').trim().toLowerCase() === 'admin' ? 'admin' : 'normal';
             const isEdit = !!payload.isEdit;
+            if (emailRaw !== null && emailRaw !== '' && !_isRealEmail(emailRaw)) return { ok: false, error: 'invalid_email' };
 
             if (!matricule || !frName || !arName || !grade || !codeBr) return { ok: false, error: 'missing_fields' };
             if (!isEdit && !pwRaw.trim()) return { ok: false, error: 'missing_fields' };
@@ -796,6 +797,12 @@ async function postAction(action, payload = {}) {
                 }
             }
 
+            let emailToSave = '';
+            if (emailRaw !== null) {
+                emailToSave = emailRaw;
+            } else if (existing) {
+                emailToSave = String(existing.email || existing.Email || '').trim().toLowerCase();
+            }
             const docData = {
                 Matricule: Number(matricule),
                 FR_Name: frName,
@@ -804,8 +811,12 @@ async function postAction(action, payload = {}) {
                 Code_BR: Number(codeBr),
                 Pw: pwHash,
                 user_type: userType,
-                pw_changed: pw_changedFinal
+                pw_changed: pw_changedFinal,
+                email: emailToSave
             };
+            if (emailRaw !== null && emailRaw !== String(existing ? (existing.email || existing.Email || '') : '').trim().toLowerCase()) {
+                docData.email_verified = false;
+            }
 
             const db = await _fbReady;
             const targetId = isEdit && existing && existing.id ? existing.id : String(matricule);
@@ -839,6 +850,74 @@ async function postAction(action, payload = {}) {
             if (target.id && String(target.id) !== String(matricule)) {
                 await db.collection('users').doc(target.id).delete().catch(() => {});
             }
+            return { ok: true };
+        }
+
+        /* ── deleteProgramme (bureau owner or admin) — robust lookup ── */
+        if (action === 'deleteProgramme') {
+            const sess = await _getSession(getToken());
+            if (!sess || !sess.matricule) return { ok: false, error: 'unauthorized' };
+            const idProgramme = String(payload.idProgramme || payload.id || payload.ID_Programme || '').trim();
+            if (!idProgramme) return { ok: false, error: 'missing_fields' };
+            console.log('[deleteProgramme] requested id=', idProgramme, 'sess', sess.matricule, 'codeBr', sess.codeBr);
+            let prog = null;
+            try { prog = await _getDocById('programmes', idProgramme); } catch (e) { console.warn('getDocById failed', e); }
+            if (!prog) {
+                try {
+                    const db2 = await _fbReady;
+                    const snap = await db2.collection('programmes').where('ID_Programme', '==', idProgramme).limit(1).get();
+                    if (!snap.empty) {
+                        const d = snap.docs[0];
+                        prog = { id: d.id, ...d.data() };
+                        console.log('[deleteProgramme] found via ID_Programme where', prog.id);
+                    }
+                } catch (e) { console.warn('where ID_Programme failed', e); }
+            }
+            if (!prog) {
+                try {
+                    const all = await _getAllDocs('programmes');
+                    const found = all.find(d => String(d.ID_Programme || d.id || '').trim() === String(idProgramme).trim());
+                    if (found) {
+                        prog = found;
+                        console.log('[deleteProgramme] found via getAllDocs fallback', prog.id);
+                    }
+                } catch (e) { console.warn('getAllDocs fallback failed', e); }
+            }
+            if (!prog) {
+                console.warn('[deleteProgramme] not_found for', idProgramme);
+                return { ok: false, error: 'not_found' };
+            }
+            const currentUser = await _findUser(sess.matricule);
+            const isAdmin = currentUser && String(currentUser.user_type || '').trim().toLowerCase() === 'admin';
+            const sessCode = String(sess.codeBr || '').trim();
+            const progCode = String(prog.Code_Bureau != null ? prog.Code_Bureau : (prog.codeBr || '')).trim();
+            console.log('[deleteProgramme] progCode', progCode, 'sessCode', sessCode, 'isAdmin', isAdmin);
+            if (!isAdmin && progCode !== sessCode) return { ok: false, error: 'unauthorized' };
+            const db = await _fbReady;
+            try {
+                const snap = await db.collection('resultats').where('ID_Programme', '==', String(prog.ID_Programme || idProgramme).trim()).get();
+                if (!snap.empty) {
+                    const batch = db.batch();
+                    snap.forEach(d => batch.delete(d.ref));
+                    await batch.commit();
+                    console.log('[deleteProgramme] cascade deleted', snap.size, 'resultats');
+                }
+            } catch (e) { console.warn('cascade resultats delete failed', e); }
+            const targetId = String(prog.id || idProgramme).trim();
+            await db.collection('programmes').doc(targetId).delete().catch(() => {});
+            if (String(idProgramme) !== targetId) {
+                await db.collection('programmes').doc(String(idProgramme)).delete().catch(() => {});
+            }
+            // also delete any duplicate docs with same ID_Programme
+            try {
+                const dupSnap = await db.collection('programmes').where('ID_Programme', '==', String(prog.ID_Programme || idProgramme).trim()).get();
+                for (const d of dupSnap.docs) {
+                    if (d.id !== targetId && d.id !== String(idProgramme)) {
+                        await db.collection('programmes').doc(d.id).delete().catch(()=>{});
+                    }
+                }
+            } catch {}
+            console.log('[deleteProgramme] deleted', targetId);
             return { ok: true };
         }
 

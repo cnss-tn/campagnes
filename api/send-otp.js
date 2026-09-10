@@ -44,15 +44,12 @@ export default async function handler(req, res) {
     const info = await transporter.sendMail({
       from: `"Campagnes CNSS" <${user}>`,
       to: email,
-      subject: `Code de vérification CNSS - ${code}`,
-      text: `Votre code de vérification Campagnes CNSS est : ${code}\nValide 10 minutes.\nMatricule: ${matricule}\nNe partagez pas ce code.`,
-      html: `<div dir="rtl" style="font-family:Tajawal,Arial,sans-serif; color:#212529; line-height:1.6">
-        <h3 style="color:#0f5132; margin:0 0 8px">Code de vérification</h3>
-        <p>Votre code <b>Campagnes CNSS</b> est :</p>
-        <p style="font-size:28px; letter-spacing:0.35em; font-weight:800; color:#0f5132; margin:8px 0; direction:ltr; text-align:center">${code}</p>
-        <p style="color:#6c757d; font-size:13px">Valide 10 minutes — Matricule ${matricule || ''}<br>Ne partagez pas ce code.</p>
-        <hr style="border:none; border-top:1px solid #e9ecef; margin:12px 0">
-        <p style="font-size:12px; color:#6c757d">CNSS — Direction du Contrôle</p>
+      subject: `الرمز السري للدخول - ${code}`,
+      text: `الرمز السري للدخول\n${code}\n\nصالح لمدة 10 دقائق`,
+      html: `<div style="font-family:Tajawal,Arial,sans-serif; color:#212529; line-height:1.8; text-align:center; padding:16px 0">
+        <p style="font-size:15px; color:#212529; margin:0 0 14px; font-weight:600">الرمز السري للدخول</p>
+        <p style="font-size:32px; letter-spacing:0.38em; font-weight:800; color:#0f5132; margin:14px 0; direction:ltr; text-align:center">${code}</p>
+        <p style="color:#6c757d; font-size:13px; margin:14px 0 0; text-align:center">صالح لمدة 10 دقائق</p>
       </div>`
     });
     console.log('Mail sent to', email, info.messageId);
