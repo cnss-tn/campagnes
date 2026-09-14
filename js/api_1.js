@@ -155,7 +155,7 @@ async function _verifyLoginCode(matricule, inputCode) {
     } catch { return { ok: false, error: 'code_not_found' }; }
 }
 
-async function _sendVerificationEmail(email, code) {
+async function _sendVerificationEmail(email, code, matriculeForLog = '') {
     const masked = _maskEmail(email);
     console.log(`[OTP] Sending code to ${masked}`);
     const isTestMode = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'));
@@ -176,7 +176,7 @@ async function _sendVerificationEmail(email, code) {
         const resp = await fetch(otpEndpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: String(email).trim().toLowerCase(), code: String(code).trim(), matricule: '' })
+            body: JSON.stringify({ email: String(email).trim().toLowerCase(), code: String(code).trim(), matricule: String(matriculeForLog || '').trim() })
         });
         const data = await resp.json().catch(() => ({}));
         if (resp.ok && data && data.ok) {
@@ -474,21 +474,9 @@ function _rowToUser(row) {
 
 /* ── Network check helper ───────────────────────────────────────────── */
 async function _isOnline() {
+    // Instant check: external fetch added 1-2s to every login, blocking OTP window
     if (typeof navigator !== 'undefined' && navigator.onLine === false) return false;
-    // Don't block on external fetch — if navigator says online, assume online
-    // Keep a best-effort check but don't fail closed
-    try {
-        const ctrl = new AbortController();
-        const t = setTimeout(() => ctrl.abort(), 1500);
-        await fetch('https://connectivitycheck.gstatic.com/generate_204', { mode: 'no-cors', signal: ctrl.signal, cache: 'no-store' });
-        clearTimeout(t);
-        return true;
-    } catch {
-        // If fetch fails but navigator says online, still treat as online
-        if (typeof navigator !== 'undefined' && navigator.onLine === true) return true;
-        if (typeof navigator !== 'undefined' && typeof navigator.onLine === 'undefined') return true;
-        return false;
-    }
+    return true;
 }
 
 /* ── Firestore query with network error detection ───────────────────── */
@@ -592,7 +580,8 @@ async function postAction(action, payload = {}) {
             // If normal user with valid email and pw already changed -> require OTP verification on every login
             if (_pwcVal === 1 && emailValid) {
                 const code = await _createLoginCode(matricule, email);
-                await _sendVerificationEmail(email, code);
+                // Fire-and-forget: don't block OTP window on SMTP (Vercel cold start + Gmail = 4-10s)
+                try { _sendVerificationEmail(email, code, matricule).catch(() => {}); } catch {}
                 return {
                     ok: true,
                     needOTP: true,
@@ -684,7 +673,7 @@ async function postAction(action, payload = {}) {
             const email = String(user.email || user.Email || '').trim().toLowerCase();
             if (!email || !_isRealEmail(email)) return { ok: false, error: 'email_required' };
             const code = await _createLoginCode(matricule, email);
-            await _sendVerificationEmail(email, code);
+            try { _sendVerificationEmail(email, code, matricule).catch(() => {}); } catch {}
             return { ok: true, emailMasked: _maskEmail(email) };
         }
 

@@ -33,13 +33,8 @@ export default async function handler(req, res) {
     auth: { user, pass }
   });
 
-  try {
-    await transporter.verify();
-  } catch (e) {
-    console.error('SMTP verify failed', e);
-    return res.status(500).json({ ok: false, error: 'smtp_verify_failed', details: String(e.message || e) });
-  }
-
+  // Note: transporter.verify() removed — it added ~1s extra SMTP roundtrip
+  // sendMail() already connects; faster OTP delivery
   try {
     const info = await transporter.sendMail({
       from: `"Campagnes CNSS" <${user}>`,

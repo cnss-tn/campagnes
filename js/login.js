@@ -273,6 +273,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch { res = { ok:false, error:'network_error' }; }
         setOtpLoading(false);
         if (!res?.ok) {
+            // reset input on wrong/expired code as requested
+            if (otpCodeEl) { otpCodeEl.value = ''; try { otpCodeEl.focus(); } catch {} }
             if (res?.error === 'network_error') { setOtpError('لا يوجد اتصال بالإنترنت'); return; }
             if (res?.error === 'code_expired') { setOtpError('انتهت صلاحية الرمز — اضغط إعادة الإرسال'); return; }
             if (res?.error === 'invalid_code' || res?.error === 'code_not_found') { setOtpError('رمز غير صحيح — حاول مجدداً'); return; }
@@ -302,6 +304,8 @@ document.addEventListener('DOMContentLoaded', () => {
             else { setOtpError('انتهت الجلسة، أعد تسجيل الدخول'); return; }
         }
         setOtpError(''); setOtpSuccess('');
+        // reset input from any old wrong/expired code before resending
+        if (otpCodeEl) { otpCodeEl.value = ''; try { otpCodeEl.focus(); } catch {} }
         otpResendBtn.disabled = true;
         let res;
         try { res = await postAction('resendLoginCode', { matricule: pendingMatricule }); } catch { res={ok:false}; }
