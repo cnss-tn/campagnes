@@ -571,8 +571,19 @@ async function _createToken(matricule, codeBr) {
             return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
     const db = await _fbReady;
+    const mat = String(matricule || '').trim();
+    // Overwrite: one live session per user — drop previous session(s) first.
+    // Wrapped so a cleanup failure never blocks login.
+    try {
+        const old = await _safeFirestoreQuery(() => db.collection('sessions').where('matricule', '==', mat).get());
+        if (!old.empty) {
+            const batch = db.batch();
+            old.docs.forEach(d => batch.delete(d.ref));
+            await batch.commit();
+        }
+    } catch {}
     await db.collection('sessions').doc(token).set({
-        matricule: String(matricule || '').trim(),
+        matricule: mat,
         codeBr: String(codeBr || '').trim(),
         createdAt: Date.now()
     });
