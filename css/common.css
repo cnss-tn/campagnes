@@ -994,3 +994,19 @@ div.modal.show {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.2; }
 }
+
+/* Guide download button — same shape as menu buttons, highlighted */
+.btn-sm.composed-menu-btn.guide-btn {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.75), rgba(249, 115, 22, 0.75)) !important;
+    color: #fff !important;
+    font-weight: 600;
+    font-size: 0.7rem;
+    padding: 0.15rem 0.55rem;
+    white-space: nowrap;
+    box-shadow: 0 2px 10px rgba(249, 115, 22, 0.25);
+}
+.btn-sm.composed-menu-btn.guide-btn:hover {
+    color: #fff !important;
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}

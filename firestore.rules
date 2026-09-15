@@ -19,5 +19,8 @@ service cloud.firestore {
     match /login_codes/{matricule} {
       allow read, write: if true;
     }
+    match /_time_sync/{doc} {
+      allow read, write: if true;
+    }
   }
 }

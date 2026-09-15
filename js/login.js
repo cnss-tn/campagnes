@@ -168,7 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (existing) {
             const u = JSON.parse(existing);
             const exp = u && typeof u === 'object' ? Number(u.sessionExpiresAt) : NaN;
-            const isExpired = Number.isFinite(exp) ? Date.now() >= exp : false;
+            // Missing/invalid expiry (legacy session) counts as expired -> force re-login
+            const isExpired = !Number.isFinite(exp) || Date.now() >= exp;
             if (u && typeof u === 'object' && u.token && !isExpired) {
                 if (isForceRequired(u)) {
                     window.location.href = 'pw-force-change.html';

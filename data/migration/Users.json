@@ -7,7 +7,8 @@
     "Code_BR": 85,
     "Pw": "8235fac07b905002f9990b41b1e64f88558a9a3bd6063731efa14b058a9346ad",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 43323,
@@ -17,7 +18,8 @@
     "Code_BR": 85,
     "Pw": "8aa41dbf253e85f5604e50e30d464812ac31c90bcfd9944bd4aaad6c04f0bea5",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 54478,
@@ -27,7 +29,8 @@
     "Code_BR": 85,
     "Pw": "419bbba17a9b2eba651b357d23cffc68587f373a89457cbd46e4b32fb1f0a8d5",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 49445,
@@ -37,7 +40,8 @@
     "Code_BR": 10,
     "Pw": "5777a0137a68b528adaac20f66bed3a3d97a4537705e90eeb2f0dcc903baca34",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72488,
@@ -47,7 +51,8 @@
     "Code_BR": 10,
     "Pw": "5731b4042740ca4eeaedda339a73da89b3af681c021372b1db73e02bb3b340b2",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 44933,
@@ -57,7 +62,8 @@
     "Code_BR": 10,
     "Pw": "b2705e8cd9d5b9030c0e297a1f9a023dcdd9b3b86b720c1d7bc23fc343cb9a3e",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 54809,
@@ -67,7 +73,8 @@
     "Code_BR": 13,
     "Pw": "2bd183cd8b37c0233555d0bf07df101dd29e34e69e9559926bee2371b5d45afe",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 44503,
@@ -77,7 +84,8 @@
     "Code_BR": 13,
     "Pw": "e6b03aa7b7f60db160b98a223d0bfde3fc9c20e17d8bf5976fce648a881b8fc8",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 51904,
@@ -87,7 +95,8 @@
     "Code_BR": 13,
     "Pw": "b147ecffbfc1b65d81f6d6b5e76209d183e32edff2d0f5abf7f18dc77bb2acc7",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 61416,
@@ -97,7 +106,8 @@
     "Code_BR": 80,
     "Pw": "sha256:6759123d91dc7698a1f46031dfca0c9f07c451b55a190917da824d1868c598bc",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72504,
@@ -107,7 +117,8 @@
     "Code_BR": 80,
     "Pw": "ab799d94a592c76a9d42e2f1e5dbf49576e4b367953116bad39ceb29e99fb26a",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 58131,
@@ -117,7 +128,8 @@
     "Code_BR": 80,
     "Pw": "1e31451bafb985528c344cb89b0a1e783ffa026d754f8145677a7394b2b2a47a",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 49593,
@@ -127,7 +139,8 @@
     "Code_BR": 81,
     "Pw": "3361fa17c030524c7f302fc7fa73081725484b3ff476ce3dd510dc1458f84269",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 45237,
@@ -137,7 +150,8 @@
     "Code_BR": 81,
     "Pw": "3c0f9620a4d66f864b7edd8a9f5fb753c1a84cffa8a82c7fcb2de42bcdf594c4",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 44909,
@@ -147,7 +161,8 @@
     "Code_BR": 81,
     "Pw": "258a4e17ec21c60929a6c028511382899094c78a4af36b6d61f25a70333d85cc",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 54494,
@@ -157,7 +172,8 @@
     "Code_BR": 16,
     "Pw": "de05fe445a797cbc93194540447af4cc7680f22c4fbc1cea1fc473a640b97267",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 43398,
@@ -167,7 +183,8 @@
     "Code_BR": 16,
     "Pw": "fd0657799a01509a8bb38246b82024b3bc971f3dc1d949616cf0a1ab99894487",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 60855,
@@ -177,7 +194,8 @@
     "Code_BR": 16,
     "Pw": "b367b9336c55e64aa30a618c374e993b9a43f6fc35d4c5938ee5f03a53bfa04d",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 57174,
@@ -187,7 +205,8 @@
     "Code_BR": 46,
     "Pw": "e837225ef189894c0893ec9f8990f016337f73ce8f7ab3053282ce66aa1e39e9",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 68320,
@@ -197,7 +216,8 @@
     "Code_BR": 46,
     "Pw": "2290e186c1996203021962f224adbffb7cb5a085f19474c8655b03c6931f5287",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 56952,
@@ -207,7 +227,8 @@
     "Code_BR": 46,
     "Pw": "97c18afc8fe7d0f51b43e21acab041b51958abc0f19ce65922c0dbdd6be488cf",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 54460,
@@ -217,7 +238,8 @@
     "Code_BR": 49,
     "Pw": "c9ae43d7d954d1921b3d9dad160384737ae7735ca2dfa840fdb54f9876bae168",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 42440,
@@ -227,7 +249,8 @@
     "Code_BR": 49,
     "Pw": "98bc59591faf71a9df90dd0ccf026cf171295ecb50fc5e460d994c75270dd932",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 48504,
@@ -237,7 +260,8 @@
     "Code_BR": 49,
     "Pw": "548565665d61c6b5b600fd4b76e8b17ed455fc3b0c2c9d8d8eccbee7f1dcb4a7",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 57042,
@@ -247,7 +271,8 @@
     "Code_BR": 53,
     "Pw": "76bdcd174634ca7557c141041c95fd68a66b223ca8532811a40d4af951bf6980",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 56994,
@@ -257,7 +282,8 @@
     "Code_BR": 53,
     "Pw": "2614babb0db289d4b42801230305b5a12283edf4d8b1755ba15c7fb8a05fe235",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 66068,
@@ -267,7 +293,8 @@
     "Code_BR": 53,
     "Pw": "dad7b44ffb38020dbe46a06e6a4b2e3ae403d818338769b8338de2bb3e303cd6",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 54783,
@@ -277,7 +304,8 @@
     "Code_BR": 55,
     "Pw": "b86b52b8e16d8130628f9b5f01979ca2904d0e76637c845f84a069ace4be96f9",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 54783,
@@ -287,7 +315,8 @@
     "Code_BR": 55,
     "Pw": "b86b52b8e16d8130628f9b5f01979ca2904d0e76637c845f84a069ace4be96f9",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 54841,
@@ -297,7 +326,8 @@
     "Code_BR": 55,
     "Pw": "356fd5e6522b402d0dd9b939dffe522bf1160bc8b5f4f9b0ad02db577a99f6d2",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 45161,
@@ -307,7 +337,8 @@
     "Code_BR": 14,
     "Pw": "52e7195fc7b4d2fd70fdb1b00c32aea2dd9bf9e2b2fffefbab25398205a48695",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 46946,
@@ -317,7 +348,8 @@
     "Code_BR": 14,
     "Pw": "0994c109eb907fb3875daf6874b02aaf0090bd7545fbf864ca3137fdfc42435f",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 45013,
@@ -327,7 +359,8 @@
     "Code_BR": 14,
     "Pw": "6495e15a02f56dfd068e22bac987ff645851d4be0a076488385150c3fd4e619f",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72421,
@@ -337,7 +370,8 @@
     "Code_BR": 17,
     "Pw": "c69f667a32113cfa6fe06c64c683d6dd6c61faeffe6c6f6ac07ed38ad0674a10",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 61135,
@@ -347,7 +381,8 @@
     "Code_BR": 17,
     "Pw": "d735526c1cef5b0a41cb097a233a506975ccfd449cebe95d1ed6d4f3e7afefb0",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 61499,
@@ -357,7 +392,8 @@
     "Code_BR": 17,
     "Pw": "ae6e412cc4d532bcf488d1751b125e2c9fc7ada95fdb978247e4a2d93bdc7d05",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 65748,
@@ -367,7 +403,8 @@
     "Code_BR": 19,
     "Pw": "42d9255915e0021600eb1102274435ba776626217f856173c1c7814517c95894",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 57158,
@@ -377,7 +414,8 @@
     "Code_BR": 19,
     "Pw": "e18f500df2c019aae27356d14025897d37906f8bf5a1342ab04c744391e42085",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72439,
@@ -387,7 +425,8 @@
     "Code_BR": 19,
     "Pw": "db61299d1e5e89a7b13f53312bf23ca38ce21566f4ece78cce6d6f4313133697",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 55228,
@@ -397,7 +436,8 @@
     "Code_BR": 22,
     "Pw": "1115819186acc8ce984c6ea829a6aad7cfc6de0a8e52e4fee353f2250275a9f0",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 43976,
@@ -407,7 +447,8 @@
     "Code_BR": 22,
     "Pw": "b0853881e786db93728e78de5ca59332dc2cae50fd569cdd64633ac141c770a3",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 62166,
@@ -417,7 +458,8 @@
     "Code_BR": 22,
     "Pw": "e923047de8793e192f0c4bd522c4e758ee9bedac3d4d035ab6e6ce6802df8789",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 61754,
@@ -427,7 +469,8 @@
     "Code_BR": 83,
     "Pw": "d7b11e215a314eba0e8a98252631fcd17f3945e2a1fcdaa2ebdac502e899348a",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 44016,
@@ -437,7 +480,8 @@
     "Code_BR": 83,
     "Pw": "d47d229a747f449eea355e253355725baaae08c85391c4f9d551833657713a32",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 43315,
@@ -447,7 +491,8 @@
     "Code_BR": 83,
     "Pw": "8f585e7e51c0ba27b3f0c20efcd3da2fb9b61672b77254e9e8ad406cb2e94dc8",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 61408,
@@ -457,7 +502,8 @@
     "Code_BR": 84,
     "Pw": "def3a80e55840e1d23220e1bbf0848d06e70f8417f94b67e54ffa174104b3e76",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72587,
@@ -467,7 +513,8 @@
     "Code_BR": 84,
     "Pw": "81cb78810b929d8508e8af098a8de94c0529a30008d26b25e3696ba8bb24916d",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72561,
@@ -477,7 +524,8 @@
     "Code_BR": 84,
     "Pw": "7f8ed0a9985a59d6acb28fe1ec13456ca9a83f08656d907f8439a2756e9f5675",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 46920,
@@ -487,7 +535,8 @@
     "Code_BR": 86,
     "Pw": "4f0f6a9d3e97b4b83e652b65c9756c52695094f0ca94950eee93581cbd4b5735",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 43877,
@@ -497,7 +546,8 @@
     "Code_BR": 86,
     "Pw": "693b93e1fd4b4c6e4b593d41f41d4fc8a5564525ada726ba2477ae496a2d0701",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 57190,
@@ -507,7 +557,8 @@
     "Code_BR": 47,
     "Pw": "54d5b7d61b3ef4290a6a6d10eb721f2a97fb347a4b2e6cf06f4f0e70bf08247f",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 54684,
@@ -517,7 +568,8 @@
     "Code_BR": 47,
     "Pw": "1ca1372e745b557641ea70ec1e541bd1d2174d843e3019b2041d9097f20322ac",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 67264,
@@ -527,7 +579,8 @@
     "Code_BR": 47,
     "Pw": "cf3187347a4031dc5fdc02442c37377acb84eddc87b8162ca04e9b5ecb46e09f",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 53538,
@@ -537,7 +590,8 @@
     "Code_BR": 50,
     "Pw": "1be96e863c945e5cb9f4a5db0bc59df8c619aa5d2a9c442c92046208bf5187d4",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 65250,
@@ -547,7 +601,8 @@
     "Code_BR": 50,
     "Pw": "1f47953378390e5f8de0ff7e2a1d7441a2c7ddb2ee6bfcd5dd7ad6629f9f21cb",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 44578,
@@ -557,7 +612,8 @@
     "Code_BR": 50,
     "Pw": "eb8e3aa19d393cf8e67376b53968ddf87fed819d26ff72d3de8ce55b38cfd664",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 79848,
@@ -567,7 +623,8 @@
     "Code_BR": 67,
     "Pw": "eef9c19e41389682646a6bae3eb66f614dea415e4783de20672e1a929f7930d4",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 71944,
@@ -577,7 +634,8 @@
     "Code_BR": 67,
     "Pw": "3dc9ff4440b2e2f8b5cfb8f1511c5bad354c8c362a3445153162db3e5b8845cf",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 71969,
@@ -587,7 +645,8 @@
     "Code_BR": 67,
     "Pw": "686a214161f02aaa94811fa1dac5a72b250943a6479d556e2486fa6e939d8433",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 60962,
@@ -597,7 +656,8 @@
     "Code_BR": 12,
     "Pw": "48d5193fedb21b6429ed17b0fa5df887ca766ca1b9c34af184b06d8551555d18",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 60079,
@@ -607,7 +667,8 @@
     "Code_BR": 12,
     "Pw": "ceb2b2e0fc59741a39f3fd40e8269ce08f9bd50a7f8de85e9aab82a60a5627f0",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 54452,
@@ -617,7 +678,8 @@
     "Code_BR": 12,
     "Pw": "cb0d5ee80295b0d14f542a20dc99efd59d0ea450d344d3ce13dd037e35d99cc2",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 123372,
@@ -627,7 +689,8 @@
     "Code_BR": 20,
     "Pw": "1efdc1c6ad7c8ece20b8b6b519b94c9fadc081329667ee57753cee29a93e10d7",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72876,
@@ -637,7 +700,8 @@
     "Code_BR": 23,
     "Pw": "fc19a847fc81b788f55ebf6ac3720153e53f7b2153b4bb55b1a20aa872670007",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72314,
@@ -647,7 +711,8 @@
     "Code_BR": 23,
     "Pw": "87152cb3267f8475d5cf68ee8031bd8ec1c93f526467a1ddb635f1379b8e58fd",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72389,
@@ -657,7 +722,8 @@
     "Code_BR": 24,
     "Pw": "896b806468d4961ae7e5e24478278aa3eae556a67843cb3bf6d53e136c87fb79",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 49049,
@@ -667,7 +733,8 @@
     "Code_BR": 24,
     "Pw": "299a60b5816a3973a1d8d9325a2c32b8ee1c9d161f786af5f0a45f3ff70fde89",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72371,
@@ -677,7 +744,8 @@
     "Code_BR": 24,
     "Pw": "2720dc19565fab7bbbd598de19af5ddc1188e431921e942a63e8fb80e279f989",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 69948,
@@ -687,7 +755,8 @@
     "Code_BR": 25,
     "Pw": "ebfc5b8e2a921b955a8355fd0d2050a4bb7eefd70afebdac6303b156a4caca02",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 65334,
@@ -697,7 +766,8 @@
     "Code_BR": 48,
     "Pw": "924867fb12c0903909f8274c7d59a563c0a5524c78e334bbf271343e75289ab4",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 65334,
@@ -707,7 +777,8 @@
     "Code_BR": 48,
     "Pw": "924867fb12c0903909f8274c7d59a563c0a5524c78e334bbf271343e75289ab4",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 44958,
@@ -717,7 +788,8 @@
     "Code_BR": 48,
     "Pw": "c3a1ad773d0a2ccc7eb47255ed47294d5a8e1f651678afe0e5b019802518d91c",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 68320,
@@ -727,7 +799,8 @@
     "Code_BR": 46,
     "Pw": "2290e186c1996203021962f224adbffb7cb5a085f19474c8655b03c6931f5287",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 49585,
@@ -737,7 +810,8 @@
     "Code_BR": 52,
     "Pw": "e0997165b21c8b4b3187fc75610d2a10eb8465b23f7d4b0014a47c3515d91e1d",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 54379,
@@ -747,7 +821,8 @@
     "Code_BR": 52,
     "Pw": "2ba2aa2878011199674b2603e152783f68a4ef094a1a8234a09e4bedae87005f",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 57034,
@@ -757,7 +832,8 @@
     "Code_BR": 52,
     "Pw": "5bce3f2a2d72a6eedd129507c8083962700a1f3647511d09b15b657d7fce9d5e",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 47159,
@@ -767,7 +843,8 @@
     "Code_BR": 56,
     "Pw": "8d9bc48aaed61737c3efec1184495f0b9bde49407c5fc03ccfcccc8b6f5aff46",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 61077,
@@ -777,7 +854,8 @@
     "Code_BR": 56,
     "Pw": "c26504f6f0534dffdb2d604e0ab144b977b3a15366dff31816add00ff2fe053c",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 71886,
@@ -787,7 +865,8 @@
     "Code_BR": 58,
     "Pw": "a338a7d25e13ccc93695836de319760debae6f995cf00ce31fe3a1181a9b97ef",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 71878,
@@ -797,7 +876,8 @@
     "Code_BR": 58,
     "Pw": "07b8d3a80a43eb54b63787a9ff4a5a39b142ffd302bb0e86e67610f1146d0be0",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 71852,
@@ -807,7 +887,8 @@
     "Code_BR": 58,
     "Pw": "1dedeb2adc14c1b36d0632df5662e5c9290c223b714de16d62d25a2becc06706",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 78832,
@@ -817,7 +898,8 @@
     "Code_BR": 18,
     "Pw": "b8c2dfeb9cdc11acc7c8706d0db1f349f8d1fada6446c5160305bb7a08a053a8",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72348,
@@ -827,7 +909,8 @@
     "Code_BR": 18,
     "Pw": "86ee512c44f87a59169a5dc9e6917faefae48535bc648547e8ac51bae1bb7548",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 78857,
@@ -837,7 +920,8 @@
     "Code_BR": 18,
     "Pw": "2fcb4ccbfffae9811a504342909dbaf43a40b444aff80517592651c7eacf0610",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 54759,
@@ -847,7 +931,8 @@
     "Code_BR": 28,
     "Pw": "2e1b661d6dba35b5080ea66dd672da533bc904559ca065feaa10ecdfe72f637b",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72116,
@@ -857,7 +942,8 @@
     "Code_BR": 28,
     "Pw": "22cb9f13ab90cfb006c71fee0022878dd4c3834be1424f292eb36d3458d82a16",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 79814,
@@ -867,7 +953,8 @@
     "Code_BR": 28,
     "Pw": "e565a715bc118e3356f278c5ffa951df6136ba6d7ca130a979815228da00439c",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 71910,
@@ -877,7 +964,8 @@
     "Code_BR": 31,
     "Pw": "5a76b148e23e6a7d32971426585b5868d83e3ad8864036ee60b0d8a176c9c4f7",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 121913,
@@ -887,7 +975,8 @@
     "Code_BR": 31,
     "Pw": "98fc9e8512cd10cbd9f3ef26a29f106ef6c0bff24cfd95535b0e1ab9e544b21c",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72199,
@@ -897,7 +986,8 @@
     "Code_BR": 37,
     "Pw": "aed51a9dedd2745cb160f3d9e0dbf92ecf07f205bc528028b8ad60f03d6c0d8b",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 61218,
@@ -907,7 +997,8 @@
     "Code_BR": 37,
     "Pw": "d59f2a486bb51803aadcc7c2c6b9000ea2f7b16a60d35aac02c30ea0787962e0",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72249,
@@ -917,7 +1008,8 @@
     "Code_BR": 40,
     "Pw": "548399f1bf18e09a1a1d93b946042270c2b7619b90c1f163d740756e38c0cd22",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72231,
@@ -927,7 +1019,8 @@
     "Code_BR": 40,
     "Pw": "49654d59e807a8d04bb38769b18e687e9c6b3b76d5d0088da0f68341a1061442",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 57208,
@@ -937,7 +1030,8 @@
     "Code_BR": 70,
     "Pw": "ea8c25761e30e8a43865e4fcc00d39e3db6ecaac97c7886fe351f7e58a620911",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 71712,
@@ -947,7 +1041,8 @@
     "Code_BR": 70,
     "Pw": "d449a3a3d53c8fef6e7102e288ba3e09a9a5776844556b1b114d20805de3e4d0",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 71860,
@@ -957,7 +1052,8 @@
     "Code_BR": 70,
     "Pw": "503eda624b3eb19b7eecc225e136d7f116c58a3986dd7d1e228c58aa5f5ac914",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 62018,
@@ -967,7 +1063,8 @@
     "Code_BR": 71,
     "Pw": "db46ea52a8b975e59ee1d0b6e1779c77111d23d78da7628758b9849edacebff3",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72629,
@@ -977,7 +1074,8 @@
     "Code_BR": 71,
     "Pw": "b7c2ec94af8e7cc4394dad08ec59bb4dc0565f055d5ef918faaa213c31d20345",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 71654,
@@ -987,7 +1085,8 @@
     "Code_BR": 34,
     "Pw": "dfb209b8b2950868aadf381c37ba72d26a427799e4ed56ced0ce0b49bd123aab",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 71639,
@@ -997,7 +1096,8 @@
     "Code_BR": 34,
     "Pw": "83b0fb043ad2667ea42c4827090c26c20c054d7ae79481d5f6779f005d949e89",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72298,
@@ -1007,7 +1107,8 @@
     "Code_BR": 38,
     "Pw": "12da2243085ce7a1d2767e0d3fc23a4d5f1548e4b58a33c56806eb2d7b219a37",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72306,
@@ -1017,7 +1118,8 @@
     "Code_BR": 38,
     "Pw": "c2f2c6fbcce116c9e2ca35b95bda6aaf4f0f8bb0bbf769495ac0362e8543f481",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 53918,
@@ -1027,7 +1129,8 @@
     "Code_BR": 43,
     "Pw": "bb45284531aaaf622cefffd4ee20229575c597c8fd175a9f22e5fbd12558b26e",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72801,
@@ -1037,7 +1140,8 @@
     "Code_BR": 43,
     "Pw": "46d850787629d1a320bbdf08adaf69213853b02ac56c5a98cd1d3c15c81e0c5e",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72082,
@@ -1047,7 +1151,8 @@
     "Code_BR": 61,
     "Pw": "d58623029589194d9d1ccd201d377a63d2ec2f4e5bd042cf42b6d2b6d0b68a8c",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 79384,
@@ -1057,7 +1162,8 @@
     "Code_BR": 61,
     "Pw": "7b4bae035c8426504fefcdb027f93e0eddce6981fd255f7c84658d9ddf20f2e7",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 72058,
@@ -1067,7 +1173,8 @@
     "Code_BR": 61,
     "Pw": "f0147109d595e59ecf56caa4d1672f5c11f9f24981758c80a4281fa062ca03c5",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 71696,
@@ -1077,7 +1184,8 @@
     "Code_BR": 64,
     "Pw": "16e6c9463044520f4b8c3f516cd881acc9ef936410636980bbd6b9338deae422",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 54072,
@@ -1087,7 +1195,8 @@
     "Code_BR": 69,
     "Pw": "c4fb54e0fc48799ee7a7c86377cf807f1a0aa23bf9caa2dbc884a02aff7b728d",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 60533,
@@ -1097,7 +1206,8 @@
     "Code_BR": 72,
     "Pw": "492f297704c201d00cc152a3c8d9c753e1ab5ef69666dc3d1bbc5781d10ad2c2",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 46052,
@@ -1107,7 +1217,8 @@
     "Code_BR": 73,
     "Pw": "bcfd10ee869af326a9059c1f1999bdd13b1856d31d9d89e828cd0e897f65cdb8",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 126474,
@@ -1117,7 +1228,8 @@
     "Code_BR": 20,
     "Pw": "f40deec8491225506e4df399f95f005ae2eea0f4be5878f1d8156f6585db6602",
     "user_type": "normal",
-    "pw_changed": 0
+    "pw_changed": 0,
+    "email": ""
   },
   {
     "Matricule": 126359,
@@ -1138,6 +1250,7 @@
     "Code_BR": 99,
     "Pw": "sha256:0ab73e6668f8d9c5f481cc44bb83776f05add0e58f6515b16cfa1ea36d6d5bc9",
     "user_type": "admin",
-    "pw_changed": 1
+    "pw_changed": 1,
+    "email": ""
   }
 ]

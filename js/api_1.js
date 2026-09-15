@@ -217,21 +217,30 @@ async function _passwordMatches(matricule, inputPw, storedPw) {
 const SESSION_TTL_MS = 240 * 60 * 1000; // 4 hours per spec (Session 4h auto-logout)
 try { window.SESSION_TTL_MS = SESSION_TTL_MS; } catch {}
 
-/* ── Server time offset (for session based on server, not user machine) */
+/* ── Server time offset (for session based on Firebase server, not user machine) ──
+   Uses a real Firestore serverTimestamp write+read with RTT compensation.
+   The old snap.readTime approach never worked in the Web SDK (undefined). */
 let _serverTimeOffset = 0;
+let _serverTimeSynced = false;
 
 async function _syncServerTime(token) {
-    const t = token || getToken();
-    if (!t) return;
     try {
         const db = await _fbReady;
-        const clientNow = Date.now();
-        const snap = await db.collection('sessions').doc(t).get();
-        const ts = snap.readTime || (snap.data && snap.data().serverNow);
-        if (ts && ts.toDate) {
+        const t0 = Date.now();
+        const ref = db.collection('_time_sync').doc('ping');
+        await ref.set({ at: firebase.firestore.FieldValue.serverTimestamp(), c: t0 });
+        const snap = await ref.get();
+        const t3 = Date.now();
+        const data = snap.exists ? snap.data() : null;
+        const ts = data && data.at;
+        if (ts && typeof ts.toDate === 'function') {
             const serverNow = ts.toDate().getTime();
-            _serverTimeOffset = serverNow - clientNow;
+            // Assume symmetric latency: server time ≈ its stamp + half RTT
+            _serverTimeOffset = (serverNow + (t3 - t0) / 2) - t3;
+            _serverTimeSynced = true;
         }
+        // best-effort cleanup, never blocks
+        try { await ref.delete(); } catch {}
     } catch {}
 }
 
@@ -263,8 +272,13 @@ function getSessionExpiresAt() {
 }
 
 function isSessionExpired() {
+    // No session at all (login / OTP pages) -> not "expired", just absent
+    const u = getCurrentUser();
+    if (!u || !u.token) return false;
     const exp = getSessionExpiresAt();
-    return exp != null ? getServerTime() >= exp : false;
+    // Legacy session without expiry (created before 4h limit) -> force re-login
+    if (exp == null) return true;
+    return getServerTime() >= exp;
 }
 
 function rememberPostLoginRedirect() {
@@ -283,14 +297,34 @@ function logoutToLogin() {
 }
 
 function scheduleAutoLogout() {
+    const u = getCurrentUser();
+    if (!u || !u.token) return;
     const exp = getSessionExpiresAt();
-    if (exp == null) return;
+    // Token but no expiry (legacy session) -> logout now, must re-login
+    if (exp == null) { logoutToLogin(); return; }
     const delay = exp - getServerTime();
     if (delay <= 0) { logoutToLogin(); return; }
     try {
         if (window.__autoLogoutTimer) clearTimeout(window.__autoLogoutTimer);
         window.__autoLogoutTimer = setTimeout(logoutToLogin, delay);
     } catch { setTimeout(logoutToLogin, delay); }
+}
+
+function checkSessionNow() {
+    try {
+        if (isSessionExpired()) {
+            var page = String(window.location.pathname || '').split('/').pop() || '';
+            if (page !== 'index.html') logoutToLogin();
+            else {
+                try { localStorage.removeItem('currentUser'); } catch {}
+                try { localStorage.removeItem('_pendingOTP'); } catch {}
+            }
+            return true;
+        }
+        // re-arm timer in case it was throttled/killed during sleep
+        scheduleAutoLogout();
+    } catch {}
+    return false;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -305,6 +339,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// Re-check on tab restore (bfcache), wake from sleep, tab focus and every minute.
+// setTimeout alone is throttled/killed during sleep, so restored tabs kept stale sessions.
+try {
+    window.addEventListener('pageshow', function () { checkSessionNow(); });
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) checkSessionNow();
+    });
+    window.addEventListener('focus', function () { checkSessionNow(); });
+    window.addEventListener('online', function () { checkSessionNow(); });
+    if (!window.__sessionWatchdog) {
+        window.__sessionWatchdog = setInterval(checkSessionNow, 60 * 1000);
+    }
+} catch {}
 
 try {
     window.getSessionExpiresAt = getSessionExpiresAt;

@@ -12,6 +12,18 @@
     <link rel="stylesheet" href="css/interface1.css" />
     <link rel="stylesheet" href="css/my-account.css" />
     <script>
+      // 4h session expiry first (server-time based at login, checked here with client clock as fallback)
+      try {
+        var _cu0 = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        if (_cu0 && _cu0.token) {
+          var _exp0 = Number(_cu0.sessionExpiresAt);
+          if (!Number.isFinite(_exp0) || Date.now() >= _exp0) {
+            try { localStorage.removeItem('currentUser'); } catch (_e0) {}
+            try { localStorage.removeItem('_pendingOTP'); } catch (_e1) {}
+            window.location.href = 'index.html';
+          }
+        }
+      } catch (_e2) {}
       // force pw change guard (normal users with pw_changed==0 must go to pw-force-change.html)
       try {
         var _u = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -49,6 +61,7 @@
             <div class="composed-user-lines">
               <div id="user-info" class="composed-user-line">--</div>
             </div>
+            <a href="Guide_Utilisateur.pdf" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm composed-menu-btn guide-btn" id="btn-guide" title="فتح دليل الاستعمال">دليل الاستعمال</a>
             <a href="my-account.html" class="btn btn-outline-secondary btn-sm composed-menu-btn is-active" id="btn-account" aria-current="page">حساب المستعمل</a>
             <button type="button" class="btn btn-outline-secondary btn-sm composed-menu-btn p-0" id="btn-logout"><img src="images/off_icon.svg" alt="خروج" width="32" height="32" /></button>
           </div>

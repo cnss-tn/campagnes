@@ -14,6 +14,16 @@
     <link rel="stylesheet" href="css/interface3.css" />
     <script>
       try {
+        // 4h session expiry (server-time based at login, checked here with client clock as fallback)
+        var _cu = JSON.parse(localStorage.getItem("currentUser") || "null");
+        if (_cu && _cu.token) {
+          var _exp = Number(_cu.sessionExpiresAt);
+          if (!Number.isFinite(_exp) || Date.now() >= _exp) {
+            try { localStorage.removeItem("currentUser"); } catch (_e0) {}
+            try { localStorage.removeItem("_pendingOTP"); } catch (_e1) {}
+            window.location.href = "index.html";
+          }
+        }
         var u = JSON.parse(localStorage.getItem("currentUser"));
         if (!u || !u.token) {
           window.location.href = "index.html";
@@ -53,6 +63,7 @@
             <div class="composed-user-lines">
               <div id="user-info" class="composed-user-line">--</div>
             </div>
+            <a href="Guide_Utilisateur.pdf" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm composed-menu-btn guide-btn" id="btn-guide" title="فتح دليل الاستعمال">دليل الاستعمال</a>
             <a href="my-account.html" class="btn btn-outline-secondary btn-sm composed-menu-btn" id="btn-account">حساب المستعمل</a>
             <button type="button" class="btn btn-outline-secondary btn-sm composed-menu-btn p-0" id="btn-logout"><img src="images/off_icon.svg" alt="خروج" width="24" height="24" /></button>
           </div>
