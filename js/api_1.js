@@ -307,13 +307,18 @@ function logoutToLogin() {
         token = u && u.token ? u.token : null;
         localStorage.removeItem('currentUser');
     } catch {}
+    const go = () => { window.location.href = 'index.html'; };
     if (token) {
-        // Best-effort: delete the server session, then redirect (short delay
-        // so the delete lands before navigation; next login overwrites anyway).
-        try { _deleteSessionDoc(token); } catch {}
-        setTimeout(() => { window.location.href = 'index.html'; }, 350);
+        // Wait for the server delete (capped at 2.5s) so the row is really
+        // gone before navigation; next login overwrites anyway as fallback.
+        try {
+            Promise.race([
+                _deleteSessionDoc(token).catch(() => {}),
+                new Promise(r => setTimeout(r, 2500))
+            ]).then(go, go);
+        } catch { go(); }
     } else {
-        window.location.href = 'index.html';
+        go();
     }
 }
 

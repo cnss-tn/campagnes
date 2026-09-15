@@ -131,10 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         userInfoEl.textContent = name ? String(name).trim() : '--';
     }
     document.getElementById('btn-logout')?.addEventListener('click', () => {
-        try {
-            localStorage.removeItem('currentUser');
-        } catch {}
-        window.location.href = 'index.html';
+        if (typeof window.logoutToLogin === 'function') window.logoutToLogin();
     });
 
     function setResultsLoading(isLoading) {

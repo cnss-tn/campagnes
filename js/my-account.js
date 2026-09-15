@@ -95,10 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (subtitleEl) subtitleEl.textContent = user.bureauRegion ? String(user.bureauRegion).trim() : '--';
 
     logoutBtn?.addEventListener('click', () => {
-        try {
-            localStorage.removeItem('currentUser');
-        } catch {}
-        window.location.href = 'index.html';
+        if (typeof window.logoutToLogin === 'function') window.logoutToLogin();
     });
 
     backBtn?.addEventListener('click', () => {

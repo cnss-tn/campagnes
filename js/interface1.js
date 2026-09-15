@@ -833,10 +833,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const logoutBtn = document.getElementById('btn-logout');
     logoutBtn?.addEventListener('click', () => {
-        try {
-            localStorage.removeItem('currentUser');
-        } catch {}
-        window.location.href = 'index.html';
+        if (typeof window.logoutToLogin === 'function') window.logoutToLogin();
     });
 
     // Filters

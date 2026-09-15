@@ -125,8 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {}
 
     logoutBtn?.addEventListener('click', () => {
-        try { localStorage.removeItem('currentUser'); } catch {}
-        window.location.href = 'index.html';
+        if (typeof window.logoutToLogin === 'function') window.logoutToLogin();
     });
 
     // live email validation hint
