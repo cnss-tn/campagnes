@@ -290,10 +290,31 @@ function rememberPostLoginRedirect() {
     } catch {}
 }
 
+async function _deleteSessionDoc(token) {
+    const t = String(token || '').trim();
+    if (!t) return;
+    try {
+        const db = await _fbReady;
+        await db.collection('sessions').doc(t).delete();
+    } catch {}
+}
+
 function logoutToLogin() {
     rememberPostLoginRedirect();
-    try { localStorage.removeItem('currentUser'); } catch {}
-    window.location.href = 'index.html';
+    let token = null;
+    try {
+        const u = getCurrentUser();
+        token = u && u.token ? u.token : null;
+        localStorage.removeItem('currentUser');
+    } catch {}
+    if (token) {
+        // Best-effort: delete the server session, then redirect (short delay
+        // so the delete lands before navigation; next login overwrites anyway).
+        try { _deleteSessionDoc(token); } catch {}
+        setTimeout(() => { window.location.href = 'index.html'; }, 350);
+    } else {
+        window.location.href = 'index.html';
+    }
 }
 
 function scheduleAutoLogout() {
