@@ -906,10 +906,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const XLSX = typeof window !== 'undefined' ? window.XLSX : null;
         if (!XLSX) { alert('XLSX library not loaded.'); return; }
         const data = programmesFilteredRows;
-        const headers = ['ID', 'BR', 'نوع الحملة', 'نوع النشاط / المنطقة الجغرافية', 'الفترة الزمنية', 'عدد المراقبين'];
+        const headers = ['BR', 'نوع الحملة', 'نوع النشاط / المنطقة الجغرافية', 'الفترة الزمنية', 'عدد المراقبين'];
         const aoa = [
             headers,
-            ...data.map((r) => [r[0] ?? '', r[1] ?? '', r[2] ?? '', r[3] ?? '', `${r[4] ?? ''} ⟻ ${r[5] ?? ''}`, r[6] ?? '']),
+            ...data.map((r) => [r[1] ?? '', r[2] ?? '', r[3] ?? '', `${r[4] ?? ''} ⟻ ${r[5] ?? ''}`, r[6] ?? '']),
         ];
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.aoa_to_sheet(aoa);
