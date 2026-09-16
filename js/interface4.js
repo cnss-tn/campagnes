@@ -159,6 +159,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentResultatId = null;
         setStatVal('res-type-hamla', progRow[2]);
         setStatVal('res-activite-zone', progRow[3]);
+        // Full text on hover (long activity names)
+        try {
+            const _t = document.getElementById('res-type-hamla');
+            if (_t) _t.title = _t.value;
+            const _z = document.getElementById('res-activite-zone');
+            if (_z) _z.title = _z.value;
+        } catch {}
 
         if (resultatRow && resultatRow.length >= 2) {
             currentResultatId = resultatRow[0] != null && String(resultatRow[0]).trim() !== '' ? String(resultatRow[0]).trim() : null;

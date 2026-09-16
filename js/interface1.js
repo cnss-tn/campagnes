@@ -635,6 +635,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         setStatVal('res-type-hamla', progRow[2]);
         setStatVal('res-activite-zone', progRow[3]);
+        // Full text on hover (long activity names)
+        try {
+            const _t = document.getElementById('res-type-hamla');
+            if (_t) _t.title = _t.value;
+            const _z = document.getElementById('res-activite-zone');
+            if (_z) _z.title = _z.value;
+        } catch {}
 
         if (data && data.length >= 2) {
             currentResultatId = data[0] != null && String(data[0]).trim() !== "" ? String(data[0]).trim() : null;
@@ -777,6 +784,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                     alert('الرجاء تعمير جميع الخانات وبشكل صحيح');
                     return;
                 }
+            }
+            // Coherence: معترف به + غير معترف به must equal المبلغ الإجمالي (same parsing as saved values)
+            const _toNum = (id) => Number(String(statVal(id)).replace(/,/g, '').trim());
+            const _tot = _toNum('res-manq-tot');
+            const _sum = _toNum('res-manq-ok') + _toNum('res-manq-nok');
+            if (!Number.isFinite(_tot) || !Number.isFinite(_sum) || Math.round(_tot * 100) !== Math.round(_sum * 100)) {
+                alert('مجموع المبلغين (المعترف به + غير المعترف به) لا يساوي المبلغ الإجمالي للنقص في المساهمات\nالرجاء التحقق من المبالغ المُدرجة');
+                document.getElementById('res-manq-ok')?.focus();
+                return;
             }
             const payload = buildResultatsRow();
             if (!payload) return;

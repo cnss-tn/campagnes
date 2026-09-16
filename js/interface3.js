@@ -221,6 +221,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         setStatVal('res-type-hamla', progRow[2]);
         setStatVal('res-activite-zone', progRow[3]);
+        // Full text on hover (long activity names)
+        try {
+            const _t = document.getElementById('res-type-hamla');
+            if (_t) _t.title = _t.value;
+            const _z = document.getElementById('res-activite-zone');
+            if (_z) _z.title = _z.value;
+        } catch {}
 
         if (data && data.length >= 2) {
             currentResultatId = data[0] != null && String(data[0]).trim() !== '' ? String(data[0]).trim() : null;
