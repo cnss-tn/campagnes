@@ -45,6 +45,8 @@
                     if (R === range.s.r) {
                         cell.s.font = cell.s.font || {};
                         cell.s.font.bold = true;
+                        // Header fill: RGB(220, 230, 241)
+                        cell.s.fill = { patternType: 'solid', fgColor: { rgb: 'FFDCE6F1' } };
                     }
                     const w = Math.min(maxWch, Math.max(minWch, Math.ceil(len * factor)));
                     if (w > mx) mx = w;
@@ -54,7 +56,8 @@
         }
         ws['!cols'] = widths.map((wch) => ({ wch: wch }));
         ws['!rtl'] = true;
-        ws['!sheetViews'] = [{ workbookViewId: 0, zoomScale: 87, zoomScaleNormal: 87 }];
+        // NOTE: xlsx-js-style ignores '!sheetViews' on write (writer has no
+        // zoom support) — sheet zoom cannot be set with this library.
         return ws;
     }
 
