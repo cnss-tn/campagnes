@@ -620,3 +620,21 @@ body.page-users main.composed-main.results-main-fluid {
         max-width: 100%;
     }
 }
+
+/* Grade circle badge: round for short codes (CT/CU/CC/DRC), pill for long ones */
+.grade-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 0.55rem;
+    border-radius: 999px;
+    background: rgba(124, 58, 237, 0.1);
+    color: #7c3aed;
+    border: 1px solid rgba(124, 58, 237, 0.18);
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    vertical-align: middle;
+}
