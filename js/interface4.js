@@ -350,12 +350,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             filterFn: numberMinFilter,
             sortingFn: (a, b) => (parseMaybeNumber(a.getValue('nonSalNonAff')) ?? 0) - (parseMaybeNumber(b.getValue('nonSalNonAff')) ?? 0),
         }),
-        columnHelper.accessor('travTotal', {
-            id: 'travTotal',
-            header: () => 'عدد الأجراء',
+        columnHelper.accessor('travDeclares', {
+            id: 'travDeclares',
+            header: () => 'عدد الأجراء المصرح بهم',
             cell: (info) => String(info.getValue() ?? '—'),
             filterFn: numberMinFilter,
-            sortingFn: (a, b) => (parseMaybeNumber(a.getValue('travTotal')) ?? 0) - (parseMaybeNumber(b.getValue('travTotal')) ?? 0),
+            sortingFn: (a, b) => (parseMaybeNumber(a.getValue('travDeclares')) ?? 0) - (parseMaybeNumber(b.getValue('travDeclares')) ?? 0),
+        }),
+        columnHelper.accessor('travNonDeclares', {
+            id: 'travNonDeclares',
+            header: () => 'عدد الأجراء غير المصرح بهم',
+            cell: (info) => String(info.getValue() ?? '—'),
+            filterFn: numberMinFilter,
+            sortingFn: (a, b) => (parseMaybeNumber(a.getValue('travNonDeclares')) ?? 0) - (parseMaybeNumber(b.getValue('travNonDeclares')) ?? 0),
         }),
         columnHelper.accessor('insuffTotale', {
             id: 'insuffTotale',
@@ -571,7 +578,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Footer totals
         if (tfootEl) {
-            const sumFields = ['salAff', 'salNonAff', 'nonSalAff', 'nonSalNonAff', 'travTotal', 'insuffTotale', 'mtReconnu', 'mtNonReconnu', 'controleursParticipants'];
+            const sumFields = ['salAff', 'salNonAff', 'nonSalAff', 'nonSalNonAff', 'travDeclares', 'travNonDeclares', 'insuffTotale', 'mtReconnu', 'mtNonReconnu', 'controleursParticipants'];
             const amounts = ['insuffTotale', 'mtReconnu', 'mtNonReconnu'];
             const sums = {};
             const hasData = {};
@@ -702,7 +709,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             'عدد المؤجرين غير المنخرطين',
             'عدد المنخرطين TNS',
             'عدد غير المنخرطين TNS',
-            'عدد الأجراء',
+            'عدد الأجراء المصرح بهم',
+            'عدد الأجراء غير المصرح بهم',
             'المبلغ الجملي للنقص في المساهمات',
             'معترف به',
             'غير معترف به',
@@ -718,7 +726,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 r.salNonAff ?? '',
                 r.nonSalAff ?? '',
                 r.nonSalNonAff ?? '',
-                r.travTotal ?? '',
+                r.travDeclares ?? '',
+                r.travNonDeclares ?? '',
                 r.insuffTotale ?? '',
                 r.mtReconnu ?? '',
                 r.mtNonReconnu ?? '',
@@ -758,7 +767,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                       .join('')}</tbody>`;
 
         // Build tfoot for PDF
-        const pdfSumFields = ['salAff', 'salNonAff', 'nonSalAff', 'nonSalNonAff', 'travTotal', 'insuffTotale', 'mtReconnu', 'mtNonReconnu', 'controleursParticipants'];
+        const pdfSumFields = ['salAff', 'salNonAff', 'nonSalAff', 'nonSalNonAff', 'travDeclares', 'travNonDeclares', 'insuffTotale', 'mtReconnu', 'mtNonReconnu', 'controleursParticipants'];
         const pdfAmounts = ['insuffTotale', 'mtReconnu', 'mtNonReconnu'];
         const pdfSums = {};
         const pdfHasData = {};
@@ -950,9 +959,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const brName = bureauMap.get(brCode) || '';
             const brLabel = brName ? `${brCode} - ${brName}` : brCode;
             const modern = r.length >= 12;
-            const dec = parseMaybeNumber(r[6]) ?? null;
-            const ndec = parseMaybeNumber(r[7]) ?? null;
-            const travTotal = dec == null && ndec == null ? '' : String((dec ?? 0) + (ndec ?? 0));
             rowsAll.push({
                 programmeId: pid,
                 br: brLabel,
@@ -967,7 +973,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 nonSalNonAff: r[5] ?? '',
                 travDeclares: r[6] ?? '',
                 travNonDeclares: r[7] ?? '',
-                travTotal,
                 insuffTotale: modern ? r[8] ?? '' : '',
                 mtReconnu: modern ? r[9] ?? '' : r[8] ?? '',
                 mtNonReconnu: modern ? r[10] ?? '' : r[9] ?? '',
@@ -986,7 +991,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const hay = [
                     r.br, r.typeCampagne, r.zone,
                     r.salAff, r.salNonAff, r.nonSalAff, r.nonSalNonAff,
-                    r.travTotal, r.insuffTotale, r.mtReconnu, r.mtNonReconnu,
+                    r.travDeclares, r.travNonDeclares, r.insuffTotale, r.mtReconnu, r.mtNonReconnu,
                     r.controleursParticipants,
                 ]
                     .map((v) => String(v ?? '').toLowerCase())
