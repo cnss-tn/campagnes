@@ -1124,22 +1124,24 @@ async function _createSeqDoc(col, idField, kind, codeBr, data) {
     const suffixRe = new RegExp('^' + kind + '-' + brEsc + '-(\\d{1,7})$');
     const lo = kind + '-' + br + '-';
     const hi = kind + '-' + br + '-' + String.fromCharCode(63743); // U+F8FF: prefix range end
-    const maxOf = (docs) => {
-        let m = 0;
-        docs.forEach(d => {
-            [d.id, String(((d.data() || {})[idField]) || '')].forEach(v => {
-                const mt = suffixRe.exec(String(v).trim());
-                if (mt) {
-                    const n = parseInt(mt[1], 10);
-                    if (Number.isFinite(n) && n > m) m = n;
-                }
-            });
+    // NOTE: the Web SDK only allows DocumentReference in transaction.get(),
+    // so the prefix scan runs OUTSIDE the transaction; the transaction only
+    // re-checks candidate IDs (DocumentReference.get) and creates the doc.
+    // On a write conflict the SDK auto-retries and the loop bumps past the
+    // now-taken ID, so concurrent creations can never share an ID.
+    const qsnap = await _safeFirestoreQuery(() => db.collection(col).where(idField, '>=', lo).where(idField, '<=', hi).get());
+    let n = 0;
+    qsnap.docs.forEach(d => {
+        [d.id, String(((d.data() || {})[idField]) || '')].forEach(v => {
+            const mt = suffixRe.exec(String(v).trim());
+            if (mt) {
+                const k = parseInt(mt[1], 10);
+                if (Number.isFinite(k) && k > n) n = k;
+            }
         });
-        return m;
-    };
+    });
+    n += 1;
     return db.runTransaction(async (t) => {
-        const qsnap = await t.get(db.collection(col).where(idField, '>=', lo).where(idField, '<=', hi));
-        let n = maxOf(qsnap.docs) + 1;
         let ref = db.collection(col).doc(kind + '-' + br + '-' + _seqPad(n));
         let check = await t.get(ref);
         while (check.exists) {
