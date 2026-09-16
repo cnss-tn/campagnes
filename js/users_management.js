@@ -585,7 +585,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }),
         ];
         const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.aoa_to_sheet(aoa);
+        const ws = (typeof window !== 'undefined' && window.styleExportSheet) ? window.styleExportSheet(aoa) : XLSX.utils.aoa_to_sheet(aoa);
         ws['!rtl'] = true;
         XLSX.utils.book_append_sheet(wb, ws, 'Users');
         wb.Workbook = wb.Workbook || {};

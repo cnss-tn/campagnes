@@ -912,7 +912,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             ...data.map((r) => [r[1] ?? '', r[2] ?? '', r[3] ?? '', `${r[4] ?? ''} ⟻ ${r[5] ?? ''}`, r[6] ?? '']),
         ];
         const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.aoa_to_sheet(aoa);
+        const ws = (typeof window !== 'undefined' && window.styleExportSheet) ? window.styleExportSheet(aoa) : XLSX.utils.aoa_to_sheet(aoa);
         ws['!rtl'] = true;
         XLSX.utils.book_append_sheet(wb, ws, 'Programmes');
         wb.Workbook = wb.Workbook || {};
