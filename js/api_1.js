@@ -1108,35 +1108,25 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /* ── Sequential IDs: P-BR-NNNNNNN / R-BR-NNNNNNN ───────────────────────
-   One counter doc per bureau: counters/P_{BR} and counters/R_{BR}.
-   Allocated inside a transaction (concurrent creations can't collide).
-   First use for a bureau scans existing docs: no P-BR-* found -> starts at 1. */
+   Next number = max suffix of the IDs currently in the collection + 1.
+   Deleted docs free their numbers: delete every P-80-* -> next is P-80-0000001.
+   Scan + existence re-check + creation happen in ONE transaction, so two
+   simultaneous creations can never receive the same ID.
+   counters/{P|R}_{BR} only mirrors the last number (informational). */
 const _TEMP_ID_RE = /^[PR]\d{10,}$/;
 
-async function _allocSeqId(kind, codeBr) {
+function _seqPad(n) { return String(n).padStart(7, '0'); }
+
+async function _createSeqDoc(col, idField, kind, codeBr, data) {
     const db = await _fbReady;
     const br = String(codeBr || '').trim();
-    const col = kind === 'R' ? 'resultats' : 'programmes';
-    const idField = kind === 'R' ? 'ID_Resultat' : 'ID_Programme';
-    const counterRef = db.collection('counters').doc(kind + '_' + br);
     const brEsc = br.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const suffixRe = new RegExp('^' + kind + '-' + brEsc + '-(\\d{1,7})$');
     const lo = kind + '-' + br + '-';
-    const hi = kind + '-' + br + '-\uf8ff';
-
-
-    const next = await db.runTransaction(async (t) => {
-        const csnap = await t.get(counterRef);
-        const lastRaw = csnap.exists ? csnap.data().last : null;
-        if (Number.isFinite(Number(lastRaw))) {
-            const n = Number(lastRaw) + 1;
-            t.set(counterRef, { last: n, updatedAt: Date.now() }, { merge: true });
-            return n;
-        }
-        // First allocation for this bureau: resume after the highest existing ID.
-        const qsnap = await t.get(db.collection(col).where(idField, '>=', lo).where(idField, '<=', hi));
+    const hi = kind + '-' + br + '-' + String.fromCharCode(63743); // U+F8FF: prefix range end
+    const maxOf = (docs) => {
         let m = 0;
-        qsnap.docs.forEach(d => {
+        docs.forEach(d => {
             [d.id, String(((d.data() || {})[idField]) || '')].forEach(v => {
                 const mt = suffixRe.exec(String(v).trim());
                 if (mt) {
@@ -1145,12 +1135,26 @@ async function _allocSeqId(kind, codeBr) {
                 }
             });
         });
-        const n = m + 1;
-        t.set(counterRef, { last: n, updatedAt: Date.now() }, { merge: true });
-        return n;
+        return m;
+    };
+    return db.runTransaction(async (t) => {
+        const qsnap = await t.get(db.collection(col).where(idField, '>=', lo).where(idField, '<=', hi));
+        let n = maxOf(qsnap.docs) + 1;
+        let ref = db.collection(col).doc(kind + '-' + br + '-' + _seqPad(n));
+        let check = await t.get(ref);
+        while (check.exists) {
+            n += 1;
+            ref = db.collection(col).doc(kind + '-' + br + '-' + _seqPad(n));
+            check = await t.get(ref);
+        }
+        const payload = Object.assign({}, data);
+        payload[idField] = ref.id;
+        t.set(ref, payload);
+        t.set(db.collection('counters').doc(kind + '_' + br), { last: n, updatedAt: Date.now() }, { merge: true });
+        return ref.id;
     });
-    return kind + '-' + br + '-' + String(next).padStart(7, '0');
 }
+
 
 /* ── Main API: saveData (drop-in replacement) ───────────────────────── */
 async function saveData(sheetName, arrayValues) {
@@ -1164,17 +1168,16 @@ async function saveData(sheetName, arrayValues) {
         if (sheetName === 'Programmes') {
             const doc = _rowToProgramme(arrayValues);
             doc.Code_Bureau = code;
-            let id = String(doc.ID_Programme || '').trim();
-            // New campagne (empty or temp P+timestamp ID, or unknown ID) -> allocate P-BR-NNNNNNN
-            if (!id || _TEMP_ID_RE.test(id)) {
-                id = await _allocSeqId('P', code);
-            } else {
-                const known = await _getDocById('programmes', id);
-                if (!known) id = await _allocSeqId('P', code);
+            const rawId = String(doc.ID_Programme || '').trim();
+            // Edit existing campagne -> keep ID; otherwise create with next P-BR-NNNNNNN
+            if (rawId && !_TEMP_ID_RE.test(rawId)) {
+                const known = await _getDocById('programmes', rawId);
+                if (known) {
+                    await _setDoc('programmes', rawId, doc);
+                    return rawId;
+                }
             }
-            doc.ID_Programme = id;
-            await _setDoc('programmes', id, doc);
-            return id;
+            return await _createSeqDoc('programmes', 'ID_Programme', 'P', code, doc);
         }
 
         if (sheetName === 'Resultats') {
@@ -1185,12 +1188,10 @@ async function saveData(sheetName, arrayValues) {
             if (existing) {
                 const db = await _fbReady;
                 await db.collection('resultats').doc(existing.id).set(doc, { merge: true });
-            } else {
-                // New resultat (empty, temp R+timestamp ID, or unknown ID) -> allocate R-BR-NNNNNNN
-                const nid = await _allocSeqId('R', code);
-                doc.ID_Resultat = nid;
-                await _setDoc('resultats', nid, doc);
+                return true;
             }
+            // New resultat (empty, temp R+timestamp ID, or unknown ID) -> create with next R-BR-NNNNNNN
+            await _createSeqDoc('resultats', 'ID_Resultat', 'R', code, doc);
             return true;
         }
 
