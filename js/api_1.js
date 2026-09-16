@@ -893,7 +893,10 @@ async function postAction(action, payload = {}) {
             }
 
             const db = await _fbReady;
-            const targetId = isEdit && existing && existing.id ? existing.id : String(matricule);
+            // New users get readable IDs: "Matricule-FR_Name" (edits keep existing ID).
+            const _frPart = String(frName || '').trim().replace(/\//g, '-');
+            const _newId = _frPart ? String(matricule).trim() + '-' + _frPart : String(matricule).trim();
+            const targetId = isEdit && existing && existing.id ? existing.id : _newId;
             await db.collection('users').doc(targetId).set(docData, { merge: true });
             // cleanup duplicates caused by previous bug (auto-id vs matricule-id with same Matricule)
             try {
@@ -919,7 +922,7 @@ async function postAction(action, payload = {}) {
             const target = await _findUser(matricule);
             if (!target) return { ok: false, error: 'user_not_found' };
             const db = await _fbReady;
-            // delete by doc id (matricule) and also by found id if different
+            // delete by found doc id and also by legacy "matricule" id if different
             await db.collection('users').doc(String(matricule)).delete().catch(() => {});
             if (target.id && String(target.id) !== String(matricule)) {
                 await db.collection('users').doc(target.id).delete().catch(() => {});
