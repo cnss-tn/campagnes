@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     let user = null;
     try { user = JSON.parse(localStorage.getItem('currentUser')); } catch {}
     if (!user || !user.token) {
-        try { localStorage.setItem('postLoginRedirect', 'users_management.html'); } catch {}
         window.location.href = 'index.html';
         return;
     }

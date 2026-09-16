@@ -282,12 +282,9 @@ function isSessionExpired() {
 }
 
 function rememberPostLoginRedirect() {
-    try {
-        const file = String(window.location.pathname || '').split('/').pop() || '';
-        if (file && file.endsWith('.html') && file !== 'index.html') {
-            localStorage.setItem('postLoginRedirect', file);
-        }
-    } catch {}
+    // No longer restores the attempted page: after re-login the user always
+    // lands on home. Clear any stale value instead of saving.
+    try { localStorage.removeItem('postLoginRedirect'); } catch {}
 }
 
 async function _deleteSessionDoc(token) {

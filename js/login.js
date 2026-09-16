@@ -115,17 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pendingMatricule) savePendingOTP(pendingMatricule, pendingEmail, maskedEmail || pendingEmail);
     }
 
-    function consumePostLoginRedirect() {
-        try {
-            const raw = localStorage.getItem('postLoginRedirect');
-            if (!raw) return '';
-            localStorage.removeItem('postLoginRedirect');
-            const file = String(raw).trim();
-            if (!file.endsWith('.html') || file === 'index.html' || file.includes('/') || file.includes('\\')) return '';
-            return file;
-        } catch { return ''; }
-    }
-
     function defaultHomeForUser(userObj) {
         const isAdmin = userObj && String(userObj.userType || '').trim().toLowerCase() === 'admin';
         return isAdmin ? 'admin-main-page.html' : 'main-page.html';
@@ -249,8 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'pw-force-change.html';
             return;
         }
-        var redir = consumePostLoginRedirect();
-        if (redir && redir !== 'pw-force-change.html') { window.location.href = redir; return; }
+        // Always land on home after login (never restore the attempted page)
         window.location.href = defaultHomeForUser(res.user);
     });
 
@@ -293,8 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setOtpSuccess('تم التأكيد — جارٍ الدخول...');
         // Force check
         if (isForceRequired(res.user)) { window.location.href = 'pw-force-change.html'; return; }
-        const redir = consumePostLoginRedirect();
-        if (redir && redir !== 'pw-force-change.html') { window.location.href = redir; return; }
+        // Always land on home after login (never restore the attempted page)
         window.location.href = defaultHomeForUser(res.user);
     });
 

@@ -106,9 +106,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         user = JSON.parse(localStorage.getItem('currentUser'));
     } catch {}
     if (!user || !user.token) {
-        try {
-            localStorage.setItem('postLoginRedirect', 'interface4.html');
-        } catch {}
         window.location.href = 'index.html';
         return;
     }

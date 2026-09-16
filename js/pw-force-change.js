@@ -69,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {}
 
     if (!user || !user.token) {
-        try { localStorage.setItem('postLoginRedirect', 'pw-force-change.html'); } catch {}
         window.location.href = 'index.html';
         return;
     }
