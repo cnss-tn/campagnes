@@ -54,6 +54,7 @@
         }
         ws['!cols'] = widths.map((wch) => ({ wch: wch }));
         ws['!rtl'] = true;
+        ws['!sheetViews'] = [{ workbookViewId: 0, zoomScale: 87, zoomScaleNormal: 87 }];
         return ws;
     }
 
