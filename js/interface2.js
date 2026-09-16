@@ -389,14 +389,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Employees (flat headers, no pre-header groups)
         columnHelper.accessor('salAff', {
             id: 'salAff',
-            header: () => 'عدد المؤجرين المنخرطين (الأجراء)',
+            header: () => 'عدد المؤجرين المنخرطين',
             cell: (info) => String(info.getValue() ?? '—'),
             filterFn: numberMinFilter,
             sortingFn: (a, b) => (parseMaybeNumber(a.getValue('salAff')) ?? 0) - (parseMaybeNumber(b.getValue('salAff')) ?? 0),
         }),
         columnHelper.accessor('salNonAff', {
             id: 'salNonAff',
-            header: () => 'عدد المؤجرين غير المنخرطين (الأجراء)',
+            header: () => 'عدد المؤجرين غير المنخرطين',
             cell: (info) => String(info.getValue() ?? '—'),
             filterFn: numberMinFilter,
             sortingFn: (a, b) => (parseMaybeNumber(a.getValue('salNonAff')) ?? 0) - (parseMaybeNumber(b.getValue('salNonAff')) ?? 0),
@@ -775,8 +775,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const headers = [
             'نوع الحملة',
             'نوع النشاط / المنطقة الجغرافية',
-            'عدد المؤجرين المنخرطين (الأجراء)',
-            'عدد المؤجرين غير المنخرطين (الأجراء)',
+            'عدد المؤجرين المنخرطين',
+            'عدد المؤجرين غير المنخرطين',
             'عدد المنخرطين (غير الأجراء)',
             'عدد غير المنخرطين (غير الأجراء)',
             'عدد الأجراء',
