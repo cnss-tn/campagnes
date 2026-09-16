@@ -42,6 +42,29 @@
     </script>
   </head>
   <body class="page-users page-admin">
+    <script>
+    /* Compat gate (ES5 only — must stay ES5): ancient browsers (e.g. Chrome < 80)
+       cannot parse this app's scripts, so redirect to an explanation page. */
+    (function () {
+        var ok = true;
+        try {
+            if (typeof Promise === 'undefined') ok = false;
+            if (typeof fetch === 'undefined') ok = false;
+            if (typeof Object === 'undefined' || typeof Object.assign !== 'function') ok = false;
+            if (typeof URL === 'undefined') ok = false;
+            new Function('return ({} ?.a ?? 0)');
+            new Function('return (async function () { return 1; })');
+        } catch (e) { ok = false; }
+        var chromeV = 0;
+        try {
+            var m = String(navigator.userAgent || '').match(/Chrom(?:e|ium)\/(\d+)/);
+            if (m) chromeV = parseInt(m[1], 10) || 0;
+        } catch (e) {}
+        if (!ok || (chromeV > 0 && chromeV < 80)) {
+            try { window.location.replace('navigateur-obsolete.html'); } catch (e) {}
+        }
+    })();
+    </script>
     <div class="composed-backdrop" aria-hidden="true"></div>
     <div class="composed-grid-pattern" aria-hidden="true"></div>
 
