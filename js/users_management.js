@@ -570,9 +570,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnNext?.addEventListener('click', () => renderUsersPage(usersPage + 1));
 
     // Export XLSX - without Pw (Pw only for import), includes email after Nom FR
-    btnExportXlsx?.addEventListener('click', () => {
-        const XLSX = typeof window !== 'undefined' ? window.XLSX : null;
-        if (!XLSX) { alert('XLSX library not loaded.'); return; }
+    btnExportXlsx?.addEventListener('click', async () => {
+        if (typeof window === 'undefined' || !window.exportStyledAoA) { alert('XLSX library not loaded.'); return; }
         const data = usersFilteredRows;
         const headers = ['Matricule', 'Nom AR', 'Nom FR', 'Email', 'Grade', 'Code Bureau', 'Bureau', 'Type'];
         const aoa = [
@@ -584,13 +583,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return [r[0] ?? '', r[2] ?? '', r[1] ?? '', r[8] ?? '', r[3] ?? '', code, bName, r[6] ?? ''];
             }),
         ];
-        const wb = XLSX.utils.book_new();
-        const ws = (typeof window !== 'undefined' && window.styleExportSheet) ? window.styleExportSheet(aoa) : XLSX.utils.aoa_to_sheet(aoa);
-        ws['!rtl'] = true;
-        XLSX.utils.book_append_sheet(wb, ws, 'Users');
-        wb.Workbook = wb.Workbook || {};
-        wb.Workbook.Views = [{ RTL: true }];
-        XLSX.writeFile(wb, `users_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        const ok = await window.exportStyledAoA(`users_${new Date().toISOString().slice(0, 10)}.xlsx`, 'Users', aoa);
+        if (!ok) alert('XLSX library not loaded.');
     });
 
     // Import XLSX - same structure as export, delete then import
@@ -603,16 +597,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     inputImportXlsx?.addEventListener('change', async (e) => {
         const file = e.target.files && e.target.files[0];
         if (!file) return;
-        const XLSXLib = typeof window !== 'undefined' ? window.XLSX : null;
-        if (!XLSXLib) { alert('XLSX library not loaded.'); return; }
+        if (typeof window === 'undefined' || !window.readWorkbookAoA) { alert('XLSX library not loaded.'); return; }
         const myMatricule = String(user.matricule || '').trim();
         let aoa;
         try {
             const buf = await file.arrayBuffer();
-            const wb = XLSXLib.read(buf, { type: 'array' });
-            const sheetName = wb.SheetNames[0];
-            const sheet = wb.Sheets[sheetName];
-            aoa = XLSXLib.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+            aoa = await window.readWorkbookAoA(buf);
+            if (!aoa) throw new Error('lib');
         } catch (err) {
             alert('خطأ في قراءة ملف Excel');
             return;

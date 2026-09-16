@@ -901,23 +901,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     updateSortIndicators();
 
-    // Export Excel
-    btnExportXlsx?.addEventListener('click', () => {
-        const XLSX = typeof window !== 'undefined' ? window.XLSX : null;
-        if (!XLSX) { alert('XLSX library not loaded.'); return; }
+    // Export Excel (ExcelJS helper: autofit + centered + bold headers + zoom 87)
+    btnExportXlsx?.addEventListener('click', async () => {
         const data = programmesFilteredRows;
         const headers = ['BR', 'نوع الحملة', 'نوع النشاط / المنطقة الجغرافية', 'الفترة الزمنية', 'عدد المراقبين'];
         const aoa = [
             headers,
             ...data.map((r) => [r[1] ?? '', r[2] ?? '', r[3] ?? '', `${r[4] ?? ''} ⟻ ${r[5] ?? ''}`, r[6] ?? '']),
         ];
-        const wb = XLSX.utils.book_new();
-        const ws = (typeof window !== 'undefined' && window.styleExportSheet) ? window.styleExportSheet(aoa) : XLSX.utils.aoa_to_sheet(aoa);
-        ws['!rtl'] = true;
-        XLSX.utils.book_append_sheet(wb, ws, 'Programmes');
-        wb.Workbook = wb.Workbook || {};
-        wb.Workbook.Views = [{ RTL: true }];
-        XLSX.writeFile(wb, `programmes_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        if (typeof window === 'undefined' || !window.exportStyledAoA) { alert('XLSX library not loaded.'); return; }
+        const ok = await window.exportStyledAoA(`programmes_${new Date().toISOString().slice(0, 10)}.xlsx`, 'Programmes', aoa);
+        if (!ok) alert('XLSX library not loaded.');
     });
 
     // Export PDF

@@ -1,65 +1,105 @@
-/* Shared Excel export styling — requires xlsx-js-style (global XLSX).
-   styleExportSheet(aoa, opts) -> styled worksheet:
+/* Shared Excel import/export — requires ExcelJS (global ExcelJS).
+   exportStyledAoA(filename, sheetName, aoa, opts) -> Promise<boolean>:
    - column widths autofit to longest cell (capped, min width floor)
    - long text wrapped (works with the width cap)
    - every cell centered (horizontal + vertical)
-   - header row (first row) bold
-   - RTL sheet view flag preserved
-   Usage: const ws = window.styleExportSheet(aoa);
+   - header row (first row) bold with RGB(220,230,241) fill
+   - RTL sheet + zoom 87%
+   readWorkbookAoA(arrayBuffer) -> Promise<aoa|null>: first sheet as
+   array-of-arrays (empty cells become ''), for the users import.
 */
 (function () {
+    function _EJ() {
+        try { return (typeof window !== 'undefined' ? window.ExcelJS : null); } catch (e) { return null; }
+    }
+
     function _len(v) {
         if (v === null || v === undefined) return 0;
+        if (typeof v === 'object') {
+            if (typeof v.text === 'string') return v.text.length;
+            if (Array.isArray(v.richText)) return v.richText.map((p) => p.text || '').join('').length;
+            return 0;
+        }
         return String(v).length;
     }
 
-    function styleExportSheet(aoa, opts) {
+    async function exportStyledAoA(filename, sheetName, aoa, opts) {
         opts = opts || {};
-        const maxWch = opts.maxWch || 115;
-        const minWch = opts.minWch || 12;
+        const EJ = _EJ();
+        if (!EJ) return false;
+        const maxW = opts.maxWch || 115;
+        const minW = opts.minWch || 12;
         const factor = opts.factor || 1.3; // Arabic glyphs are wider than latin
-        const XLSX = typeof window !== 'undefined' ? window.XLSX : null;
-        if (!XLSX) return null;
-        const ws = XLSX.utils.aoa_to_sheet(aoa || [[]]);
-        let nCols = 0;
-        (aoa || []).forEach((r) => {
-            if (Array.isArray(r) && r.length > nCols) nCols = r.length;
-        });
-        const widths = [];
-        for (let c = 0; c < nCols; c++) widths.push(minWch);
-        const ref = ws['!ref'];
-        if (ref) {
-            const range = XLSX.utils.decode_range(ref);
-            for (let C = range.s.c; C <= range.e.c && C < nCols; C++) {
-                let mx = minWch;
-                for (let R = range.s.r; R <= range.e.r; R++) {
-                    let cell;
-                    try {
-                        cell = ws[XLSX.utils.encode_cell({ c: C, r: R })];
-                    } catch (e) { cell = null; }
-                    if (!cell) continue;
-                    const len = _len(cell.v);
-                    const wrap = len > maxWch;
-                    cell.s = cell.s || {};
-                    cell.s.alignment = { horizontal: 'center', vertical: 'center', wrapText: wrap };
-                    if (R === range.s.r) {
-                        cell.s.font = cell.s.font || {};
-                        cell.s.font.bold = true;
-                        // Header fill: RGB(220, 230, 241)
-                        cell.s.fill = { patternType: 'solid', fgColor: { rgb: 'FFDCE6F1' } };
-                    }
-                    const w = Math.min(maxWch, Math.max(minWch, Math.ceil(len * factor)));
+        try {
+            const wb = new EJ.Workbook();
+            const ws = wb.addWorksheet(String(sheetName || 'Sheet1'));
+            ws.views = [{ rightToLeft: true, zoomScale: 87 }];
+            const rows = Array.isArray(aoa) ? aoa : [[]];
+            let nCols = 0;
+            rows.forEach((r) => {
+                if (Array.isArray(r) && r.length > nCols) nCols = r.length;
+            });
+            const cols = [];
+            for (let c = 0; c < nCols; c++) {
+                let mx = minW;
+                rows.forEach((r) => {
+                    const w = Math.min(maxW, Math.max(minW, Math.ceil(_len(r ? r[c] : null) * factor)));
                     if (w > mx) mx = w;
-                }
-                widths[C] = mx;
+                });
+                cols.push({ width: mx });
             }
+            ws.columns = cols;
+            rows.forEach((r, ri) => {
+                const row = ws.addRow(Array.isArray(r) ? r.slice() : []);
+                row.eachCell({ includeEmpty: true }, (cell) => {
+                    cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: _len(cell.value) > maxW };
+                    if (ri === 0) {
+                        cell.font = { bold: true };
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCE6F1' } };
+                    }
+                });
+            });
+            const buf = await wb.xlsx.writeBuffer();
+            const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = String(filename || 'export.xlsx');
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => { try { URL.revokeObjectURL(a.href); a.remove(); } catch (e) {} }, 1500);
+            return true;
+        } catch (e) {
+            return false;
         }
-        ws['!cols'] = widths.map((wch) => ({ wch: wch }));
-        ws['!rtl'] = true;
-        // NOTE: xlsx-js-style ignores '!sheetViews' on write (writer has no
-        // zoom support) — sheet zoom cannot be set with this library.
-        return ws;
     }
 
-    try { window.styleExportSheet = styleExportSheet; } catch (e) {}
+    async function readWorkbookAoA(arrayBuffer) {
+        const EJ = _EJ();
+        if (!EJ) return null;
+        const wb = new EJ.Workbook();
+        await wb.xlsx.load(arrayBuffer);
+        const ws = wb.worksheets[0];
+        if (!ws) return [];
+        const aoa = [];
+        ws.eachRow({ includeEmpty: false }, (row) => {
+            const arr = [];
+            for (let c = 1; c <= row.cellCount; c++) {
+                let v = row.getCell(c).value;
+                if (v !== null && typeof v === 'object' && !(v instanceof Date)) {
+                    if (typeof v.text === 'string') v = v.text;
+                    else if (Array.isArray(v.richText)) v = v.richText.map((p) => p.text || '').join('');
+                    else if (v.result !== undefined && v.result !== null) v = v.result;
+                    else v = '';
+                }
+                arr.push(v === null || v === undefined ? '' : v);
+            }
+            aoa.push(arr);
+        });
+        return aoa;
+    }
+
+    try {
+        window.exportStyledAoA = exportStyledAoA;
+        window.readWorkbookAoA = readWorkbookAoA;
+    } catch (e) {}
 })();

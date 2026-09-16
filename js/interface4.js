@@ -688,9 +688,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         return rows.map((r) => r.original || {});
     }
 
-    function exportToXlsx() {
-        const XLSX = typeof window !== 'undefined' ? window.XLSX : null;
-        if (!XLSX) {
+    async function exportToXlsx() {
+        if (typeof window === 'undefined' || !window.exportStyledAoA) {
             alert('XLSX library not loaded.');
             return;
         }
@@ -727,14 +726,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             ]),
         ];
 
-        const wb = XLSX.utils.book_new();
-        const ws = (typeof window !== 'undefined' && window.styleExportSheet) ? window.styleExportSheet(aoa) : XLSX.utils.aoa_to_sheet(aoa);
-        ws['!rtl'] = true;
-        XLSX.utils.book_append_sheet(wb, ws, 'Campagnes');
-        wb.Workbook = wb.Workbook || {};
-        wb.Workbook.Views = [{ RTL: true }];
         const filename = `campagnes_${new Date().toISOString().slice(0, 10)}.xlsx`;
-        XLSX.writeFile(wb, filename);
+        const ok = await window.exportStyledAoA(filename, 'Campagnes', aoa);
+        if (!ok) alert('XLSX library not loaded.');
     }
 
     function exportToPdf() {
