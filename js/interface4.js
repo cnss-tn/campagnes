@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }),
         columnHelper.accessor('insuffTotale', {
             id: 'insuffTotale',
-            header: () => 'المبلغ الإجمالي للنقص',
+            header: () => 'المبلغ الجملي للنقص في المساهمات',
             cell: (info) => formatMontant(info.getValue()),
             filterFn: amountMinFilter,
             sortingFn: (a, b) => (parseMaybeAmount(a.getValue('insuffTotale')) ?? 0) - (parseMaybeAmount(b.getValue('insuffTotale')) ?? 0),
@@ -703,7 +703,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             'عدد المنخرطين',
             'عدد غير المنخرطين',
             'عدد الأجراء',
-            'المبلغ الإجمالي للنقص',
+            'المبلغ الجملي للنقص في المساهمات',
             'معترف به',
             'غير معترف به',
             'عدد المراقبين المشاركين',

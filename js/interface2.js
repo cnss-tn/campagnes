@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const _tot = _toNum('res-manq-tot');
         const _sum = _toNum('res-manq-ok') + _toNum('res-manq-nok');
         if (!Number.isFinite(_tot) || !Number.isFinite(_sum) || Math.round(_tot * 100) !== Math.round(_sum * 100)) {
-            alert('مجموع المبلغين (المعترف به + غير المعترف به) لا يساوي المبلغ الإجمالي للنقص في المساهمات\nالرجاء التحقق من المبالغ المُدرجة');
+            alert('مجموع المبلغين (المعترف به + غير المعترف به) لا يساوي المبلغ الجملي للنقص في المساهمات\nالرجاء التحقق من المبالغ المُدرجة');
             document.getElementById('res-manq-ok')?.focus();
             return;
         }
@@ -426,7 +426,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Amounts (flat headers, no pre-header group)
         columnHelper.accessor('insuffTotale', {
             id: 'insuffTotale',
-            header: () => 'المبلغ الإجمالي للنقص',
+            header: () => 'المبلغ الجملي للنقص في المساهمات',
             cell: (info) => formatMontant(info.getValue()),
             filterFn: amountMinFilter,
             sortingFn: (a, b) => (parseMaybeAmount(a.getValue('insuffTotale')) ?? 0) - (parseMaybeAmount(b.getValue('insuffTotale')) ?? 0),
@@ -780,7 +780,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             'عدد المنخرطين',
             'عدد غير المنخرطين',
             'عدد الأجراء',
-            'المبلغ الإجمالي للنقص',
+            'المبلغ الجملي للنقص في المساهمات',
             'معترف به',
             'غير معترف به',
             'عدد المراقبين المشاركين',

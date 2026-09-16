@@ -794,7 +794,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const _tot = _toNum('res-manq-tot');
             const _sum = _toNum('res-manq-ok') + _toNum('res-manq-nok');
             if (!Number.isFinite(_tot) || !Number.isFinite(_sum) || Math.round(_tot * 100) !== Math.round(_sum * 100)) {
-                alert('مجموع المبلغين (المعترف به + غير المعترف به) لا يساوي المبلغ الإجمالي للنقص في المساهمات\nالرجاء التحقق من المبالغ المُدرجة');
+                alert('مجموع المبلغين (المعترف به + غير المعترف به) لا يساوي المبلغ الجملي للنقص في المساهمات\nالرجاء التحقق من المبالغ المُدرجة');
                 document.getElementById('res-manq-ok')?.focus();
                 return;
             }
