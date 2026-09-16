@@ -54,7 +54,7 @@
               </a>
               <a href="interface1.html" class="btn btn-outline-secondary btn-sm composed-menu-btn">البرنامج</a>
               <a href="interface2.html" class="btn btn-outline-secondary btn-sm composed-menu-btn">الإحصائيات</a>
-              <a href="users_management.html" class="btn btn-outline-secondary btn-sm composed-menu-btn" id="nav-users" style="display:none">إدارة المستخدمين</a>
+              <a href="users_management.html" class="btn btn-outline-secondary btn-sm composed-menu-btn" id="nav-users" style="display:none">إدارة المستعملين</a>
             </div>
           </div>
           <div class="composed-user-panel">
@@ -163,7 +163,7 @@
                 links[i].href = is_admin ? 'interface3.html' : 'interface1.html';
             } else if (t === 'الإحصائيات') {
                 links[i].href = is_admin ? 'interface4.html' : 'interface2.html';
-            } else if (t === 'إدارة المستخدمين') {
+            } else if (t === 'إدارة المستعملين') {
                 links[i].href = 'users_management.html';
             }
             links[i].classList.remove('is-active');

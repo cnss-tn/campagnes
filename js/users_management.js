@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 else window.location.href = 'index.html';
                 return;
             }
-            setUsersMessage('تعذر تحميل المستخدمين');
+            setUsersMessage('تعذر تحميل المستعملين');
             return;
         }
 
@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         isEditMode = false;
         editMatricule = null;
         if (modalUserTitle) modalUserTitle.textContent = 'مستخدم جديد';
-        if (btnText) btnText.textContent = 'إضافة المستخدم';
+        if (btnText) btnText.textContent = 'إضافة المستعمل';
         if (pwHint) pwHint.textContent = '(مطلوبة للإضافة)';
         inputMatricule.removeAttribute('readonly');
         inputMatricule.style.backgroundColor = '';
@@ -439,7 +439,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             inputFrName.value = String(row[1] || '');
             inputArName.value = String(row[2] || '');
             if (inputEmail) inputEmail.value = String(row[8] || '').trim();
-            if (modalUserTitle) modalUserTitle.textContent = 'تعديل المستخدم';
+            if (modalUserTitle) modalUserTitle.textContent = 'تعديل المستعمل';
             if (btnText) btnText.textContent = 'حفظ التعديلات';
             if (pwHint) pwHint.textContent = '(اتركه فارغاً للإبقاء)';
             inputPw.value = '';
@@ -469,14 +469,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('لا يمكنك حذف حسابك الحالي');
             return;
         }
-        if (!confirm(`هل أنت متأكد من حذف المستخدم ${matricule} ؟`)) return;
+        if (!confirm(`هل أنت متأكد من حذف المستعمل ${matricule} ؟`)) return;
         const res = await postAction('adminDeleteUser', { matricule: String(matricule).trim() });
         if (res && res.ok) {
             await loadUsers();
         } else {
-            let msg = 'تعذر حذف المستخدم';
+            let msg = 'تعذر حذف المستعمل';
             if (res && res.error === 'cannot_delete_self') msg = 'لا يمكنك حذف حسابك الحالي';
-            else if (res && res.error === 'user_not_found') msg = 'المستخدم غير موجود';
+            else if (res && res.error === 'user_not_found') msg = 'المستعمل غير موجود';
             else if (res && res.error === 'unauthorized') msg = 'غير مصرح';
             else if (res && res.error === 'network_error') msg = 'لا يوجد اتصال بالإنترنت';
             alert(msg);
@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             isEditMode = false;
             editMatricule = null;
             if (modalUserTitle) modalUserTitle.textContent = 'مستخدم جديد';
-            if (btnText) btnText.textContent = 'إضافة المستخدم';
+            if (btnText) btnText.textContent = 'إضافة المستعمل';
             if (pwHint) pwHint.textContent = '(مطلوبة للإضافة)';
             inputMatricule.removeAttribute('readonly');
             inputMatricule.style.backgroundColor = '';
@@ -600,7 +600,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const totalCount = rows.length;
         const totalLabel = totalCount === 1 ? 'مستخدم' : 'مستخدمين';
         const totalBadge = `<span style="position:absolute;left:10mm;font-size:14pt;font-weight:700;">${totalCount} ${totalLabel}</span>`;
-        const html = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"/><title>${filenameBase}</title><style>@page{size:A4 landscape;margin:10mm}body{font-family:Arial,"Segoe UI",Tahoma,sans-serif;direction:rtl;color:#111}h1{text-align:center;font-size:18pt;margin:0 0 10mm 0;position:relative}table{width:100%;border-collapse:collapse}tr{page-break-inside:avoid}</style></head><body><h1>${totalBadge}قائمة المستخدمين</h1>${tableHtml}<script>(function(){try{document.title="${filenameBase}"}catch(e){}var hasInvokedPrint=false;function closeMeSoon(){setTimeout(function(){try{window.close()}catch(e){}},120)}window.onafterprint=closeMeSoon;if(window.matchMedia){var mql=window.matchMedia("print");var handler=function(e){if(hasInvokedPrint&&e&&e.matches===false)closeMeSoon()};if(mql&&typeof mql.addEventListener==="function")mql.addEventListener("change",handler);else if(mql&&typeof mql.addListener==="function")mql.addListener(handler)}window.addEventListener("focus",function(){if(hasInvokedPrint)closeMeSoon()});window.onload=function(){setTimeout(function(){window.focus();hasInvokedPrint=true;window.print()},200)}})()<\/script></body></html>`;
+        const html = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"/><title>${filenameBase}</title><style>@page{size:A4 landscape;margin:10mm}body{font-family:Arial,"Segoe UI",Tahoma,sans-serif;direction:rtl;color:#111}h1{text-align:center;font-size:18pt;margin:0 0 10mm 0;position:relative}table{width:100%;border-collapse:collapse}tr{page-break-inside:avoid}</style></head><body><h1>${totalBadge}قائمة المستعملين</h1>${tableHtml}<script>(function(){try{document.title="${filenameBase}"}catch(e){}var hasInvokedPrint=false;function closeMeSoon(){setTimeout(function(){try{window.close()}catch(e){}},120)}window.onafterprint=closeMeSoon;if(window.matchMedia){var mql=window.matchMedia("print");var handler=function(e){if(hasInvokedPrint&&e&&e.matches===false)closeMeSoon()};if(mql&&typeof mql.addEventListener==="function")mql.addEventListener("change",handler);else if(mql&&typeof mql.addListener==="function")mql.addListener(handler)}window.addEventListener("focus",function(){if(hasInvokedPrint)closeMeSoon()});window.onload=function(){setTimeout(function(){window.focus();hasInvokedPrint=true;window.print()},200)}})()<\/script></body></html>`;
         const win = window.open('', '_blank');
         if (!win) { alert('Popup blocked.'); return; }
         win.document.open();
@@ -655,7 +655,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         btnSubmit.disabled = false;
         if (btnSpinner) btnSpinner.classList.add('d-none');
-        if (btnText) btnText.textContent = isEditMode ? 'حفظ التعديلات' : 'إضافة المستخدم';
+        if (btnText) btnText.textContent = isEditMode ? 'حفظ التعديلات' : 'إضافة المستعمل';
 
         if (res && res.ok) {
             closeUserForm();
@@ -664,7 +664,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             let msg = 'خطأ أثناء الحفظ';
             if (res) {
                 if (res.error === 'duplicate_matricule') msg = 'المعرف موجود مسبقاً';
-                else if (res.error === 'user_not_found') msg = 'المستخدم غير موجود';
+                else if (res.error === 'user_not_found') msg = 'المستعمل غير موجود';
                 else if (res.error === 'missing_fields') msg = 'الرجاء تعمير جميع الخانات المطلوبة';
                 else if (res.error === 'unauthorized') msg = 'غير مصرح';
                 else if (res.error === 'network_error') msg = 'لا يوجد اتصال بالإنترنت';

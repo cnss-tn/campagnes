@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>إدارة المستخدمين - الإدارة</title>
+    <title>إدارة المستعملين - الإدارة</title>
     <link rel="icon" href="images/cnss_logo.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -56,7 +56,7 @@
               </a>
               <a href="interface3.html" class="btn btn-outline-secondary btn-sm composed-menu-btn">البرامج</a>
               <a href="interface4.html" class="btn btn-outline-secondary btn-sm composed-menu-btn">الإحصائيات</a>
-              <a href="users_management.html" class="btn btn-outline-secondary btn-sm composed-menu-btn is-active" aria-current="page">إدارة المستخدمين</a>
+              <a href="users_management.html" class="btn btn-outline-secondary btn-sm composed-menu-btn is-active" aria-current="page">إدارة المستعملين</a>
             </div>
           </div>
           <div class="composed-user-panel">
@@ -82,7 +82,7 @@
                 <span class="composed-card-icon composed-card-icon--table" aria-hidden="true"></span>
                 <div class="w-100">
                   <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-                    <h2 class="h5 fw-bold mb-0">قائمة المستخدمين</h2>
+                    <h2 class="h5 fw-bold mb-0">قائمة المستعملين</h2>
                     <button type="button" id="btn-open-user-form" class="btn btn-primary btn-sm users-add-btn mx-auto">+ إضافة مستخدم</button>
                     <div class="programmes-total text-start" id="users-total"></div>
                   </div>
@@ -213,7 +213,7 @@
                 </select>
               </div>
               <div class="mb-3">
-                <label class="form-label" for="user-type">نوع المستخدم *</label>
+                <label class="form-label" for="user-type">نوع المستعمل *</label>
                 <select id="user-type" class="form-select" required>
                   <option value="normal">normal</option>
                   <option value="admin">admin</option>
@@ -229,7 +229,7 @@
                 <input type="password" id="user-pw" class="form-control" placeholder="••••••••" autocomplete="new-password" />
               </div>
               <button type="submit" class="btn btn-primary w-100" id="btn-submit">
-                <span id="btn-text">إضافة المستخدم</span>
+                <span id="btn-text">إضافة المستعمل</span>
                 <span class="spinner-border spinner-border-sm ms-2 d-none" id="btn-submit-spinner" role="status" aria-hidden="true"></span>
               </button>
             </form>
