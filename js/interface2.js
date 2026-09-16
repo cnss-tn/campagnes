@@ -175,7 +175,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             const _t = document.getElementById('res-type-hamla');
             if (_t) _t.title = _t.value;
             const _z = document.getElementById('res-activite-zone');
-            if (_z) _z.title = _z.value;
+            if (_z) {
+                _z.title = _z.value;
+                // Grow to fit the whole text (works even while modal hidden)
+                try { _z.rows = Math.min(6, Math.max(2, Math.ceil(String(_z.value).length / 55))); } catch {}
+            }
         } catch {}
 
         if (data && data.length >= 2) {
