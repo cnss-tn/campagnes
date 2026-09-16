@@ -151,12 +151,12 @@
       </div>
     </main>
 
-    <!-- Modal consultation campagne -->
+    <!-- Modal consultation résultats (admin read-only) -->
     <div class="modal" id="modal-stats-campagne" tabindex="-1" aria-labelledby="modal-stats-title" aria-hidden="true">
       <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content stats-modal-content" dir="rtl">
           <div class="modal-header border-0 py-2 px-3">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
           </div>
           <div class="modal-body pt-0 px-3 pb-1">
             <h3 class="stats-popup-section-title h6 fw-bold mb-2 pe-3" id="modal-stats-title">
@@ -189,9 +189,9 @@
             <div class="table-responsive stats-table-scroll" id="stats-table-panel">
               <div class="stats-modal-loader" id="stats-modal-loader" aria-hidden="true">
                 <div class="spinner-border text-success" role="status" aria-label="Chargement">
-                  <span class="visually-hidden">Chargement…</span>
+                  <span class="visually-hidden">تحميل...</span>
                 </div>
-                <p class="small text-muted mb-0 mt-3 fw-semibold">Chargement des données…</p>
+                <p class="small text-muted mb-0 mt-3 fw-semibold">تحميل البيانات…</p>
               </div>
               <div class="stats-table-layout" dir="rtl">
                 <div class="stats-split-top">
@@ -206,10 +206,10 @@
                       <tbody>
                         <tr>
                           <td>
-                            <input type="text" class="form-control form-control-sm text-center bg-light" id="res-type-hamla" readonly tabindex="-1" aria-readonly="true" />
+                            <input type="text" class="form-control form-control-sm text-center bg-light" id="res-type-hamla" readonly disabled tabindex="-1" aria-readonly="true" />
                           </td>
                           <td>
-                            <textarea class="form-control form-control-sm text-center bg-light" id="res-activite-zone" readonly tabindex="-1" aria-readonly="true" rows="2" style="font-size:0.72rem; resize:none"></textarea>
+                            <textarea class="form-control form-control-sm text-center bg-light" id="res-activite-zone" readonly disabled tabindex="-1" aria-readonly="true" rows="2" style="font-size:0.72rem; resize:none"></textarea>
                           </td>
                         </tr>
                       </tbody>
@@ -235,12 +235,12 @@
                       </thead>
                       <tbody>
                         <tr>
-                          <td><input type="number" class="form-control form-control-sm text-center bg-light" id="res-w-in" min="0" step="1" readonly tabindex="-1" /></td>
-                          <td><input type="number" class="form-control form-control-sm text-center bg-light" id="res-w-ni" min="0" step="1" readonly tabindex="-1" /></td>
-                          <td><input type="number" class="form-control form-control-sm text-center bg-light" id="res-nw-in" min="0" step="1" readonly tabindex="-1" /></td>
-                          <td><input type="number" class="form-control form-control-sm text-center bg-light" id="res-nw-ni" min="0" step="1" readonly tabindex="-1" /></td>
-                          <td><input type="number" class="form-control form-control-sm text-center bg-light" id="res-emp-dec" min="0" step="1" readonly tabindex="-1" /></td>
-                          <td><input type="number" class="form-control form-control-sm text-center bg-light" id="res-emp-ndec" min="0" step="1" readonly tabindex="-1" /></td>
+                          <td><input type="number" class="form-control form-control-sm text-center bg-light" id="res-w-in" min="0" step="1" readonly disabled /></td>
+                          <td><input type="number" class="form-control form-control-sm text-center bg-light" id="res-w-ni" min="0" step="1" readonly disabled /></td>
+                          <td><input type="number" class="form-control form-control-sm text-center bg-light" id="res-nw-in" min="0" step="1" readonly disabled /></td>
+                          <td><input type="number" class="form-control form-control-sm text-center bg-light" id="res-nw-ni" min="0" step="1" readonly disabled /></td>
+                          <td><input type="number" class="form-control form-control-sm text-center bg-light" id="res-emp-dec" min="0" step="1" readonly disabled /></td>
+                          <td><input type="number" class="form-control form-control-sm text-center bg-light" id="res-emp-ndec" min="0" step="1" readonly disabled /></td>
                         </tr>
                       </tbody>
                     </table>
@@ -259,9 +259,9 @@
                       </thead>
                       <tbody>
                         <tr>
-                          <td><input type="text" class="form-control form-control-sm text-center stats-amount-input bg-light" id="res-manq-tot" inputmode="numeric" autocomplete="off" readonly tabindex="-1" /></td>
-                          <td><input type="text" class="form-control form-control-sm text-center stats-amount-input bg-light" id="res-manq-ok" inputmode="numeric" autocomplete="off" readonly tabindex="-1" /></td>
-                          <td><input type="text" class="form-control form-control-sm text-center stats-amount-input bg-light" id="res-manq-nok" inputmode="numeric" autocomplete="off" readonly tabindex="-1" /></td>
+                          <td><input type="text" class="form-control form-control-sm text-center stats-amount-input bg-light" id="res-manq-tot" inputmode="numeric" autocomplete="off" readonly disabled /></td>
+                          <td><input type="text" class="form-control form-control-sm text-center stats-amount-input bg-light" id="res-manq-ok" inputmode="numeric" autocomplete="off" readonly disabled /></td>
+                          <td><input type="text" class="form-control form-control-sm text-center stats-amount-input bg-light" id="res-manq-nok" inputmode="numeric" autocomplete="off" readonly disabled /></td>
                         </tr>
                       </tbody>
                     </table>
@@ -276,7 +276,7 @@
                       </thead>
                       <tbody>
                         <tr>
-                          <td><input type="number" class="form-control form-control-sm text-center bg-light" id="res-participants" min="0" step="1" readonly tabindex="-1" /></td>
+                          <td><input type="number" class="form-control form-control-sm text-center bg-light" id="res-participants" min="0" step="1" readonly disabled /></td>
                         </tr>
                       </tbody>
                     </table>
@@ -284,6 +284,9 @@
                 </div>
               </div>
             </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">إغلاق</button>
           </div>
         </div>
       </div>
