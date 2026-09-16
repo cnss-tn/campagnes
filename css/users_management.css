@@ -507,10 +507,6 @@ body.page-users main.composed-main.results-main-fluid {
     background: var(--cp-accent);
     border-color: var(--cp-accent);
 }
-#btn-import-xlsx:disabled {
-    opacity: 0.6;
-    pointer-events: none;
-}
 
 /* Header with centered add button */
 .page-users .users-card-head .d-flex {
