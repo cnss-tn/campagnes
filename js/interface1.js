@@ -1032,11 +1032,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('nb_controleurs').value,
         ];
 
-        const success = await saveData('Programmes', newEntry);
+        const newId = await saveData('Programmes', newEntry);
 
-        if (success) {
+        if (newId) {
             goToLastPageOnce = true;
-            goToNewCampagneId = newEntry[0];
+            goToNewCampagneId = String(newId);
             btnText.textContent = 'إضافة إلى البرنامج';
             btnSpinner.classList.add('d-none');
             closeCampagneForm();

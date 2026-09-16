@@ -1107,6 +1107,51 @@ document.addEventListener('DOMContentLoaded', function () {
     try { if (_shouldForceRedirect()) window.location.href = 'pw-force-change.html'; } catch {}
 });
 
+/* ── Sequential IDs: P-BR-NNNNNNN / R-BR-NNNNNNN ───────────────────────
+   One counter doc per bureau: counters/P_{BR} and counters/R_{BR}.
+   Allocated inside a transaction (concurrent creations can't collide).
+   First use for a bureau scans existing docs: no P-BR-* found -> starts at 1. */
+const _TEMP_ID_RE = /^[PR]\d{10,}$/;
+
+async function _allocSeqId(kind, codeBr) {
+    const db = await _fbReady;
+    const br = String(codeBr || '').trim();
+    const col = kind === 'R' ? 'resultats' : 'programmes';
+    const idField = kind === 'R' ? 'ID_Resultat' : 'ID_Programme';
+    const counterRef = db.collection('counters').doc(kind + '_' + br);
+    const brEsc = br.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const suffixRe = new RegExp('^' + kind + '-' + brEsc + '-(\\d{1,7})$');
+    const lo = kind + '-' + br + '-';
+    const hi = kind + '-' + br + '-\uf8ff';
+
+
+    const next = await db.runTransaction(async (t) => {
+        const csnap = await t.get(counterRef);
+        const lastRaw = csnap.exists ? csnap.data().last : null;
+        if (Number.isFinite(Number(lastRaw))) {
+            const n = Number(lastRaw) + 1;
+            t.set(counterRef, { last: n, updatedAt: Date.now() }, { merge: true });
+            return n;
+        }
+        // First allocation for this bureau: resume after the highest existing ID.
+        const qsnap = await t.get(db.collection(col).where(idField, '>=', lo).where(idField, '<=', hi));
+        let m = 0;
+        qsnap.docs.forEach(d => {
+            [d.id, String(((d.data() || {})[idField]) || '')].forEach(v => {
+                const mt = suffixRe.exec(String(v).trim());
+                if (mt) {
+                    const n = parseInt(mt[1], 10);
+                    if (Number.isFinite(n) && n > m) m = n;
+                }
+            });
+        });
+        const n = m + 1;
+        t.set(counterRef, { last: n, updatedAt: Date.now() }, { merge: true });
+        return n;
+    });
+    return kind + '-' + br + '-' + String(next).padStart(7, '0');
+}
+
 /* ── Main API: saveData (drop-in replacement) ───────────────────────── */
 async function saveData(sheetName, arrayValues) {
     if (isSessionExpired()) { logoutToLogin(); return false; }
@@ -1119,24 +1164,32 @@ async function saveData(sheetName, arrayValues) {
         if (sheetName === 'Programmes') {
             const doc = _rowToProgramme(arrayValues);
             doc.Code_Bureau = code;
-            const id = doc.ID_Programme || ('P' + Date.now());
+            let id = String(doc.ID_Programme || '').trim();
+            // New campagne (empty or temp P+timestamp ID, or unknown ID) -> allocate P-BR-NNNNNNN
+            if (!id || _TEMP_ID_RE.test(id)) {
+                id = await _allocSeqId('P', code);
+            } else {
+                const known = await _getDocById('programmes', id);
+                if (!known) id = await _allocSeqId('P', code);
+            }
+            doc.ID_Programme = id;
             await _setDoc('programmes', id, doc);
-            return true;
+            return id;
         }
 
         if (sheetName === 'Resultats') {
             const doc = _rowToResultat(arrayValues);
             doc.Code_br = code;
-            const id = doc.ID_Resultat || null;
-            const existing = id ? await _getDocById('resultats', id) : null;
+            const rawId = String(doc.ID_Resultat || '').trim();
+            const existing = rawId ? await _getDocById('resultats', rawId) : null;
             if (existing) {
                 const db = await _fbReady;
                 await db.collection('resultats').doc(existing.id).set(doc, { merge: true });
             } else {
-                const db = await _fbReady;
-                const ref = await db.collection('resultats').add(doc);
-                // Update ID_Resultat to match Firestore doc ID
-                await db.collection('resultats').doc(ref.id).update({ ID_Resultat: ref.id });
+                // New resultat (empty, temp R+timestamp ID, or unknown ID) -> allocate R-BR-NNNNNNN
+                const nid = await _allocSeqId('R', code);
+                doc.ID_Resultat = nid;
+                await _setDoc('resultats', nid, doc);
             }
             return true;
         }
