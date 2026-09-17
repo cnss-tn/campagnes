@@ -849,22 +849,15 @@ async function postAction(action, payload = {}) {
             }
             if (!pwHash) return { ok: false, error: 'missing_fields' };
 
-            // pw_changed logic: explicit Excel value (Matricule|...|Pw|pw_changed) takes precedence, else auto (normal 0, admin 1)
-            var explicitPwc = payload.pw_changed != null && String(payload.pw_changed).trim() !== '' ? Number(payload.pw_changed) : null;
+            // pw_changed: new users (normal and admin) always 0; edits keep the existing value untouched.
             var existingPwc = null;
             if (existing && existing.pw_changed != null) existingPwc = Number(existing.pw_changed);
             else if (existing && existing.Pw_changed != null) existingPwc = Number(existing.Pw_changed);
             var pw_changedFinal;
-            if (explicitPwc === 0 || explicitPwc === 1) {
-                pw_changedFinal = explicitPwc; // honored as-is, even 0 for admins (admins are exempt at login anyway)
-            } else if (!isEdit) {
-                pw_changedFinal = userType === 'admin' ? 1 : 0;
+            if (!isEdit) {
+                pw_changedFinal = 0;
             } else {
-                if (pwRaw && pwRaw.trim() !== '') {
-                    pw_changedFinal = userType === 'admin' ? 1 : 0;
-                } else {
-                    pw_changedFinal = existingPwc != null && Number.isFinite(Number(existingPwc)) ? Number(existingPwc) : (userType === 'admin' ? 1 : 0);
-                }
+                pw_changedFinal = existingPwc != null && Number.isFinite(Number(existingPwc)) ? Number(existingPwc) : 0;
             }
 
             let emailToSave = '';

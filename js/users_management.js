@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const selectCodeBr = document.getElementById('user-code-br');
     const inputEmail = document.getElementById('user-email');
     const inputPw = document.getElementById('user-pw');
-    const selectPwChanged = document.getElementById('user-pw-changed');
     const selectUserType = document.getElementById('user-type');
     const pwHint = document.getElementById('pw-hint');
     const btnSubmit = document.getElementById('btn-submit');
@@ -408,7 +407,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (selectGrade) selectGrade.value = '';
         if (selectCodeBr) selectCodeBr.value = '';
         if (selectUserType) selectUserType.value = 'normal';
-        if (selectPwChanged) selectPwChanged.value = '0';
         destroyFormChoices();
         rebuildFormChoices();
     }
@@ -448,8 +446,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const gradeVal = String(row[3] || '');
             const codeVal = String(row[4] || '');
             const typeVal = String(row[6] || 'normal').trim().toLowerCase() === 'admin' ? 'admin' : 'normal';
-            const _pwcRaw = row[7] != null ? String(row[7]).trim() : '';
-            if (selectPwChanged) selectPwChanged.value = (_pwcRaw === '1' || _pwcRaw === '0') ? _pwcRaw : '0';
             try {
                 if (choicesGrade) choicesGrade.setChoiceByValue(gradeVal);
                 else if (selectGrade) selectGrade.value = gradeVal;
@@ -622,12 +618,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const emailRaw = String(inputEmail?.value || '').trim().toLowerCase();
         const pw = String(inputPw.value || '');
         const userType = String(selectUserType.value || 'normal').trim();
-        const pwChangedVal = String(selectPwChanged ? selectPwChanged.value : '0').trim();
-        if (pwChangedVal !== '0' && pwChangedVal !== '1') {
-            alert('حالة كلمة المرور يجب أن تكون 0 أو 1');
-            if (selectPwChanged) selectPwChanged.focus();
-            return;
-        }
 
         if (!matricule || !frName || !arName || !grade || !codeBr || !userType) {
             alert('الرجاء تعمير جميع الخانات المطلوبة');
@@ -657,7 +647,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             email: emailRaw,
             pw: pw.trim(),
             userType,
-            pw_changed: pwChangedVal,
             isEdit: isEditMode
         };
 
