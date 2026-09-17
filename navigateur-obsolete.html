@@ -30,24 +30,27 @@
       }
       .card {
         position: relative; z-index: 1;
-        max-width: 30rem; width: 100%; margin: 0;
+        max-width: 32rem; width: 100%; margin: 0;
         background: rgba(255, 255, 255, 0.72);
         border-radius: 28px;
         border: 1px solid rgba(12, 107, 47, 0.1);
         box-shadow: 0 18px 45px rgba(4, 143, 64, 0.14);
-        padding: 1.6rem 1.5rem 1.3rem;
+        padding: 2.2rem 2rem 1.8rem;
         text-align: center;
       }
-      .logo { display: block; margin: 0 auto 0.7rem; filter: drop-shadow(0 4px 14px rgba(4, 143, 64, 0.25)); }
-      h1 { font-size: 1.15rem; font-weight: 700; margin: 0 0 1.3rem; color: #0a6e33; }
-      ol { margin: 0 0 1.3rem; padding: 0; list-style: none; counter-reset: step; text-align: right; }
+      .logo { display: block; margin: 0 auto 0.9rem; filter: drop-shadow(0 4px 14px rgba(4, 143, 64, 0.25)); }
+      h1 { font-size: 1.15rem; font-weight: 700; margin: 0 0 1.7rem; color: #0a6e33; }
+      ol { margin: 0 0 1.7rem; padding: 0; list-style: none; counter-reset: step; text-align: right; }
       ol li {
         counter-increment: step;
         position: relative;
-        font-size: 0.9rem; font-weight: 600; line-height: 1.6;
+        font-size: 0.9rem; font-weight: 600; line-height: 1.7;
         color: #0f2918;
-        padding: 0.35rem 2.6rem 0.35rem 0.4rem;
-        margin-bottom: 0.55rem;
+        background: #eef7f0;
+        border: 1px dashed rgba(4, 143, 64, 0.35); border-radius: 16px;
+        border-right: 5px solid #048f40;
+        padding: 0.8rem 3rem 0.8rem 1rem;
+        margin-bottom: 0.9rem;
       }
       ol li:before {
         content: counter(step);
@@ -57,7 +60,7 @@
         color: #fff; background: linear-gradient(135deg, #048f40, #3da937);
         border-radius: 50%;
       }
-      .link-label { font-size: 0.87rem; font-weight: 700; color: #0a6e33; margin: 0 0 0.5rem; }
+      .link-label { font-size: 0.87rem; font-weight: 700; color: #0a6e33; margin: 0 0 0.7rem; }
       .link-row { display: flex; gap: 0.45rem; }
       .link-row input {
         flex: 1; min-width: 0; direction: ltr; text-align: center;
