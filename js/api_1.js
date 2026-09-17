@@ -856,8 +856,7 @@ async function postAction(action, payload = {}) {
             else if (existing && existing.Pw_changed != null) existingPwc = Number(existing.Pw_changed);
             var pw_changedFinal;
             if (explicitPwc === 0 || explicitPwc === 1) {
-                pw_changedFinal = explicitPwc;
-                if (userType === 'admin' && pw_changedFinal === 0) pw_changedFinal = 1; // admin never forced
+                pw_changedFinal = explicitPwc; // honored as-is, even 0 for admins (admins are exempt at login anyway)
             } else if (!isEdit) {
                 pw_changedFinal = userType === 'admin' ? 1 : 0;
             } else {
