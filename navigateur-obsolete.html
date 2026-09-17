@@ -11,44 +11,48 @@
         margin: 0; padding: 1rem;
         min-height: 100vh;
         display: flex; align-items: center; justify-content: center;
-        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
-        color: #212529;
-        background: #0f5132;
-        background: linear-gradient(135deg, #0f5132 0%, #146c43 45%, #1e7e34 100%);
+        font-family: "DM Sans", "Segoe UI", Tahoma, Arial, sans-serif;
+        color: #0f2918;
+        background: linear-gradient(160deg, #e4f0e8 0%, #d4e8da 40%, #ecf8ee 100%);
+        position: relative;
       }
-      body:before {
-        content: ""; position: fixed; top: 0; right: 0; bottom: 0; left: 0;
-        background-image: radial-gradient(rgba(255,255,255,0.14) 1px, transparent 1px);
-        background-size: 22px 22px;
-        pointer-events: none;
+      .shape {
+        position: fixed; z-index: 0; pointer-events: none;
+        border-radius: 50%; opacity: 0.5;
+      }
+      .shape--tl {
+        width: 420px; height: 420px; top: -160px; right: -110px;
+        background: radial-gradient(circle, rgba(4, 143, 64, 0.16), transparent 70%);
+      }
+      .shape--br {
+        width: 360px; height: 360px; bottom: -120px; left: -90px;
+        background: radial-gradient(circle, rgba(165, 202, 31, 0.16), transparent 70%);
       }
       .card {
-        position: relative;
+        position: relative; z-index: 1;
         max-width: 30rem; width: 100%; margin: 0;
-        background: #ffffff; border-radius: 20px;
-        padding: 0 0 1.3rem; overflow: hidden;
-        box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+        background: rgba(255, 255, 255, 0.72);
+        border-radius: 28px;
+        border: 1px solid rgba(12, 107, 47, 0.1);
+        box-shadow: 0 18px 45px rgba(4, 143, 64, 0.14);
+        padding: 1.6rem 1.5rem 1.3rem;
+        text-align: center;
       }
-      .card-top {
-        background: linear-gradient(135deg, #f59e0b, #f97316);
-        padding: 1.3rem 1.4rem 1.1rem; text-align: center;
+      .logo-tile {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 4rem; height: 4rem; border-radius: 20px;
+        background: linear-gradient(135deg, rgba(4, 143, 64, 0.12), rgba(165, 202, 31, 0.12));
+        margin-bottom: 0.7rem;
+        box-shadow: 0 4px 14px rgba(4, 143, 64, 0.18);
       }
-      .logo-badge {
-        display: inline-block; background: #fff; border-radius: 50%;
-        width: 64px; height: 64px; line-height: 64px;
-        box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-        margin-bottom: 0.5rem;
-      }
-      .logo-badge img { vertical-align: middle; }
-      h1 { font-size: 1.15rem; margin: 0; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.25); }
-      .card-body { padding: 1.1rem 1.4rem 0; }
-      ol { margin: 0 0 1rem; padding: 0; list-style: none; counter-reset: step; }
+      h1 { font-size: 1.15rem; font-weight: 700; margin: 0 0 0.9rem; color: #0a6e33; }
+      ol { margin: 0 0 1rem; padding: 0; list-style: none; counter-reset: step; text-align: right; }
       ol li {
         counter-increment: step;
         position: relative;
         font-size: 0.87rem; line-height: 1.6;
-        background: #f8faf9;
-        border: 1px solid #e3efe8; border-radius: 12px;
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(12, 107, 47, 0.1); border-radius: 14px;
         padding: 0.55rem 2.6rem 0.55rem 0.8rem;
         margin-bottom: 0.5rem;
       }
@@ -57,48 +61,47 @@
         position: absolute; top: 50%; right: 0.7rem;
         width: 1.5rem; height: 1.5rem; line-height: 1.5rem; margin-top: -0.75rem;
         text-align: center; font-size: 0.78rem; font-weight: 700;
-        color: #fff; background: linear-gradient(135deg, #0f5132, #1e7e34);
+        color: #fff; background: linear-gradient(135deg, #048f40, #3da937);
         border-radius: 50%;
       }
-      .link-label { font-size: 0.83rem; font-weight: 700; color: #0f5132; margin: 0 0 0.35rem; }
+      .link-label { font-size: 0.83rem; font-weight: 700; color: #0a6e33; margin: 0 0 0.35rem; }
       .link-row { display: flex; gap: 0.4rem; }
       .link-row input {
-        flex: 1; min-width: 0; direction: ltr; text-align: left;
+        flex: 1; min-width: 0; direction: ltr; text-align: center;
         font-size: 0.78rem; padding: 0.5rem 0.6rem;
-        border: 1.5px solid #ced4da; border-radius: 10px; background: #f8f9fa; color: #212529;
+        border: 1.5px solid rgba(12, 107, 47, 0.2); border-radius: 12px;
+        background: rgba(255, 255, 255, 0.9); color: #0f2918;
       }
-      .link-row input:focus { outline: none; border-color: #f59e0b; }
+      .link-row input:focus { outline: none; border-color: #048f40; }
       .link-row button {
         flex-shrink: 0; font-size: 0.82rem; font-weight: 700;
-        padding: 0.5rem 1.1rem; border-radius: 10px; cursor: pointer;
+        padding: 0.5rem 1.1rem; border-radius: 12px; cursor: pointer;
         color: #fff; border: none;
-        background: linear-gradient(135deg, #f59e0b, #f97316);
-        box-shadow: 0 4px 12px rgba(249,115,22,0.4);
+        background: linear-gradient(135deg, #048f40, #3da937);
+        box-shadow: 0 4px 12px rgba(4, 143, 64, 0.35);
       }
       .link-row button:hover { filter: brightness(1.07); }
       .link-row button:active { transform: translateY(1px); }
-      .copied { font-size: 0.76rem; font-weight: 700; color: #0f5132; margin: 0.3rem 0 0; min-height: 1.1em; text-align: center; }
+      .copied { font-size: 0.76rem; font-weight: 700; color: #0a6e33; margin: 0.3rem 0 0; min-height: 1.1em; }
     </style>
   </head>
   <body>
+    <div class="shape shape--tl"></div>
+    <div class="shape shape--br"></div>
     <div class="card">
-      <div class="card-top">
-        <span class="logo-badge"><img src="images/cnss_logo.svg" width="38" height="38" alt="" /></span>
-        <h1>متصفحك قديم ولا يدعم هذا التطبيق</h1>
+      <span class="logo-tile"><img src="images/cnss_logo.svg" width="38" height="38" alt="" /></span>
+      <h1>متصفحك قديم ولا يدعم هذا التطبيق</h1>
+      <ol>
+        <li>افتح Edge أو Firefox إن كانا متوفرين بنسخة حديثة.</li>
+        <li>أو حدّث متصفحك الحالي إلى آخر نسخة.</li>
+        <li>إذا تعذر الحل، اتصل بمسؤول الإعلامية.</li>
+      </ol>
+      <p class="link-label">رابط التطبيق لفتحه في المتصفح الحديث :</p>
+      <div class="link-row">
+        <input type="text" id="app-link" readonly value="https://cnss-tn.github.io/campagnes" />
+        <button type="button" id="btn-copy-link">نسخ</button>
       </div>
-      <div class="card-body">
-        <ol>
-          <li>افتح Edge أو Firefox إن كانا متوفرين بنسخة حديثة.</li>
-          <li>أو حدّث متصفحك الحالي إلى آخر نسخة.</li>
-          <li>إذا تعذر الحل، اتصل بمسؤول الإعلامية.</li>
-        </ol>
-        <p class="link-label">رابط التطبيق لفتحه في المتصفح الحديث :</p>
-        <div class="link-row">
-          <input type="text" id="app-link" readonly value="https://cnss-tn.github.io/campagnes" />
-          <button type="button" id="btn-copy-link">نسخ</button>
-        </div>
-        <p class="copied" id="copy-msg"></p>
-      </div>
+      <p class="copied" id="copy-msg"></p>
     </div>
     <script>
     (function () {
