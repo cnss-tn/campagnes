@@ -1061,8 +1061,7 @@ try {
 /* ── pw_changed helper & force-change enforcement ───────────────────── */
 function _isForcePwChangeRequired(u) {
     if (!u || typeof u !== 'object') return false;
-    var ut = String(u.userType || u.user_type || '').trim().toLowerCase();
-    if (ut === 'admin') return false;
+    // No admin exemption: admins with pw_changed=0 are forced like everyone else
     var v = u.pw_changed;
     if (v == null && u.pwChanged != null) v = u.pwChanged;
     if (v == null && u.Pw_changed != null) v = u.Pw_changed;

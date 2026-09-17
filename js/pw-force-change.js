@@ -73,19 +73,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Admin should not be forced; redirect to admin home
+    // Admins with pw_changed=0 stay (forced like everyone else); anyone at 1 leaves for their home
     var isAdmin = user.userType && String(user.userType).trim().toLowerCase() === 'admin';
-    if (isAdmin) {
-        window.location.href = 'admin-main-page.html';
-        return;
-    }
-
-    // If already changed (pw_changed == 1), no need to stay here; redirect to main
     var pwc = user.pw_changed;
     if (pwc == null && user.pwChanged != null) pwc = user.pwChanged;
     if (pwc == null) pwc = 0; // missing => force
     if (Number(pwc) === 1) {
-        window.location.href = 'main-page.html';
+        window.location.href = isAdmin ? 'admin-main-page.html' : 'main-page.html';
         return;
     }
 
@@ -216,7 +210,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loaderEl) loaderEl.classList.add('d-none');
 
         setTimeout(() => {
-            window.location.href = 'main-page.html';
+            var _isAdm = user && String(user.userType || '').trim().toLowerCase() === 'admin';
+            window.location.href = _isAdm ? 'admin-main-page.html' : 'main-page.html';
         }, 1400);
     });
 });

@@ -122,8 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function isForceRequired(userObj) {
         if (!userObj) return false;
-        var isAdmin = String(userObj.userType || '').trim().toLowerCase() === 'admin';
-        if (isAdmin) return false;
+        // No admin exemption: admins with pw_changed=0 are forced like everyone else
         var v = userObj.pw_changed;
         if (v == null && userObj.pwChanged != null) v = userObj.pwChanged;
         if (v == null) return true;
