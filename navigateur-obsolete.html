@@ -112,8 +112,28 @@
                 if (u.sessionExpiresAt && Date.now() > Number(u.sessionExpiresAt)) return;
                 var isAdmin = String(u.userType || '').trim().toLowerCase() === 'admin';
                 window.location.replace(isAdmin ? 'admin-main-page.html' : 'main-page.html');
+                return;
             }
         } catch (e) {}
+        /* Modern browser opened this page directly (not via old-browser
+           redirect) -> back to login. Same ES5-safe probes as the gate. */
+        var modern = true;
+        try {
+            if (typeof Promise === 'undefined') modern = false;
+            if (typeof fetch === 'undefined') modern = false;
+            if (typeof Object === 'undefined' || typeof Object.assign !== 'function') modern = false;
+            if (typeof URL === 'undefined') modern = false;
+            new Function('return ({} ?.a ?? 0)');
+            new Function('return (async function () { return 1; })');
+        } catch (e) { modern = false; }
+        var chromeV = 0;
+        try {
+            var m = String(navigator.userAgent || '').match(/Chrom(?:e|ium)\/(\d+)/);
+            if (m) chromeV = parseInt(m[1], 10) || 0;
+        } catch (e) {}
+        if (modern && !(chromeV > 0 && chromeV < 80)) {
+            try { window.location.replace('index.html'); } catch (e) {}
+        }
     })();
     (function () {
         var btn = document.getElementById('btn-copy-link');
