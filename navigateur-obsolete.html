@@ -3,46 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>متصفح قديم — Navigateur obsolète</title>
+    <title>متصفح قديم</title>
     <link rel="icon" href="images/cnss_logo.svg" type="image/svg+xml" />
     <style>
       * { box-sizing: border-box; }
       body {
         margin: 0; padding: 1rem;
+        min-height: 100vh;
+        display: flex; align-items: center; justify-content: center;
         font-family: "Segoe UI", Tahoma, Arial, sans-serif;
         background: #f4f6f8; color: #212529;
       }
       .card {
-        max-width: 32rem; margin: 3vh auto 0;
+        max-width: 32rem; width: 100%; margin: 0;
         background: #fff; border: 1px solid #dee2e6; border-radius: 12px;
         padding: 1.2rem 1.4rem; box-shadow: 0 4px 18px rgba(0,0,0,0.08);
       }
       .logo { display: block; margin: 0 auto 0.6rem; }
-      h1 { font-size: 1.1rem; margin: 0 0 0.2rem; color: #842029; text-align: center; }
-      .sub { text-align: center; color: #6c757d; font-size: 0.85rem; margin: 0 0 0.8rem; }
-      p { font-size: 0.88rem; line-height: 1.6; margin: 0 0 0.7rem; }
+      h1 { font-size: 1.1rem; margin: 0 0 0.8rem; color: #842029; text-align: center; }
       ol { margin: 0; padding-right: 1.3rem; font-size: 0.88rem; line-height: 1.7; }
-      .fr { direction: ltr; text-align: left; border-top: 1px solid #dee2e6; margin-top: 0.9rem; padding-top: 0.8rem; }
-      .fr ol { padding-left: 1.3rem; padding-right: 0; }
     </style>
   </head>
   <body>
     <div class="card">
       <img src="images/cnss_logo.svg" width="40" height="40" alt="" class="logo" />
       <h1>متصفحك قديم ولا يدعم هذا التطبيق</h1>
-      <p class="sub">Votre navigateur est trop ancien pour cette application</p>
       <ol>
         <li>افتح Edge أو Firefox إن كانا متوفرين بنسخة حديثة.</li>
         <li>أو حدّث متصفحك الحالي إلى آخر نسخة.</li>
         <li>إذا تعذر الحل، اتصل بمسؤول الإعلامية.</li>
       </ol>
-      <div class="fr">
-        <ol>
-          <li>Ouvrez Edge ou Firefox s'ils sont installés en version récente.</li>
-          <li>Ou mettez à jour votre navigateur actuel.</li>
-          <li>Si besoin, contactez le responsable informatique.</li>
-        </ol>
-      </div>
     </div>
   </body>
 </html>
