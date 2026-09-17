@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>متصفح قديم</title>
     <link rel="icon" href="images/cnss_logo.svg" type="image/svg+xml" />
+    <style>body { visibility: hidden; }</style>
+    <noscript><style>body { visibility: visible !important; }</style></noscript>
     <style>
       * { box-sizing: border-box; }
       body {
@@ -86,6 +88,41 @@
     </style>
   </head>
   <body>
+    <script>
+    /* Guard runs first (page hidden until decision): logged-in -> home,
+       modern browser -> login, else reveal (old browser stays). ES5 only. */
+    (function () {
+        function show() { try { document.body.style.visibility = 'visible'; } catch (e) {} }
+        try {
+            var u = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            if (u && u.token) {
+                if (u.sessionExpiresAt && Date.now() > Number(u.sessionExpiresAt)) { show(); return; }
+                var isAdmin = String(u.userType || '').trim().toLowerCase() === 'admin';
+                window.location.replace(isAdmin ? 'admin-main-page.html' : 'main-page.html');
+                return;
+            }
+        } catch (e) {}
+        var modern = true;
+        try {
+            if (typeof Promise === 'undefined') modern = false;
+            if (typeof fetch === 'undefined') modern = false;
+            if (typeof Object === 'undefined' || typeof Object.assign !== 'function') modern = false;
+            if (typeof URL === 'undefined') modern = false;
+            new Function('return ({} ?.a ?? 0)');
+            new Function('return (async function () { return 1; })');
+        } catch (e) { modern = false; }
+        var chromeV = 0;
+        try {
+            var m = String(navigator.userAgent || '').match(/Chrom(?:e|ium)\/(\d+)/);
+            if (m) chromeV = parseInt(m[1], 10) || 0;
+        } catch (e) {}
+        if (modern && !(chromeV > 0 && chromeV < 80)) {
+            try { window.location.replace('index.html'); } catch (e) {}
+            return;
+        }
+        show();
+    })();
+    </script>
     <div class="shape shape--tl"></div>
     <div class="shape shape--br"></div>
     <div class="card">
@@ -104,37 +141,6 @@
       <p class="copied" id="copy-msg"></p>
     </div>
     <script>
-    /* Logged-in users don't belong here -> send them home (role-based) */
-    (function () {
-        try {
-            var u = JSON.parse(localStorage.getItem('currentUser') || 'null');
-            if (u && u.token) {
-                if (u.sessionExpiresAt && Date.now() > Number(u.sessionExpiresAt)) return;
-                var isAdmin = String(u.userType || '').trim().toLowerCase() === 'admin';
-                window.location.replace(isAdmin ? 'admin-main-page.html' : 'main-page.html');
-                return;
-            }
-        } catch (e) {}
-        /* Modern browser opened this page directly (not via old-browser
-           redirect) -> back to login. Same ES5-safe probes as the gate. */
-        var modern = true;
-        try {
-            if (typeof Promise === 'undefined') modern = false;
-            if (typeof fetch === 'undefined') modern = false;
-            if (typeof Object === 'undefined' || typeof Object.assign !== 'function') modern = false;
-            if (typeof URL === 'undefined') modern = false;
-            new Function('return ({} ?.a ?? 0)');
-            new Function('return (async function () { return 1; })');
-        } catch (e) { modern = false; }
-        var chromeV = 0;
-        try {
-            var m = String(navigator.userAgent || '').match(/Chrom(?:e|ium)\/(\d+)/);
-            if (m) chromeV = parseInt(m[1], 10) || 0;
-        } catch (e) {}
-        if (modern && !(chromeV > 0 && chromeV < 80)) {
-            try { window.location.replace('index.html'); } catch (e) {}
-        }
-    })();
     (function () {
         var btn = document.getElementById('btn-copy-link');
         var input = document.getElementById('app-link');
