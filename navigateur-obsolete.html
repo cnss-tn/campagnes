@@ -104,6 +104,17 @@
       <p class="copied" id="copy-msg"></p>
     </div>
     <script>
+    /* Logged-in users don't belong here -> send them home (role-based) */
+    (function () {
+        try {
+            var u = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            if (u && u.token) {
+                if (u.sessionExpiresAt && Date.now() > Number(u.sessionExpiresAt)) return;
+                var isAdmin = String(u.userType || '').trim().toLowerCase() === 'admin';
+                window.location.replace(isAdmin ? 'admin-main-page.html' : 'main-page.html');
+            }
+        } catch (e) {}
+    })();
     (function () {
         var btn = document.getElementById('btn-copy-link');
         var input = document.getElementById('app-link');
