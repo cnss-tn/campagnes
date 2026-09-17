@@ -21,7 +21,20 @@
       }
       .logo { display: block; margin: 0 auto 0.6rem; }
       h1 { font-size: 1.1rem; margin: 0 0 0.8rem; color: #842029; text-align: center; }
-      ol { margin: 0; padding-right: 1.3rem; font-size: 0.88rem; line-height: 1.7; }
+      ol { margin: 0 0 0.9rem; padding-right: 1.3rem; font-size: 0.88rem; line-height: 1.7; }
+      .link-label { font-size: 0.85rem; color: #495057; margin: 0 0 0.35rem; }
+      .link-row { display: flex; gap: 0.4rem; }
+      .link-row input {
+        flex: 1; min-width: 0; direction: ltr; text-align: left;
+        font-size: 0.8rem; padding: 0.4rem 0.55rem;
+        border: 1px solid #ced4da; border-radius: 8px; background: #f8f9fa; color: #212529;
+      }
+      .link-row button {
+        flex-shrink: 0; font-size: 0.82rem; font-weight: 700;
+        padding: 0.4rem 0.9rem; border-radius: 8px; cursor: pointer;
+        color: #fff; background: #0f5132; border: 1px solid #0f5132;
+      }
+      .copied { font-size: 0.78rem; color: #0f5132; margin: 0.3rem 0 0; min-height: 1.1em; }
     </style>
   </head>
   <body>
@@ -33,6 +46,31 @@
         <li>أو حدّث متصفحك الحالي إلى آخر نسخة.</li>
         <li>إذا تعذر الحل، اتصل بمسؤول الإعلامية.</li>
       </ol>
+      <p class="link-label">رابط التطبيق لفتحه في المتصفح الحديث :</p>
+      <div class="link-row">
+        <input type="text" id="app-link" readonly value="https://cnss-tn.github.io/campagnes" />
+        <button type="button" id="btn-copy-link">نسخ</button>
+      </div>
+      <p class="copied" id="copy-msg"></p>
     </div>
+    <script>
+    (function () {
+        var btn = document.getElementById('btn-copy-link');
+        var input = document.getElementById('app-link');
+        var msg = document.getElementById('copy-msg');
+        if (!btn || !input) return;
+        btn.onclick = function () {
+            try {
+                input.focus();
+                input.select();
+                input.setSelectionRange(0, input.value.length);
+                var done = false;
+                try { done = document.execCommand('copy'); } catch (e) { done = false; }
+                if (msg) msg.textContent = done ? 'تم النسخ' : '';
+            } catch (e) {}
+            try { if (window.getSelection) window.getSelection().removeAllRanges(); } catch (e) {}
+        };
+    })();
+    </script>
   </body>
 </html>
