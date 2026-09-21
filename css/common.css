@@ -31,7 +31,7 @@ body.page-programme main.composed-main,
 body.page-results main.composed-main,
 body.page-admin main.composed-main,
 body.page-users main.composed-main {
-    padding-top: 5em;
+    margin-top: 5em;
 }
 :root {
     --primary: #0d6efd;
