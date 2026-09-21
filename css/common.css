@@ -1,6 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&display=swap');
 
-/* Vertical centering of main on all pages */
+/* Page flow on all pages: normal top-aligned flow (no vertical auto-centering).
+   Auto margins on main recentered the content whenever its height changed
+   (filtering, pagination, modal open/close), landing 1px borders on fractional
+   pixels and making filter/table top borders look hidden or blurred — worse on
+   large desktop screens where short content gets centered. Screens that really
+   need centering (login card, force-change card) keep their own layout rules. */
 body.page-programme,
 body.page-results,
 body.page-admin,
@@ -18,8 +23,8 @@ body.page-results main,
 body.page-admin main,
 body.page-login main,
 body.page-account main {
-    margin-top: auto;
-    margin-bottom: auto;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 :root {
     --primary: #0d6efd;

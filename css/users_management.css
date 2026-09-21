@@ -18,7 +18,8 @@
     background-color: #ede9fe;
     position: relative;
 }
-/* Center like interface2 (body flex + main auto margins) */
+/* Top-aligned flow (no vertical auto-centering): auto margins recentered the
+   content on every height change and blurred 1px filter/table top borders. */
 body.page-users {
     display: flex;
     flex-direction: column;
@@ -28,8 +29,8 @@ body.page-users .composed-topbar {
     flex-shrink: 0;
 }
 body.page-users main.composed-main {
-    margin-top: auto;
-    margin-bottom: auto;
+    margin-top: 0;
+    margin-bottom: 0;
     isolation: isolate;
 }
 body.page-users main.container.composed-main {
