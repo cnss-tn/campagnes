@@ -34,6 +34,11 @@ body.page-users main.composed-main {
     margin-top: 4em;
     padding-top: 0;
 }
+/* Neutralize Bootstrap row negative top margin (g-4 pulls content up 1.5rem):
+   the gap above the container must be exactly the 4em above, nothing else */
+.row.composed-bento {
+    --bs-gutter-y: 0;
+}
 :root {
     --primary: #0d6efd;
     --success: #198754;
