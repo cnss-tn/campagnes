@@ -32,6 +32,7 @@ body.page-results main.composed-main,
 body.page-admin main.composed-main,
 body.page-users main.composed-main {
     margin-top: 5em;
+    padding-top: 0;
 }
 :root {
     --primary: #0d6efd;
