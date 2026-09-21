@@ -26,6 +26,13 @@ body.page-account main {
     margin-top: 0;
     margin-bottom: 0;
 }
+/* Gap between the sticky topbar and the page container (pages with topbar) */
+body.page-programme main.composed-main,
+body.page-results main.composed-main,
+body.page-admin main.composed-main,
+body.page-users main.composed-main {
+    padding-top: 5em;
+}
 :root {
     --primary: #0d6efd;
     --success: #198754;
