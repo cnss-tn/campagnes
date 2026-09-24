@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (typeof window.logoutToLogin === 'function') window.logoutToLogin();
     });
 
-    const USERS_PAGE_SIZE = 5;
+    const USERS_PAGE_SIZE = 4;
     let usersAllRows = [];
     let usersFilteredRows = [];
     let usersPage = 1;
