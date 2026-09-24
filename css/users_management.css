@@ -29,7 +29,6 @@ body.page-users .composed-topbar {
     flex-shrink: 0;
 }
 body.page-users main.composed-main {
-    margin-top: 0;
     margin-bottom: 0;
     isolation: isolate;
 }
