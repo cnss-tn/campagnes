@@ -110,10 +110,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Redirect normal users away from admin pages
-    if ((user.userType || '').trim().toLowerCase() !== 'admin') {
+    // Admin pages: admins see all bureaus, visionnaires see their own bureau only (read-only)
+    const _ut4 = (user.userType || '').trim().toLowerCase();
+    if (_ut4 !== 'admin' && _ut4 !== 'visionnaire') {
         window.location.href = 'main-page.html';
         return;
+    }
+    const isVisionnaire = _ut4 === 'visionnaire';
+    const visionBr = isVisionnaire ? String(user.codeBr || '').trim() : '';
+    if (isVisionnaire) {
+        // Read-only view: no user management link
+        var _unav4 = document.querySelector('a[href="users_management.html"]');
+        if (_unav4) _unav4.style.display = 'none';
     }
 
     if (typeof window !== 'undefined' && typeof window.isSessionExpired === 'function' && window.isSessionExpired()) {
@@ -276,6 +284,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function populateBrFilter() {
         if (!filterBrEl) return;
+        if (isVisionnaire && visionBr) {
+            // Locked to their own bureau
+            filterBrEl.value = visionBr;
+            try { filterBrEl.disabled = true; } catch {}
+            return;
+        }
         filterBrEl.value = '';
     }
 
@@ -662,7 +676,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         filterYearEl?.addEventListener('change', applyFiltersToState);
         btnResetEl?.addEventListener('click', () => {
             if (filterTypeEl) filterTypeEl.value = '';
-            if (filterBrEl) filterBrEl.value = '';
+            if (filterBrEl && !isVisionnaire) filterBrEl.value = '';
+            if (isVisionnaire && filterBrEl && visionBr) { filterBrEl.value = visionBr; }
             if (filterZoneEl) filterZoneEl.value = '';
             const resetYear = serverYear ? String(serverYear) : '';
             if (filterYearEl) filterYearEl.value = resetYear;
@@ -975,6 +990,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 mtNonReconnu: modern ? r[10] ?? '' : r[9] ?? '',
                 controleursParticipants: modern ? r[11] ?? '' : r[10] ?? '',
             });
+        }
+
+        // Visionnaires: restrict to their own bureau (exact code match)
+        if (isVisionnaire && visionBr) {
+            rowsAll = rowsAll.filter((r) => r && r.programmeRow && String(r.programmeRow[1] || '').trim() === visionBr);
         }
 
         const resolvedOptions = {

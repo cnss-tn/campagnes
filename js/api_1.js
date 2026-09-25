@@ -832,7 +832,8 @@ async function postAction(action, payload = {}) {
             const codeBr = String(payload.codeBr || '').trim();
             const emailRaw = payload.email != null ? String(payload.email).trim().toLowerCase() : null;
             const pwRaw = String(payload.pw || '');
-            const userType = String(payload.userType || 'normal').trim().toLowerCase() === 'admin' ? 'admin' : 'normal';
+            const _utRaw = String(payload.userType || 'normal').trim().toLowerCase();
+            const userType = _utRaw === 'admin' ? 'admin' : (_utRaw === 'visionnaire' ? 'visionnaire' : 'normal');
             const isEdit = !!payload.isEdit;
             if (emailRaw !== null && emailRaw !== '' && !_isRealEmail(emailRaw)) return { ok: false, error: 'invalid_email' };
 
@@ -954,7 +955,9 @@ async function postAction(action, payload = {}) {
                 return { ok: false, error: 'not_found' };
             }
             const currentUser = await _findUser(sess.matricule);
-            const isAdmin = currentUser && String(currentUser.user_type || '').trim().toLowerCase() === 'admin';
+            const _delUt = currentUser ? String(currentUser.user_type || '').trim().toLowerCase() : '';
+            if (_delUt === 'visionnaire') return { ok: false, error: 'unauthorized' };
+            const isAdmin = _delUt === 'admin';
             const sessCode = String(sess.codeBr || '').trim();
             const progCode = String(prog.Code_Bureau != null ? prog.Code_Bureau : (prog.codeBr || '')).trim();
             console.log('[deleteProgramme] progCode', progCode, 'sessCode', sessCode, 'isAdmin', isAdmin);

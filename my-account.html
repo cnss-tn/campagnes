@@ -174,7 +174,9 @@
     <script>
     (function() {
         var user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        var is_admin = (user.userType || '').trim().toLowerCase() === 'admin';
+        var _utmn = (user.userType || '').trim().toLowerCase();
+        var is_admin = _utmn === 'admin';
+        var is_priv = is_admin || _utmn === 'visionnaire';
         if (is_admin) document.body.classList.add('page-admin');
         var navUsers = document.getElementById('nav-users');
         if (navUsers) navUsers.style.display = is_admin ? '' : 'none';
@@ -183,9 +185,9 @@
         for (var i = 0; i < links.length; i++) {
             var t = links[i].textContent.trim();
             if (t === 'البرامج' || t === 'البرنامج') {
-                links[i].href = is_admin ? 'interface3.html' : 'interface1.html';
+                links[i].href = is_priv ? 'interface3.html' : 'interface1.html';
             } else if (t === 'الإحصائيات') {
-                links[i].href = is_admin ? 'interface4.html' : 'interface2.html';
+                links[i].href = is_priv ? 'interface4.html' : 'interface2.html';
             } else if (t === 'إدارة المستعملين') {
                 links[i].href = 'users_management.html';
             }

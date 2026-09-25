@@ -136,7 +136,8 @@
           window.location.href = "index.html";
           return;
         }
-        if ((user.userType || "").trim().toLowerCase() === "admin") {
+        var _utm = (user.userType || "").trim().toLowerCase();
+        if (_utm === "admin" || _utm === "visionnaire") {
           window.location.href = "admin-main-page.html";
           return;
         }

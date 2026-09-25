@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const isSelf = String(user.matricule || '').trim() === matricule;
             tr.dataset.matricule = matricule;
             const typeVal = String(row[6] || 'normal').trim().toLowerCase();
-            const badgeCls = typeVal === 'admin' ? 'user-type-badge user-type-badge--admin' : 'user-type-badge user-type-badge--normal';
+            const badgeCls = typeVal === 'admin' ? 'user-type-badge user-type-badge--admin' : (typeVal === 'visionnaire' ? 'user-type-badge user-type-badge--visionnaire' : 'user-type-badge user-type-badge--normal');
             const bLabel = bureauLabel(row[4]);
             const emailVal = String(row[8] || '').trim();
             tr.innerHTML = `

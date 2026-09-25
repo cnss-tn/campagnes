@@ -826,8 +826,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Redirect admins away from bureau pages
-    if ((user.userType || '').trim().toLowerCase() === 'admin') {
+    // Redirect admins and visionnaires away from bureau pages (they use interface3/4)
+    const _ut1 = (user.userType || '').trim().toLowerCase();
+    if (_ut1 === 'admin' || _ut1 === 'visionnaire') {
         window.location.href = 'admin-main-page.html';
         return;
     }

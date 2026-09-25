@@ -157,9 +157,14 @@
           window.location.href = "index.html";
           return;
         }
-        if ((user.userType || "").trim().toLowerCase() !== "admin") {
+        var _uta = (user.userType || "").trim().toLowerCase();
+        if (_uta !== "admin" && _uta !== "visionnaire") {
           window.location.href = "main-page.html";
           return;
+        }
+        if (_uta === "visionnaire") {
+          var _ucard = document.querySelector('a[href="users_management.html"]');
+          if (_ucard) _ucard.style.display = "none";
         }
         if (typeof window !== "undefined" && typeof window.isSessionExpired === "function" && window.isSessionExpired()) {
           if (typeof window.logoutToLogin === "function") window.logoutToLogin();

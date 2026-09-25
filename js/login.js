@@ -116,8 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function defaultHomeForUser(userObj) {
-        const isAdmin = userObj && String(userObj.userType || '').trim().toLowerCase() === 'admin';
-        return isAdmin ? 'admin-main-page.html' : 'main-page.html';
+        const t = userObj ? String(userObj.userType || '').trim().toLowerCase() : '';
+        return (t === 'admin' || t === 'visionnaire') ? 'admin-main-page.html' : 'main-page.html';
     }
 
     function isForceRequired(userObj) {

@@ -491,6 +491,11 @@ body.page-users main.composed-main.results-main-fluid {
     color: #5c3d6e;
     border-color: rgba(124,58,237,0.14);
 }
+.page-users .user-type-badge--visionnaire {
+    background: linear-gradient(135deg, #048f40, #3da937);
+    color: #fff;
+    border-color: transparent;
+}
 .page-users #form-user .form-control,
 .page-users #form-user .form-select,
 .page-users #form-user .choices__inner {
