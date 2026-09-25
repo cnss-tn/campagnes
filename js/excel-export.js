@@ -71,7 +71,33 @@
         }
     }
 
+    async function readWorkbookAoA(arrayBuffer) {
+        const EJ = _EJ();
+        if (!EJ) return null;
+        const wb = new EJ.Workbook();
+        await wb.xlsx.load(arrayBuffer);
+        const ws = wb.worksheets[0];
+        if (!ws) return [];
+        const aoa = [];
+        ws.eachRow({ includeEmpty: false }, (row) => {
+            const arr = [];
+            for (let c = 1; c <= row.cellCount; c++) {
+                let v = row.getCell(c).value;
+                if (v !== null && typeof v === 'object' && !(v instanceof Date)) {
+                    if (typeof v.text === 'string') v = v.text;
+                    else if (Array.isArray(v.richText)) v = v.richText.map((p) => p.text || '').join('');
+                    else if (v.result !== undefined && v.result !== null) v = v.result;
+                    else v = '';
+                }
+                arr.push(v === null || v === undefined ? '' : v);
+            }
+            aoa.push(arr);
+        });
+        return aoa;
+    }
+
     try {
         window.exportStyledAoA = exportStyledAoA;
+        window.readWorkbookAoA = readWorkbookAoA;
     } catch (e) {}
 })();

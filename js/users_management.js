@@ -34,6 +34,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnReset = document.getElementById('btn-filters-reset');
     const btnExportXlsx = document.getElementById('btn-export-xlsx');
     const btnExportPdf = document.getElementById('btn-export-pdf');
+    const btnImportXlsx = document.getElementById('btn-import-xlsx');
+    const inputImportXlsx = document.getElementById('input-import-xlsx');
+    const importLabel = document.getElementById('import-label');
+    const importSpinner = document.getElementById('import-spinner');
 
     // Auth guard
     let user = null;
@@ -580,6 +584,128 @@ document.addEventListener('DOMContentLoaded', async () => {
         ];
         const ok = await window.exportStyledAoA(`users_${new Date().toISOString().slice(0, 10)}.xlsx`, 'Users', aoa);
         if (!ok) alert('XLSX library not loaded.');
+    });
+
+    // Import XLSX - UPSERT only: creates new users (pw_changed=0 auto), updates
+    // existing ones (password kept if empty, pw_changed kept). NEVER deletes.
+    btnImportXlsx?.addEventListener('click', () => {
+        if (inputImportXlsx) {
+            inputImportXlsx.value = '';
+            inputImportXlsx.click();
+        }
+    });
+    inputImportXlsx?.addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        if (typeof window === 'undefined' || !window.readWorkbookAoA) { alert('XLSX library not loaded.'); return; }
+        let aoa;
+        try {
+            const buf = await file.arrayBuffer();
+            aoa = await window.readWorkbookAoA(buf);
+            if (!aoa) throw new Error('lib');
+        } catch (err) {
+            alert('خطأ في قراءة ملف Excel');
+            return;
+        }
+        if (!aoa || aoa.length < 2) { alert('الملف فارغ أو بلا بيانات'); return; }
+        const header = (aoa[0] || []).map(v => String(v || '').trim().toLowerCase());
+        // Expected: Matricule | Nom AR | Nom FR | Grade | Code Bureau | Type | Pw (pw_changed column, if present, is ignored: new=0, edit=kept)
+        const findIdx = (names) => {
+            for (let i = 0; i < header.length; i++) {
+                const h = header[i];
+                for (const n of names) if (h === n || h.includes(n)) return i;
+            }
+            return -1;
+        };
+        const idxMat = findIdx(['matricule']);
+        const idxAr = findIdx(['nom ar', 'ar_name', 'ar']);
+        const idxFr = findIdx(['nom fr', 'fr_name', 'fr']);
+        const idxGrade = findIdx(['grade']);
+        const idxCodeBr = findIdx(['code bureau', 'code_br', 'code']);
+        const idxType = findIdx(['type', 'user_type']);
+        const idxPw = (() => {
+            for (let i = 0; i < header.length; i++) {
+                const h = header[i];
+                if (h === 'pw') return i;
+                if (h.includes('password') && !h.includes('chang')) return i;
+                if (h.includes('mot de passe')) return i;
+                if (h.includes('كلمة المرور') || h.includes('كلمة السر')) return i;
+            }
+            return -1;
+        })();
+        if (idxMat < 0 || idxAr < 0 || idxFr < 0 || idxGrade < 0 || idxCodeBr < 0 || idxType < 0) {
+            alert('رأس الجدول غير مطابق. يجب أن يحتوي على: Matricule | Nom AR | Nom FR | Grade | Code Bureau | Type | Pw');
+            return;
+        }
+        const GRADES = ['CT', 'CU', 'CC', 'DRC', 'CONTROLLEUR', 'Chef_BR'];
+        const TYPES = ['normal', 'admin', 'visionnaire'];
+        const toImport = [];
+        const seen = new Set();
+        const errors = [];
+        for (let r = 1; r < aoa.length; r++) {
+            const row = aoa[r] || [];
+            const isEmpty = row.every(v => String(v || '').trim() === '');
+            if (isEmpty) continue;
+            const matricule = String(row[idxMat] || '').trim();
+            const arName = String(row[idxAr] || '').trim();
+            const frName = String(row[idxFr] || '').trim();
+            const grade = String(row[idxGrade] || '').trim();
+            const codeBr = String(row[idxCodeBr] || '').trim();
+            const userType = String(row[idxType] || '').trim().toLowerCase();
+            const pw = idxPw >= 0 ? String(row[idxPw] || '').trim() : '';
+            if (!matricule || !arName || !frName || !grade || !codeBr || !userType) {
+                errors.push(`سطر ${r + 1}: خانات ناقصة`); continue;
+            }
+            if (!/^\d+$/.test(matricule)) { errors.push(`سطر ${r + 1}: Matricule غير صالح`); continue; }
+            if (seen.has(matricule)) { errors.push(`سطر ${r + 1}: Matricule مكرر ${matricule}`); continue; }
+            if (!GRADES.includes(grade)) { errors.push(`سطر ${r + 1}: Grade غير صالح`); continue; }
+            if (!TYPES.includes(userType)) { errors.push(`سطر ${r + 1}: Type غير صالح (normal/admin/visionnaire)`); continue; }
+            seen.add(matricule);
+            toImport.push({ matricule, arName, frName, grade, codeBr, userType, pw });
+        }
+        if (errors.length) { alert('أخطاء في الملف:\n' + errors.slice(0, 10).join('\n') + (errors.length > 10 ? '\n...' : '')); return; }
+        if (toImport.length === 0) { alert('لا توجد بيانات للاستيراد'); return; }
+        if (!confirm(`استيراد ${toImport.length} مستخدمًا من الملف ؟\n- الجديد: يُنشأ (pw_changed=0)\n- الموجود: يُحدَّث (كلمة المرور تُحفظ إن فارغة، pw_changed يُحفظ)\n- لا يتم حذف أي مستخدم`)) return;
+        btnImportXlsx.disabled = true;
+        if (importSpinner) importSpinner.classList.remove('d-none');
+        if (importLabel) importLabel.textContent = 'جاري الاستيراد...';
+        let created = 0, updated = 0, failCount = 0;
+        const failMsgs = [];
+        try {
+            for (const u of toImport) {
+                const base = {
+                    matricule: u.matricule,
+                    frName: u.frName,
+                    arName: u.arName,
+                    grade: u.grade,
+                    codeBr: u.codeBr,
+                    pw: u.pw,
+                    userType: u.userType,
+                    isEdit: false
+                };
+                try {
+                    const res = await postAction('adminSaveUser', base);
+                    if (res && res.ok) { created++; continue; }
+                    if (res && res.error === 'duplicate_matricule') {
+                        base.isEdit = true;
+                        const res2 = await postAction('adminSaveUser', base);
+                        if (res2 && res2.ok) { updated++; continue; }
+                        failCount++;
+                        failMsgs.push(`${u.matricule}: mise à jour refusée`);
+                    } else {
+                        failCount++;
+                        failMsgs.push(`${u.matricule}: ${(res && res.error) || 'erreur'}`);
+                    }
+                } catch { failCount++; failMsgs.push(`${u.matricule}: erreur réseau`); }
+            }
+            alert(`تم: ${created} مستخدم(ين) جديد(ين)، ${updated} محدَّث(ين)${failCount ? `, فشل: ${failCount}\n` + failMsgs.slice(0, 5).join('\n') : ''}`);
+            await loadUsers();
+        } finally {
+            btnImportXlsx.disabled = false;
+            if (importSpinner) importSpinner.classList.add('d-none');
+            if (importLabel) importLabel.textContent = 'استيراد Excel';
+            if (inputImportXlsx) inputImportXlsx.value = '';
+        }
     });
 
     // Export PDF via print window — includes email after Nom FR
