@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <td><span style="display:block;margin-right:34%;text-align:right;direction:rtl;white-space:normal;word-break:break-word;font-weight:700;font-size:0.82rem">${row[2] || ''}</span></td>
                 <td><span style="display:block;margin-left:34%;text-align:left;direction:ltr;white-space:normal;word-break:break-word;font-size:0.78rem;color:#4a4458">${row[1] || ''}</span></td>
                 <td><span style="display:block;direction:ltr;text-align:right;white-space:normal;word-break:break-all;font-size:0.76rem;color:#1e0f29">${emailVal || '<span class=\"text-muted\">—</span>'}</span></td>
-                <td class="text-center"><span style="color:#7c3aed;font-weight:700;font-size:0.78rem">${row[3] || ''}</span></td>
+                <td class="text-center"><span style="color:#7c3aed;font-weight:700;font-size:0.75em">${row[3] || ''}</span></td>
                 <td><span style="display:block;margin-right:25%;text-align:right;direction:rtl;white-space:normal;word-break:break-word;font-size:0.75rem">${bLabel}</span></td>
                 <td><span class="${badgeCls}">${typeVal}</span></td>
                 <td>
