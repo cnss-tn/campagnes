@@ -1,4 +1,4 @@
-// api_1.js — Firebase Firestore replacement for Google Apps Script backend
+// api.js — Firebase Firestore replacement for Google Apps Script backend
 // Drop-in replacement: exposes the same global functions as the old api.js
 
 const firebaseConfig = {
