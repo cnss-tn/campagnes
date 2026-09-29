@@ -349,7 +349,12 @@ body { background-color: var(--light-bg); font-family: 'Inter', sans-serif; }
     border-radius: 14px;
     border: 1px solid var(--cp-border);
     background: rgba(255, 255, 255, 0.55);
-    overflow: hidden;
+    /* Horizontal scroll at every width: wide tables (e.g. 12-col results at
+       125%+ display scaling) were clipped with no way to reach cut columns.
+       Vertical clipping + radius preserved; thead is not sticky so nothing breaks. */
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 @media (max-width: 767.98px) {
     .composed-table-wrap {
