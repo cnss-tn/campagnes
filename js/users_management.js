@@ -218,7 +218,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (btnNext) btnNext.disabled = usersPage >= pages;
         if (usersPages) {
             usersPages.innerHTML = '';
-            for (let i = 1; i <= pages; i++) {
+            // Sliding window: max 5 page numbers, prev/next buttons cover the rest
+            const MAX_BTNS = 5;
+            const start = Math.max(1, Math.min(usersPage - 2, pages - MAX_BTNS + 1));
+            const end = Math.min(pages, start + MAX_BTNS - 1);
+            for (let i = start; i <= end; i++) {
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'programmes-page-number' + (i === usersPage ? ' is-active' : '');
