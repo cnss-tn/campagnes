@@ -177,3 +177,38 @@ body.page-visionnaire .page-admin-main .main-card:hover {
 body.page-visionnaire .main-card--stats:hover {
     box-shadow: 0 24px 48px -14px rgba(30, 64, 175, 0.22), 0 8px 20px rgba(30, 64, 175, 0.07);
 }
+
+/* ---- Popup table headers (interface3 has no .page-admin rules here: the
+   base green gradient would show — cover base selectors too) ---- */
+body.page-visionnaire .stats-block-thead th,
+body.page-visionnaire .page-admin .stats-block-thead th {
+    background: linear-gradient(180deg, rgba(219, 234, 254, 0.98), rgba(191, 219, 254, 0.92));
+    color: #1d4ed8;
+}
+body.page-visionnaire .stats-th-main,
+body.page-visionnaire .page-admin .stats-th-main {
+    background: linear-gradient(180deg, rgba(219, 234, 254, 0.98), rgba(191, 219, 254, 0.92));
+    color: #1d4ed8;
+    border-radius: 8px;
+}
+body.page-visionnaire .stats-th-sub,
+body.page-visionnaire .page-admin .stats-th-sub {
+    color: #2f4b7c;
+}
+body.page-visionnaire .stats-th-group,
+body.page-visionnaire .page-admin .stats-th-group {
+    color: #1d4ed8;
+}
+body.page-visionnaire .stats-block-title,
+body.page-visionnaire .page-admin .stats-block-title {
+    color: #1d4ed8;
+}
+body.page-visionnaire .results-tfoot,
+body.page-visionnaire .page-admin .results-tfoot {
+    border-top: 2px solid rgba(29, 78, 216, 0.2);
+}
+body.page-visionnaire .results-tfoot td,
+body.page-visionnaire .page-admin .results-tfoot td {
+    color: #1d4ed8;
+    background: rgba(239, 246, 255, 0.6);
+}
