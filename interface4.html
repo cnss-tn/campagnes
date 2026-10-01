@@ -28,11 +28,12 @@
         if (!u || !u.token) {
           window.location.href = "index.html";
         } else {
-          var _isAdmin = String(u.userType || "").trim().toLowerCase() === "admin";
-          var _pwc = u.pw_changed; if (_pwc == null && u.pwChanged != null) _pwc = u.pwChanged; if (_pwc == null) _pwc = _isAdmin ? 1 : 0;
-          if (!_isAdmin && Number(_pwc) === 0) {
+          var _ut = String(u.userType || "").trim().toLowerCase();
+          var _priv = (_ut === "admin" || _ut === "visionnaire");
+          var _pwc = u.pw_changed; if (_pwc == null && u.pwChanged != null) _pwc = u.pwChanged; if (_pwc == null) _pwc = _priv ? 1 : 0;
+          if (!_priv && Number(_pwc) === 0) {
             window.location.href = "pw-force-change.html";
-          } else if ((u.userType || "").trim().toLowerCase() !== "admin") {
+          } else if (!_priv) {
             window.location.href = "main-page.html";
           }
         }

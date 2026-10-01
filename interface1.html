@@ -28,7 +28,7 @@
         var u = JSON.parse(localStorage.getItem("currentUser"));
         if (!u || !u.token) {
           window.location.href = "index.html";
-        } else if ((u.userType || "").trim().toLowerCase() === "admin") {
+        } else if ((u.userType || "").trim().toLowerCase() === "admin" || (u.userType || "").trim().toLowerCase() === "visionnaire") {
           window.location.href = "admin-main-page.html";
         } else {
           var _pwc = u.pw_changed; if (_pwc == null && u.pwChanged != null) _pwc = u.pwChanged;
@@ -402,14 +402,15 @@
     (function() {
         var user = JSON.parse(localStorage.getItem('currentUser') || '{}');
         var is_admin = (user.userType || '').trim().toLowerCase() === 'admin';
+        var is_priv = is_admin || (user.userType || '').trim().toLowerCase() === 'visionnaire';
         var links = document.querySelectorAll('.brand-mini-menu .composed-menu-btn:not(#nav-home)');
         var page = window.location.pathname.split('/').pop() || '';
         for (var i = 0; i < links.length; i++) {
             var t = links[i].textContent.trim();
             if (t === 'البرامج' || t === 'البرنامج') {
-                links[i].href = is_admin ? 'interface3.html' : 'interface1.html';
+                links[i].href = is_priv ? 'interface3.html' : 'interface1.html';
             } else if (t === 'الإحصائيات') {
-                links[i].href = is_admin ? 'interface4.html' : 'interface2.html';
+                links[i].href = is_priv ? 'interface4.html' : 'interface2.html';
             }
             links[i].classList.remove('is-active');
             if (links[i].getAttribute('href') === page) {
