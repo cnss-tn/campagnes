@@ -178,6 +178,8 @@
         var is_admin = _utmn === 'admin';
         var is_priv = is_admin || _utmn === 'visionnaire';
         if (is_admin) document.body.classList.add('page-admin');
+        var navHome = document.getElementById('nav-home');
+        if (navHome) navHome.href = is_priv ? 'admin-main-page.html' : 'main-page.html';
         var navUsers = document.getElementById('nav-users');
         if (navUsers) navUsers.style.display = is_admin ? '' : 'none';
         var links = document.querySelectorAll('.brand-mini-menu .composed-menu-btn:not(#nav-home)');

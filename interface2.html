@@ -324,6 +324,8 @@
         var user = JSON.parse(localStorage.getItem('currentUser') || '{}');
         var is_admin = (user.userType || '').trim().toLowerCase() === 'admin';
         var is_priv = is_admin || (user.userType || '').trim().toLowerCase() === 'visionnaire';
+        var navHome = document.getElementById('nav-home');
+        if (navHome) navHome.href = is_priv ? 'admin-main-page.html' : 'main-page.html';
         var links = document.querySelectorAll('.brand-mini-menu .composed-menu-btn:not(#nav-home)');
         var page = window.location.pathname.split('/').pop() || '';
         for (var i = 0; i < links.length; i++) {
@@ -339,7 +341,6 @@
             }
         }
     })();
-    </script>
     </script>
     <div class="on-user"><span class="dot"></span><span id="on-user-text">...</span></div>
     <div class="dev-credit">تصميم وتطوير: إدارة المراقبة - أحمد الزكراوي</div>

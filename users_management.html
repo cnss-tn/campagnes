@@ -271,6 +271,13 @@
     <script src="js/excel-export.js?v=20261001"></script>
     <script src="js/api.js?v=20261001"></script>
     <script src="js/users_management.js?v=20261001"></script>
+    <script>
+    (function() {
+        // Admin-only page: home goes to admin home
+        var navHome = document.getElementById('nav-home');
+        if (navHome) navHome.href = 'admin-main-page.html';
+    })();
+    </script>
     <div class="on-user"><span class="dot"></span><span id="on-user-text">...</span></div>
     <div class="dev-credit">تصميم وتطوير: إدارة المراقبة - أحمد الزكراوي</div>
   </body>
