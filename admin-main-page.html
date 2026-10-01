@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/common.css" />
     <link rel="stylesheet" href="css/main-page.css" />
     <link rel="stylesheet" href="css/admin-main-page.css" />
+    <link rel="stylesheet" href="css/visionnaire.css" />
     <script src="js/api.js?v=20261001"></script>
     <script>
       // Loop-breaker: if we were just sent back here from the target page (<5s),
@@ -182,6 +183,7 @@
           return;
         }
         if (_uta === "visionnaire") {
+          try { document.body.classList.add("page-visionnaire"); } catch (_e5) {}
           var _ucard = document.querySelector('a[href="users_management.html"]');
           if (_ucard) _ucard.style.display = "none";
         }

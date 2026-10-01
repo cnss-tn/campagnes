@@ -1,0 +1,179 @@
+/* Visionnaire (chef BR) theme: blue instead of admin purple.
+   Applied via body.page-visionnaire (added by JS for visionnaire users only).
+   Every rule below mirrors an admin-purple rule with higher specificity. */
+
+/* ---- CSS variables (interface3/4 + admin home) ---- */
+body.page-visionnaire.page-admin,
+body.page-visionnaire.page-admin-main,
+body.page-visionnaire .page-admin {
+    --cp-surface: rgba(255, 255, 255, 0.82);
+    --cp-surface-2: rgba(239, 246, 255, 0.94);
+    --cp-border: rgba(29, 78, 216, 0.08);
+    --cp-border-strong: rgba(29, 78, 216, 0.14);
+    --cp-shadow: 0 1px 2px rgba(30, 58, 138, 0.05), 0 24px 48px -12px rgba(30, 58, 138, 0.1);
+    --cp-shadow-soft: 0 18px 40px -20px rgba(29, 78, 216, 0.28);
+    --cp-accent: #1d4ed8;
+    --cp-accent-mid: #3b82f6;
+    --cp-accent-2: #93c5fd;
+    --cp-accent-lime: #bfdbfe;
+    --cp-ink: #16283f;
+    --cp-muted: #2f4b7c;
+    --cp-focus-ring: rgba(29, 78, 216, 0.22);
+}
+body.page-visionnaire.page-admin {
+    background-color: #e9f1fe;
+}
+body.page-visionnaire.page-admin-main {
+    --cp-accent: #1e40af;
+    --cp-accent-mid: #2563eb;
+    --cp-accent-2: #60a5fa;
+    --cp-accent-lime: #7dd3fc;
+    --cp-ink: #16283f;
+    --cp-muted: #2f4b7c;
+    color: #1e40af;
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.12), rgba(96, 165, 250, 0.08));
+}
+
+/* ---- Top menu active/hover (common.css admin rules) ---- */
+body.page-visionnaire .page-admin .btn-sm.composed-menu-btn.is-active,
+body.page-visionnaire .page-users .btn-sm.composed-menu-btn.is-active,
+body.page-visionnaire .page-admin .btn-sm.composed-menu-btn.is-active:hover {
+    color: #1d4ed8 !important;
+}
+body.page-visionnaire .page-results.page-admin .btn-sm.composed-menu-btn.is-active {
+    color: #1d4ed8 !important;
+}
+
+/* ---- interface3/4 shared admin blocks ---- */
+body.page-visionnaire .page-admin .card-composed-accent--secondary {
+    background: linear-gradient(90deg, #1d4ed8, #93c5fd) !important;
+}
+body.page-visionnaire .page-admin .brand-mini-link.is-active,
+body.page-visionnaire .page-admin .brand-mini-link:hover,
+body.page-visionnaire .page-admin .results-total {
+    color: #1d4ed8;
+}
+body.page-visionnaire .page-admin .spinner-border.text-success {
+    color: #1d4ed8 !important;
+}
+body.page-visionnaire .page-admin .programmes-page-number {
+    border-color: rgba(29, 78, 216, 0.18);
+}
+body.page-visionnaire .page-admin .programmes-page-number:hover {
+    border-color: rgba(29, 78, 216, 0.3);
+    background: rgba(239, 246, 255, 0.88);
+}
+body.page-visionnaire .page-admin .programmes-page-number.is-active {
+    background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+    border-color: transparent;
+    color: white;
+}
+body.page-visionnaire .page-admin .results-th-sortable,
+body.page-visionnaire .page-admin .results-th-static {
+    border-color: rgba(29, 78, 216, 0.12);
+    background: linear-gradient(180deg, rgba(239, 246, 255, 0.95), rgba(231, 241, 254, 0.88));
+}
+body.page-visionnaire .page-admin .choices__inner {
+    border: 1px solid rgba(29, 78, 216, 0.14);
+}
+body.page-visionnaire .page-admin .choices.is-focused .choices__inner,
+body.page-visionnaire .page-admin .choices.is-open .choices__inner {
+    border-color: #1d4ed8;
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.16);
+}
+body.page-visionnaire .page-admin .choices__list--dropdown {
+    border: 1px solid rgba(29, 78, 216, 0.18);
+    box-shadow: 0 10px 30px -18px rgba(30, 58, 138, 0.25);
+}
+body.page-visionnaire .page-admin .choices__list--dropdown .choices__item--selectable.is-highlighted {
+    background: rgba(29, 78, 216, 0.1);
+}
+body.page-visionnaire .page-admin .results-filters .form-control-sm,
+body.page-visionnaire .page-admin .results-filters .form-select-sm,
+body.page-visionnaire .page-admin #filter-zone.form-control-sm {
+    border-color: rgba(29, 78, 216, 0.14);
+}
+body.page-visionnaire .page-admin .results-filters .form-control-sm:focus,
+body.page-visionnaire .page-admin .results-filters .form-select-sm:focus {
+    border-color: #1d4ed8;
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.16);
+}
+body.page-visionnaire .page-admin .btn-outline-success {
+    color: #1d4ed8;
+    border-color: #1d4ed8;
+}
+body.page-visionnaire .page-admin .btn-outline-success:hover {
+    color: #fff;
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+}
+body.page-visionnaire .page-admin .stats-block-title {
+    color: #1d4ed8;
+}
+body.page-visionnaire .page-admin .stats-block-thead th {
+    background: rgba(29, 78, 216, 0.06);
+    color: #1d4ed8;
+}
+body.page-visionnaire .page-admin .stats-th-group {
+    color: #1d4ed8;
+}
+body.page-visionnaire .page-admin .results-tfoot {
+    border-top: 2px solid rgba(29, 78, 216, 0.2);
+}
+body.page-visionnaire .page-admin .results-tfoot td {
+    color: #1d4ed8;
+    background: rgba(239, 246, 255, 0.6);
+}
+
+/* ---- admin home decorative purple ---- */
+body.page-visionnaire .page-admin-main .shape-bg {
+    background:
+        radial-gradient(ellipse 100% 60% at 0% 0%, rgba(30, 64, 175, 0.12), transparent 50%),
+        radial-gradient(ellipse 80% 50% at 100% 100%, rgba(96, 165, 250, 0.08), transparent 45%);
+}
+body.page-visionnaire .page-admin-main .shape-circle--tl {
+    background: radial-gradient(circle, rgba(30, 64, 175, 0.4), transparent 70%);
+}
+body.page-visionnaire .page-admin-main .main-logo {
+    filter: drop-shadow(0 4px 14px rgba(30, 64, 175, 0.25));
+}
+body.page-visionnaire .main-card--stats::before {
+    background: linear-gradient(160deg, rgba(30, 64, 175, 0.04), rgba(96, 165, 250, 0.02));
+}
+body.page-visionnaire .main-card--stats .main-card__glow {
+    background: radial-gradient(circle, rgba(30, 64, 175, 0.12), transparent 70%);
+}
+body.page-visionnaire .main-card--stats .main-card__icon {
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.12), rgba(96, 165, 250, 0.08));
+    color: #1e40af;
+}
+body.page-visionnaire .main-card--stats .main-card__title { color: #1e3a8a; }
+body.page-visionnaire .main-card--stats .main-card__arrow {
+    background: rgba(30, 64, 175, 0.08);
+    color: #1e40af;
+}
+body.page-visionnaire .main-card--users::before {
+    background: linear-gradient(160deg, rgba(29, 78, 216, 0.06), rgba(59, 130, 246, 0.03));
+}
+body.page-visionnaire .main-card--users .main-card__glow {
+    background: radial-gradient(circle, rgba(29, 78, 216, 0.14), transparent 70%);
+}
+body.page-visionnaire .main-card--users .main-card__icon {
+    background: linear-gradient(135deg, rgba(29, 78, 216, 0.14), rgba(59, 130, 246, 0.1));
+    color: #1d4ed8;
+}
+body.page-visionnaire .main-card--users .main-card__title { color: #1d4ed8; }
+body.page-visionnaire .main-card--users .main-card__arrow {
+    background: rgba(29, 78, 216, 0.08);
+    color: #1d4ed8;
+}
+body.page-visionnaire .main-card--users:hover {
+    box-shadow: 0 24px 48px -14px rgba(29, 78, 216, 0.22), 0 8px 20px rgba(29, 78, 216, 0.07);
+}
+body.page-visionnaire .page-admin-main .main-card:hover {
+    border-color: rgba(30, 64, 175, 0.14);
+    box-shadow: 0 24px 48px -14px rgba(30, 64, 175, 0.18), 0 8px 20px rgba(30, 64, 175, 0.06);
+}
+body.page-visionnaire .main-card--stats:hover {
+    box-shadow: 0 24px 48px -14px rgba(30, 64, 175, 0.22), 0 8px 20px rgba(30, 64, 175, 0.07);
+}
