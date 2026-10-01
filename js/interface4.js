@@ -185,14 +185,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             setStatVal('res-emp-dec', resultatRow[6]);
             setStatVal('res-emp-ndec', resultatRow[7]);
             if (resultatRow.length >= 12) {
-                setStatVal('res-manq-tot', sanitizeAmountText(resultatRow[8]));
-                setStatVal('res-manq-ok', sanitizeAmountText(resultatRow[9]));
-                setStatVal('res-manq-nok', sanitizeAmountText(resultatRow[10]));
+                setStatVal('res-manq-tot', formatMontant(resultatRow[8]));
+                setStatVal('res-manq-ok', formatMontant(resultatRow[9]));
+                setStatVal('res-manq-nok', formatMontant(resultatRow[10]));
                 setStatVal('res-participants', resultatRow[11]);
             } else {
                 setStatVal('res-manq-tot', '');
-                setStatVal('res-manq-ok', sanitizeAmountText(resultatRow[8]));
-                setStatVal('res-manq-nok', sanitizeAmountText(resultatRow[9]));
+                setStatVal('res-manq-ok', formatMontant(resultatRow[8]));
+                setStatVal('res-manq-nok', formatMontant(resultatRow[9]));
                 setStatVal('res-participants', resultatRow.length > 10 ? resultatRow[10] : '');
             }
         } else {

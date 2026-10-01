@@ -37,10 +37,27 @@ function parseMaybeAmount(v) {
     return Number.isFinite(n) ? n : null;
 }
 
+// Reference format (same as interface4 table): 1.250.500,000
 function formatMontant(v) {
     const n = parseMaybeAmount(v);
     if (n === null) return '';
-    return String(n);
+    const parts = n.toFixed(3).split('.');
+    const intPart = parts[0];
+    const decPart = parts[1];
+    const sep = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return sep + ',' + decPart;
+}
+
+// Inverse of formatMontant for saving: "1.250.500,000" -> "1250500".
+// Old plain style without dots ("1,500,000") keeps legacy behavior (commas stripped).
+function unformatMontant(v) {
+    let s = String(v ?? '').trim();
+    if (!s) return '';
+    if (s.indexOf('.') !== -1) {
+        s = s.replace(/\./g, '');
+        s = s.replace(/,\d{3}$/, '');
+    }
+    return s.replace(/,/g, '');
 }
 
 function sanitizeAmountText(v) {
@@ -235,7 +252,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function buildResultatsRow() {
         if (!currentProgrammeRow) return null;
         const nz = (v) => (v === '' || v === undefined ? '0' : v);
-        const amountVal = (id) => statVal(id).replace(/,/g, '');
+        const amountVal = (id) => unformatMontant(statVal(id));
         const idResultat =
             currentResultatId && String(currentResultatId).trim() !== '' ? String(currentResultatId).trim() : `R${Date.now()}`;
         return [
@@ -268,7 +285,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
         // Coherence: معترف به + غير معترف به must equal المبلغ الإجمالي (same parsing as saved values)
-        const _toNum = (id) => Number(String(statVal(id)).replace(/,/g, '').trim());
+        const _toNum = (id) => Number(unformatMontant(statVal(id)));
         const _tot = _toNum('res-manq-tot');
         const _sum = _toNum('res-manq-ok') + _toNum('res-manq-nok');
         if (!Number.isFinite(_tot) || !Number.isFinite(_sum) || Math.round(_tot * 100) !== Math.round(_sum * 100)) {

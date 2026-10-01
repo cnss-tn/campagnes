@@ -48,12 +48,32 @@ function setStatVal(id, v) {
     if (el) el.value = v === undefined || v === null ? '' : String(v);
 }
 
-function sanitizeAmountText(v) {
-    const raw = String(v === undefined || v === null ? '' : v);
-    const normalizedSep = raw.replace(/[.;:،؛'"’‘“”]/g, ',');
-    const kept = normalizedSep.replace(/[^\d,]/g, '');
-    return kept.replace(/,{2,}/g, ',').replace(/^,/, '');
-}
+    function sanitizeAmountText(v) {
+        const raw = String(v === undefined || v === null ? '' : v);
+        const normalizedSep = raw.replace(/[.;:،؛'"’‘“”]/g, ',');
+        const kept = normalizedSep.replace(/[^\d,]/g, '');
+        return kept.replace(/,{2,}/g, ',').replace(/^,/, '');
+    }
+
+    function parseMaybeAmount(v) {
+        const s = String(v ?? '').trim();
+        if (!s) return null;
+        const cleaned = s.replace(/[^\d]/g, '');
+        if (!cleaned) return null;
+        const n = Number(cleaned);
+        return Number.isFinite(n) ? n : null;
+    }
+
+    // Reference format (same as interface4 table): 1.250.500,000
+    function formatMontant(v) {
+        const n = parseMaybeAmount(v);
+        if (n === null) return '';
+        const parts = n.toFixed(3).split('.');
+        const intPart = parts[0];
+        const decPart = parts[1];
+        const sep = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        return sep + ',' + decPart;
+    }
 
 function initAmountInputs() {
     const ids = ['res-manq-tot', 'res-manq-ok', 'res-manq-nok'];
@@ -253,14 +273,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             setStatVal('res-emp-dec', data[6]);
             setStatVal('res-emp-ndec', data[7]);
             if (data.length >= 12) {
-                setStatVal('res-manq-tot', sanitizeAmountText(data[8]));
-                setStatVal('res-manq-ok', sanitizeAmountText(data[9]));
-                setStatVal('res-manq-nok', sanitizeAmountText(data[10]));
+                setStatVal('res-manq-tot', formatMontant(data[8]));
+                setStatVal('res-manq-ok', formatMontant(data[9]));
+                setStatVal('res-manq-nok', formatMontant(data[10]));
                 setStatVal('res-participants', data[11]);
             } else {
                 setStatVal('res-manq-tot', '');
-                setStatVal('res-manq-ok', sanitizeAmountText(data[8]));
-                setStatVal('res-manq-nok', sanitizeAmountText(data[9]));
+                setStatVal('res-manq-ok', formatMontant(data[8]));
+                setStatVal('res-manq-nok', formatMontant(data[9]));
                 setStatVal('res-participants', data.length > 10 ? data[10] : '');
             }
         } else {

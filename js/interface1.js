@@ -612,6 +612,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         return kept.replace(/,{2,}/g, ',').replace(/^,/, '');
     }
 
+    function parseMaybeAmount(v) {
+        const s = String(v ?? '').trim();
+        if (!s) return null;
+        const cleaned = s.replace(/[^\d]/g, '');
+        if (!cleaned) return null;
+        const n = Number(cleaned);
+        return Number.isFinite(n) ? n : null;
+    }
+
+    // Reference format (same as interface4 table): 1.250.500,000
+    function formatMontant(v) {
+        const n = parseMaybeAmount(v);
+        if (n === null) return '';
+        const parts = n.toFixed(3).split('.');
+        const intPart = parts[0];
+        const decPart = parts[1];
+        const sep = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        return sep + ',' + decPart;
+    }
+
+    // Inverse of formatMontant for saving: "1.250.500,000" -> "1250500".
+    // Old plain style without dots ("1,500,000") keeps legacy behavior (commas stripped).
+    function unformatMontant(v) {
+        let s = String(v ?? '').trim();
+        if (!s) return '';
+        if (s.indexOf('.') !== -1) {
+            s = s.replace(/\./g, '');
+            s = s.replace(/,\d{3}$/, '');
+        }
+        return s.replace(/,/g, '');
+    }
+
     function initAmountInputs() {
         const ids = ['res-manq-tot', 'res-manq-ok', 'res-manq-nok'];
         ids.forEach((id) => {
@@ -656,14 +688,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             setStatVal('res-emp-dec', data[6]);
             setStatVal('res-emp-ndec', data[7]);
             if (data.length >= 12) {
-                setStatVal('res-manq-tot', sanitizeAmountText(data[8]));
-                setStatVal('res-manq-ok', sanitizeAmountText(data[9]));
-                setStatVal('res-manq-nok', sanitizeAmountText(data[10]));
+                setStatVal('res-manq-tot', formatMontant(data[8]));
+                setStatVal('res-manq-ok', formatMontant(data[9]));
+                setStatVal('res-manq-nok', formatMontant(data[10]));
                 setStatVal('res-participants', data[11]);
             } else {
                 setStatVal('res-manq-tot', '');
-                setStatVal('res-manq-ok', sanitizeAmountText(data[8]));
-                setStatVal('res-manq-nok', sanitizeAmountText(data[9]));
+                setStatVal('res-manq-ok', formatMontant(data[8]));
+                setStatVal('res-manq-nok', formatMontant(data[9]));
                 setStatVal('res-participants', data.length > 10 ? data[10] : '');
             }
         } else {
@@ -702,7 +734,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function buildResultatsRow() {
         if (!currentProgrammeRow) return null;
         const nz = (v) => (v === '' || v === undefined ? '0' : v);
-        const amountVal = (id) => statVal(id).replace(/,/g, '');
+        const amountVal = (id) => unformatMontant(statVal(id));
         const idResultat = currentResultatId && String(currentResultatId).trim() !== '' ? String(currentResultatId).trim() : `R${Date.now()}`;
         return [
             idResultat,
@@ -790,7 +822,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
             // Coherence: معترف به + غير معترف به must equal المبلغ الإجمالي (same parsing as saved values)
-            const _toNum = (id) => Number(String(statVal(id)).replace(/,/g, '').trim());
+            const _toNum = (id) => Number(unformatMontant(statVal(id)));
             const _tot = _toNum('res-manq-tot');
             const _sum = _toNum('res-manq-ok') + _toNum('res-manq-nok');
             if (!Number.isFinite(_tot) || !Number.isFinite(_sum) || Math.round(_tot * 100) !== Math.round(_sum * 100)) {
