@@ -170,6 +170,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch {}
 
+    // Flash message after a loop-breaker redirect (see __fwdOk in home pages)
+    try {
+        const _navErr = sessionStorage.getItem('__navError');
+        if (_navErr) {
+            sessionStorage.removeItem('__navError');
+            setError(_navErr);
+        }
+    } catch {}
+
     form?.addEventListener('submit', async (e) => {
         e.preventDefault();
         setError('');

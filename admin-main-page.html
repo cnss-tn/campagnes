@@ -12,8 +12,26 @@
     <link rel="stylesheet" href="css/common.css" />
     <link rel="stylesheet" href="css/main-page.css" />
     <link rel="stylesheet" href="css/admin-main-page.css" />
-    <script src="js/api.js"></script>
+    <script src="js/api.js?v=20261001"></script>
     <script>
+      // Loop-breaker: if we were just sent back here from the target page (<5s),
+      // stop bouncing and go to login with a message instead of looping forever.
+      function __fwdOk(to) {
+        try {
+          var now = Date.now(), last = null;
+          try { last = JSON.parse(sessionStorage.getItem("__homeFwd") || "null"); } catch (_e) {}
+          var here = "";
+          try { here = String(window.location.pathname || "").split("/").pop() || ""; } catch (_e2) {}
+          if (last && last.to === here && last.from === to && (now - Number(last.t)) < 5000) {
+            try { sessionStorage.setItem("__navError", "Session instable détectée — veuillez vous reconnecter."); } catch (_e3) {}
+            try { sessionStorage.removeItem("__homeFwd"); } catch (_e4) {}
+            window.location.href = "index.html";
+            return false;
+          }
+          try { sessionStorage.setItem("__homeFwd", JSON.stringify({ from: here, to: to, t: now })); } catch (_e5) {}
+        } catch (_e6) {}
+        return true;
+      }
       try {
         // 4h session expiry (server-time based at login, checked here with client clock as fallback)
         var _cu = JSON.parse(localStorage.getItem("currentUser") || "null");
@@ -29,12 +47,13 @@
         if (!u || !u.token) {
           window.location.href = "index.html";
         } else {
-          var _isAdmin = String(u.userType || "").trim().toLowerCase() === "admin";
-          var _pwc = u.pw_changed; if (_pwc == null && u.pwChanged != null) _pwc = u.pwChanged; if (_pwc == null) _pwc = _isAdmin ? 1 : 0;
-          if (!_isAdmin && Number(_pwc) === 0) {
+          var _uth = String(u.userType || "").trim().toLowerCase();
+          var _priv = (_uth === "admin" || _uth === "visionnaire");
+          var _pwc = u.pw_changed; if (_pwc == null && u.pwChanged != null) _pwc = u.pwChanged; if (_pwc == null) _pwc = _priv ? 1 : 0;
+          if (!_priv && Number(_pwc) === 0) {
             window.location.href = "pw-force-change.html";
-          } else if ((u.userType || "").trim().toLowerCase() !== "admin") {
-            window.location.href = "main-page.html";
+          } else if (!_priv) {
+            if (__fwdOk("main-page.html")) window.location.href = "main-page.html";
           }
         }
       } catch (e) {
@@ -159,7 +178,7 @@
         }
         var _uta = (user.userType || "").trim().toLowerCase();
         if (_uta !== "admin" && _uta !== "visionnaire") {
-          window.location.href = "main-page.html";
+          if (typeof __fwdOk === "function" ? __fwdOk("main-page.html") : true) window.location.href = "main-page.html";
           return;
         }
         if (_uta === "visionnaire") {
