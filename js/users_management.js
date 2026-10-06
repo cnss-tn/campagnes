@@ -11,8 +11,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const inputArName = document.getElementById('user-ar-name');
     const selectGrade = document.getElementById('user-grade');
     const selectCodeBr = document.getElementById('user-code-br');
-    const inputEmail = document.getElementById('user-email');
-    const emailBlock = document.getElementById('email-block');
     const inputPw = document.getElementById('user-pw');
     const selectUserType = document.getElementById('user-type');
     const pwHint = document.getElementById('pw-hint');
@@ -405,9 +403,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         inputMatricule.style.backgroundColor = '';
         inputPw.placeholder = '••••••••';
         inputPw.required = false;
-        if (inputEmail) inputEmail.value = '';
-        // Add mode: email hidden (collected at first login via force-change page)
-        if (emailBlock) emailBlock.style.display = 'none';
         try { choicesGrade?.setChoiceByValue(''); } catch {}
         try { choicesCodeBr?.setChoiceByValue(''); } catch {}
         try { choicesUserType?.setChoiceByValue('normal'); } catch {}
@@ -444,9 +439,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             inputMatricule.style.backgroundColor = '#f5f3ff';
             inputFrName.value = String(row[1] || '');
             inputArName.value = String(row[2] || '');
-            if (inputEmail) inputEmail.value = String(row[8] || '').trim();
-            // Edit mode: email visible and editable
-            if (emailBlock) emailBlock.style.display = '';
             if (modalUserTitle) modalUserTitle.textContent = 'تعديل المستعمل';
             if (btnText) btnText.textContent = 'حفظ التعديلات';
             if (pwHint) pwHint.textContent = '(اتركه فارغاً للإبقاء)';
@@ -624,18 +616,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const arName = String(inputArName.value || '').trim();
         const grade = String(selectGrade.value || '').trim();
         const codeBr = String(selectCodeBr.value || '').trim();
-        // Add mode: no email (user provides it at first login); edit mode: editable
-        const emailRaw = isEditMode ? String(inputEmail?.value || '').trim().toLowerCase() : '';
         const pw = String(inputPw.value || '');
         const userType = String(selectUserType.value || 'normal').trim();
 
         if (!matricule || !frName || !arName || !grade || !codeBr || !userType) {
             alert('الرجاء تعمير جميع الخانات المطلوبة');
-            return;
-        }
-        if (emailRaw && !/^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$/i.test(emailRaw)) {
-            alert('البريد الإلكتروني غير صالح');
-            inputEmail?.focus();
             return;
         }
         if (!isEditMode && !pw.trim()) {
@@ -654,7 +639,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             arName,
             grade,
             codeBr,
-            email: emailRaw,
             pw: pw.trim(),
             userType,
             isEdit: isEditMode
