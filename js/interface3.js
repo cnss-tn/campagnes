@@ -143,8 +143,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const isVisionnaire = _ut3 === 'visionnaire';
     const visionBr = isVisionnaire ? String(user.codeBr || '').trim() : '';
     if (isVisionnaire) {
-        // Blue theme + read-only view: no user management link
-        try { document.body.classList.add('page-visionnaire'); } catch {}
+        // Read-only view: no user management link
         var _unav3 = document.querySelector('a[href="users_management.html"]');
         if (_unav3) _unav3.style.display = 'none';
     }
