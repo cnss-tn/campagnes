@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const isSelf = String(user.matricule || '').trim() === matricule;
             tr.dataset.matricule = matricule;
             const typeVal = String(row[6] || 'normal').trim().toLowerCase();
-            const badgeCls = typeVal === 'admin' ? 'user-type-badge user-type-badge--admin' : (typeVal === 'visionnaire' ? 'user-type-badge user-type-badge--visionnaire' : 'user-type-badge user-type-badge--normal');
+            const badgeCls = typeVal === 'admin' ? 'user-type-badge user-type-badge--admin' : (typeVal === 'visionnaire' ? 'user-type-badge user-type-badge--visionnaire' : (typeVal === 'tester' ? 'user-type-badge user-type-badge--tester' : 'user-type-badge user-type-badge--normal'));
             const bLabel = bureauLabel(row[4]);
             const emailVal = String(row[8] || '').trim();
             tr.innerHTML = `
@@ -446,7 +446,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             inputPw.placeholder = 'اتركه فارغاً للإبقاء';
             const gradeVal = String(row[3] || '');
             const codeVal = String(row[4] || '');
-            const typeVal = String(row[6] || 'normal').trim().toLowerCase() === 'admin' ? 'admin' : 'normal';
+            const _rawType = String(row[6] || 'normal').trim().toLowerCase();
+            const typeVal = (_rawType === 'admin' || _rawType === 'visionnaire' || _rawType === 'tester') ? _rawType : 'normal';
             try {
                 if (choicesGrade) choicesGrade.setChoiceByValue(gradeVal);
                 else if (selectGrade) selectGrade.value = gradeVal;

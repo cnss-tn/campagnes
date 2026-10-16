@@ -73,12 +73,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Admins with pw_changed=0 stay (forced like everyone else); anyone at 1 leaves for their home
-    var isAdmin = user.userType && String(user.userType).trim().toLowerCase() === 'admin';
+    // Admins with pw_changed=0 stay (forced like everyone else); anyone at 1 leaves for their home; testers always leave
+    var _utPf = user.userType ? String(user.userType).trim().toLowerCase() : '';
+    var isAdmin = _utPf === 'admin';
     var pwc = user.pw_changed;
     if (pwc == null && user.pwChanged != null) pwc = user.pwChanged;
     if (pwc == null) pwc = 0; // missing => force
-    if (Number(pwc) === 1) {
+    if (Number(pwc) === 1 || _utPf === 'tester') {
         window.location.href = isAdmin ? 'admin-main-page.html' : 'main-page.html';
         return;
     }

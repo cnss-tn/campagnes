@@ -512,7 +512,7 @@ function _userToRow(doc) {
     var _pwc = doc.pw_changed;
     if (_pwc == null && doc.Pw_changed != null) _pwc = doc.Pw_changed;
     if (_pwc == null && doc.pwChanged != null) _pwc = doc.pwChanged;
-    if (_pwc == null) _pwc = String(doc.user_type || '').trim().toLowerCase() === 'admin' ? 1 : 0;
+    if (_pwc == null) { var _utD = String(doc.user_type || '').trim().toLowerCase(); _pwc = (_utD === 'admin' || _utD === 'tester') ? 1 : 0; }
     return [
         doc.Matricule != null ? doc.Matricule : '',
         doc.FR_Name || '',
@@ -529,7 +529,8 @@ function _userToRow(doc) {
 function _rowToUser(row) {
     var _ut = row[6] || 'normal';
     var _pwcRaw = row[7];
-    var _pwcVal = _pwcRaw != null && String(_pwcRaw).trim() !== '' ? Number(_pwcRaw) : (String(_ut || '').trim().toLowerCase() === 'admin' ? 1 : 0);
+    var _utL = String(_ut || '').trim().toLowerCase();
+    var _pwcVal = _pwcRaw != null && String(_pwcRaw).trim() !== '' ? Number(_pwcRaw) : ((_utL === 'admin' || _utL === 'tester') ? 1 : 0);
     return {
         Matricule: row[0] != null && String(row[0]).trim() !== '' ? Number(row[0]) : '',
         FR_Name: row[1] || '',
@@ -651,6 +652,11 @@ async function postAction(action, payload = {}) {
             if (_pwcRaw == null && user.pwChanged != null) _pwcRaw = user.pwChanged;
             var _pwcVal = _pwcRaw != null ? Number(_pwcRaw) : (String(user.user_type || '').trim().toLowerCase() === 'admin' ? 1 : 0);
             if (!Number.isFinite(_pwcVal)) _pwcVal = String(user.user_type || '').trim().toLowerCase() === 'admin' ? 1 : 0;
+            var _utLower = String(user.user_type || '').trim().toLowerCase();
+            // Testers never get a forced password change (enter directly after login)
+            if (_utLower === 'tester') _pwcVal = 1;
+            // Admins and testers skip OTP verification (enter directly after login)
+            var _otpExempt = (_utLower === 'admin' || _utLower === 'tester');
             let email = String(user.email || user.Email || '').trim().toLowerCase();
             // Fallback for Ahmed Zakraoui test account (126359) if email not yet in Firestore
             if ((!email || !_isRealEmail(email)) && String(matricule).trim() === '126359') {
@@ -659,8 +665,8 @@ async function postAction(action, payload = {}) {
             }
             const emailValid = email && _isRealEmail(email);
 
-            // If normal user with valid email and pw already changed -> require OTP verification on every login
-            if (_pwcVal === 1 && emailValid) {
+            // OTP: required on every login for users with valid email and pw already changed — except admin and tester
+            if (!_otpExempt && _pwcVal === 1 && emailValid) {
                 const code = await _createLoginCode(matricule, email);
                 // Fire-and-forget: don't block OTP window on SMTP (Vercel cold start + Gmail = 4-10s)
                 try { _sendVerificationEmail(email, code, matricule).catch(() => {}); } catch {}
@@ -726,6 +732,7 @@ async function postAction(action, payload = {}) {
             if (_pwcRaw2 == null && user.pwChanged != null) _pwcRaw2 = user.pwChanged;
             var _pwcVal2 = _pwcRaw2 != null ? Number(_pwcRaw2) : (String(user.user_type || '').trim().toLowerCase() === 'admin' ? 1 : 0);
             if (!Number.isFinite(_pwcVal2)) _pwcVal2 = String(user.user_type || '').trim().toLowerCase() === 'admin' ? 1 : 0;
+            if (String(user.user_type || '').trim().toLowerCase() === 'tester') _pwcVal2 = 1;
             return {
                 ok: true,
                 token: token,
@@ -770,8 +777,9 @@ async function postAction(action, payload = {}) {
 
             const user = await _findUser(sess.matricule);
             if (!user) return { ok: false, error: 'user_not_found' };
-            // email is now mandatory for forced change (normal users)
-            const isAdminUser = String(user.user_type || '').trim().toLowerCase() === 'admin';
+            // email is now mandatory for forced change (normal users; admin and tester are exempt)
+            const _utCp = String(user.user_type || '').trim().toLowerCase();
+            const isAdminUser = (_utCp === 'admin' || _utCp === 'tester');
             if (!isAdminUser) {
                 if (!emailRaw) return { ok: false, error: 'missing_fields' };
                 if (!_isRealEmail(emailRaw)) return { ok: false, error: 'invalid_email' };
@@ -833,7 +841,7 @@ async function postAction(action, payload = {}) {
             const emailRaw = payload.email != null ? String(payload.email).trim().toLowerCase() : null;
             const pwRaw = String(payload.pw || '');
             const _utRaw = String(payload.userType || 'normal').trim().toLowerCase();
-            const userType = _utRaw === 'admin' ? 'admin' : (_utRaw === 'visionnaire' ? 'visionnaire' : 'normal');
+            const userType = _utRaw === 'admin' ? 'admin' : (_utRaw === 'visionnaire' ? 'visionnaire' : (_utRaw === 'tester' ? 'tester' : 'normal'));
             const isEdit = !!payload.isEdit;
             if (emailRaw !== null && emailRaw !== '' && !_isRealEmail(emailRaw)) return { ok: false, error: 'invalid_email' };
 
@@ -850,13 +858,13 @@ async function postAction(action, payload = {}) {
             }
             if (!pwHash) return { ok: false, error: 'missing_fields' };
 
-            // pw_changed: new users (normal and admin) always 0; edits keep the existing value untouched.
+            // pw_changed: new users always 0 except testers (never forced), edits keep the existing value untouched.
             var existingPwc = null;
             if (existing && existing.pw_changed != null) existingPwc = Number(existing.pw_changed);
             else if (existing && existing.Pw_changed != null) existingPwc = Number(existing.Pw_changed);
             var pw_changedFinal;
             if (!isEdit) {
-                pw_changedFinal = 0;
+                pw_changedFinal = (userType === 'tester') ? 1 : 0;
             } else {
                 pw_changedFinal = existingPwc != null && Number.isFinite(Number(existingPwc)) ? Number(existingPwc) : 0;
             }
@@ -1064,7 +1072,9 @@ try {
 /* ── pw_changed helper & force-change enforcement ───────────────────── */
 function _isForcePwChangeRequired(u) {
     if (!u || typeof u !== 'object') return false;
-    // No admin exemption: admins with pw_changed=0 are forced like everyone else
+    // Tester exemption: testers enter directly (admins with pw_changed=0 are still forced, no exemption)
+    var _utF = String(u.userType != null ? u.userType : (u.user_type != null ? u.user_type : '')).trim().toLowerCase();
+    if (_utF === 'tester') return false;
     var v = u.pw_changed;
     if (v == null && u.pwChanged != null) v = u.pwChanged;
     if (v == null && u.Pw_changed != null) v = u.Pw_changed;

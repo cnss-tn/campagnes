@@ -496,6 +496,11 @@ body.page-users main.composed-main.results-main-fluid {
     color: #fff;
     border-color: transparent;
 }
+.page-users .user-type-badge--tester {
+    background: linear-gradient(135deg, #d97706, #f59e0b);
+    color: #fff;
+    border-color: transparent;
+}
 .page-users #form-user .form-control,
 .page-users #form-user .form-select,
 .page-users #form-user .choices__inner {

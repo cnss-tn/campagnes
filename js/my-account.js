@@ -51,9 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Force pw change for normal users with pw_changed==0 -> redirect to force page
-    var _isAdminMy = user.userType && String(user.userType).trim().toLowerCase() === 'admin';
-    if (!_isAdminMy) {
+    // Force pw change for normal users with pw_changed==0 -> redirect to force page (testers are exempt)
+    var _utMy = user.userType ? String(user.userType).trim().toLowerCase() : '';
+    var _isAdminMy = _utMy === 'admin';
+    if (!_isAdminMy && _utMy !== 'tester') {
         var _pwcMy = user.pw_changed; if (_pwcMy == null && user.pwChanged != null) _pwcMy = user.pwChanged;
         if (_pwcMy == null) _pwcMy = 0;
         if (Number(_pwcMy) === 0) { window.location.href = 'pw-force-change.html'; return; }
