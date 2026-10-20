@@ -476,6 +476,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 (parseMaybeNumber(a.getValue('controleursParticipants')) ?? 0) -
                 (parseMaybeNumber(b.getValue('controleursParticipants')) ?? 0),
         }),
+        columnHelper.display({
+            id: 'actions',
+            header: () => 'إجراءات',
+            enableSorting: false,
+            enableColumnFilter: false,
+            enableGlobalFilter: false,
+            cell: () => '<button type="button" class="results-action-btn" data-action="view">عرض أو تعديل</button>',
+        }),
     ];
 
     let table = null;
@@ -630,7 +638,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const rowModel = table.getRowModel();
         tbodyEl.innerHTML = '';
         if (!rowModel.rows.length) {
-            tbodyEl.innerHTML = `<tr><td colspan="11" class="text-center text-muted">القائمة فارغة</td></tr>`;
+            tbodyEl.innerHTML = `<tr><td colspan="13" class="text-center text-muted">القائمة فارغة</td></tr>`;
             if (tfootEl) tfootEl.classList.add('d-none');
             updateTotalUI(rowsAll.length, 0);
             updateResultsPaginationUI(0);
@@ -648,25 +656,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         pageRows.forEach((row) => {
             const tr = document.createElement('tr');
-            tr.className = 'results-row-clickable';
-            tr.setAttribute('role', 'button');
-            tr.tabIndex = 0;
 
             const progRow = row.original.programmeRow;
             const open = () => {
                 if (progRow) openStatsModal(progRow);
             };
-            tr.addEventListener('click', open);
-            tr.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    open();
-                }
-            });
 
             row.getVisibleCells().forEach((cell) => {
                 const td = document.createElement('td');
                 td.innerHTML = flexRender(cell.column.columnDef.cell, cell.getContext());
+                if (cell.column.id === 'actions') {
+                    td.querySelector('[data-action="view"]')?.addEventListener('click', open);
+                }
                 tr.appendChild(td);
             });
             tbodyEl.appendChild(tr);

@@ -184,3 +184,20 @@ body.page-results thead#results-thead th div {
     font-size: 0.78rem;
     border-bottom: none !important;
 }
+
+/* Row action button (view / edit) */
+.page-results .results-action-btn {
+    border: 1px solid rgba(10, 146, 68, 0.22);
+    background: transparent;
+    padding: 0.2rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #0a9244;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+.page-results .results-action-btn:hover {
+    background: rgba(10, 146, 68, 0.1);
+}

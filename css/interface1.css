@@ -615,6 +615,14 @@ section.results-filters.mt-3 {
     font-size: 0.8rem;
 }
 
+/* Programme row actions (view + delete) */
+.page-programme .programme-row-actions {
+    display: flex;
+    gap: 0.3rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
 /* Programme delete button — même principe que users_management */
 .page-programme .user-action-btn {
     border: none;
@@ -625,6 +633,13 @@ section.results-filters.mt-3 {
     font-weight: 700;
     cursor: pointer;
     transition: all 0.15s ease;
+}
+.page-programme .user-action-view {
+    color: var(--cp-accent);
+    border: 1px solid rgba(4, 143, 64, 0.22);
+}
+.page-programme .user-action-view:hover {
+    background: rgba(4, 143, 64, 0.1);
 }
 .page-programme .user-action-delete {
     color: #dc3545;

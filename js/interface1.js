@@ -234,18 +234,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         slice.forEach((row) => {
             const tr = document.createElement('tr');
-            tr.className = 'programme-row-clickable';
-            tr.dataset.programmeId = row[0];
             const programmeId = String(row[0]).trim();
             const hasResultats = programmeIdsWithResultats.has(programmeId);
-            if (hasResultats) {
-                tr.classList.add('programme-row-with-resultats');
-                tr.setAttribute('aria-label', 'Ouvrir les statistiques — résultats déjà enregistrés pour cette campagne');
-            } else {
-                tr.setAttribute('aria-label', 'Ouvrir les statistiques de cette campagne');
-            }
-            tr.setAttribute('role', 'button');
-            tr.tabIndex = 0;
+            if (hasResultats) tr.classList.add('programme-row-with-resultats');
                 const typeV = String(row[2] ?? '').trim();
                 let badgeCls = 'badge campagne-type-badge';
                 if (typeV === 'لا شيء' || typeV === '') badgeCls += ' campagne-type-badge--rien';
@@ -255,16 +246,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <td>${window.renderZoneActivity(row[3])}</td>
                 <td><small dir="ltr">${row[4]} ⟻ ${row[5]}</small></td>
                 <td class="text-center">${row[6]}</td>
-                <td><button type="button" class="user-action-btn user-action-delete" data-id="${programmeId}">حذف</button></td>
+                <td>
+                    <div class="programme-row-actions">
+                        <button type="button" class="user-action-btn user-action-view" data-action="view">عرض أو تعديل</button>
+                        <button type="button" class="user-action-btn user-action-delete" data-action="delete">حذف</button>
+                    </div>
+                </td>
             `;
-            tr.addEventListener('click', () => openStatsModal(row));
-            tr.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    openStatsModal(row);
-                }
-            });
-            const delBtn = tr.querySelector('[data-id]');
+            tr.querySelector('[data-action="view"]')?.addEventListener('click', () => openStatsModal(row));
+            const delBtn = tr.querySelector('[data-action="delete"]');
             if (delBtn) {
                 delBtn.addEventListener('click', async (e) => {
                     e.stopPropagation();
