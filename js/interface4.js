@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const elEff = document.getElementById('modal-prog-effectif');
         if (elType) elType.textContent = programmeRow[2] ?? '';
         if (elZone) elZone.textContent = programmeRow[3] ?? '';
-        if (elPeriod) elPeriod.textContent = `${programmeRow[4] ?? ''} ↤ ${programmeRow[5] ?? ''}`;
+        if (elPeriod) elPeriod.innerHTML = `<span dir="ltr">${programmeRow[4] ?? ''} ⟻ ${programmeRow[5] ?? ''}</span>`;
         if (elEff) elEff.textContent = programmeRow[6] != null ? String(programmeRow[6]) : '';
         populateModalFromCache(programmeRow, resultatRow);
         statsModal.show();
