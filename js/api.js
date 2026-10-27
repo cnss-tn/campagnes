@@ -278,6 +278,9 @@ function _readCurrentUser() {
         const legacy = JSON.parse(localStorage.getItem('currentUser') || 'null');
         if (legacy && legacy.token && _isCampagnesUser(legacy)) {
             try { localStorage.setItem(LS_CURRENT_USER, JSON.stringify(legacy)); } catch {}
+            // Remove the stale campagnes session from the shared key so the
+            // 'courriers' app (same origin) never misreads it.
+            try { localStorage.removeItem('currentUser'); } catch {}
             return legacy;
         }
     } catch {}
