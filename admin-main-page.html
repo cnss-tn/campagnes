@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="css/common.css" />
     <link rel="stylesheet" href="css/main-page.css" />
     <link rel="stylesheet" href="css/admin-main-page.css" />
-    <script src="js/api.js?v=20261001"></script>
+    <script src="js/api.js?v=20261020"></script>
     <script>
       // Loop-breaker: if we were just sent back here from the target page (<5s),
       // stop bouncing and go to login with a message instead of looping forever.
@@ -34,16 +34,16 @@
       }
       try {
         // 4h session expiry (server-time based at login, checked here with client clock as fallback)
-        var _cu = JSON.parse(localStorage.getItem("currentUser") || "null");
+        var _cu = JSON.parse(localStorage.getItem("campagnes_currentUser") || "null");
         if (_cu && _cu.token) {
           var _exp = Number(_cu.sessionExpiresAt);
           if (!Number.isFinite(_exp) || Date.now() >= _exp) {
-            try { localStorage.removeItem("currentUser"); } catch (_e0) {}
-            try { localStorage.removeItem("_pendingOTP"); } catch (_e1) {}
+            try { localStorage.removeItem("campagnes_currentUser"); } catch (_e0) {}
+            try { localStorage.removeItem("campagnes_pendingOTP"); } catch (_e1) {}
             window.location.href = "index.html";
           }
         }
-        var u = JSON.parse(localStorage.getItem("currentUser"));
+        var u = JSON.parse(localStorage.getItem("campagnes_currentUser"));
         if (!u || !u.token) {
           window.location.href = "index.html";
         } else {
@@ -167,7 +167,7 @@
       document.addEventListener("DOMContentLoaded", () => {
         let user = null;
         try {
-          user = JSON.parse(localStorage.getItem("currentUser"));
+          user = JSON.parse(localStorage.getItem("campagnes_currentUser"));
         } catch {}
         if (!user || !user.token) {
           try {

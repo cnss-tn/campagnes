@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let user = null;
     try {
-        user = JSON.parse(localStorage.getItem('currentUser'));
+        user = (typeof window.getCurrentUser === 'function') ? window.getCurrentUser() : JSON.parse(localStorage.getItem('campagnes_currentUser') || 'null');
     } catch {}
     if (!user || !user.token) {
         window.location.href = 'index.html';

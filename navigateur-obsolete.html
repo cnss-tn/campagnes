@@ -94,7 +94,7 @@
     (function () {
         function show() { try { document.body.style.visibility = 'visible'; } catch (e) {} }
         try {
-            var u = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            var u = JSON.parse(localStorage.getItem('campagnes_currentUser') || 'null');
             if (u && u.token) {
                 if (u.sessionExpiresAt && Date.now() > Number(u.sessionExpiresAt)) { show(); return; }
                 var isAdmin = String(u.userType || '').trim().toLowerCase() === 'admin';

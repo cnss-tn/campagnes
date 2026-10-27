@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let user = null;
     try {
-        user = JSON.parse(localStorage.getItem('currentUser'));
+        user = (typeof window.getCurrentUser === 'function') ? window.getCurrentUser() : JSON.parse(localStorage.getItem('campagnes_currentUser') || 'null');
     } catch {}
 
     if (!user || !user.token) {
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (href === 'pw-force-change.html' || href === '' || href === '#') return;
             a.addEventListener('click', function (e) {
                 try {
-                    var cur = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                    var cur = (typeof window.getCurrentUser === 'function') ? (window.getCurrentUser() || {}) : JSON.parse(localStorage.getItem('campagnes_currentUser') || '{}');
                     var curPwc = cur.pw_changed;
                     if (curPwc == null && cur.pwChanged != null) curPwc = cur.pwChanged;
                     if (Number(curPwc) === 1) return;
@@ -193,12 +193,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Success: update localStorage pw_changed to 1 and store email
         try {
-            var curRaw = localStorage.getItem('currentUser');
+            var curRaw = localStorage.getItem('campagnes_currentUser');
             var cur = curRaw ? JSON.parse(curRaw) : {};
             cur.pw_changed = 1;
             cur.pwChanged = 1;
             cur.email = email;
-            localStorage.setItem('currentUser', JSON.stringify(cur));
+            localStorage.setItem('campagnes_currentUser', JSON.stringify(cur));
             user = cur;
         } catch {}
 

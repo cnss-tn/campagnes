@@ -107,10 +107,10 @@ async function _createLoginCode(matricule, email) {
         await db.collection('login_codes').doc(String(matricule).trim()).set(payload);
     } catch (e) {
         console.warn('Firestore login_codes set failed, fallback to localStorage', e);
-        try { localStorage.setItem('_otp_' + String(matricule).trim(), JSON.stringify(payload)); } catch {}
+        try { localStorage.setItem(LS_OTP_PREFIX + String(matricule).trim(), JSON.stringify(payload)); } catch {}
     }
     // also keep in localStorage for fallback verification
-    try { localStorage.setItem('_otp_' + String(matricule).trim(), JSON.stringify(payload)); } catch {}
+    try { localStorage.setItem(LS_OTP_PREFIX + String(matricule).trim(), JSON.stringify(payload)); } catch {}
     return code;
 }
 
@@ -126,7 +126,7 @@ async function _verifyLoginCode(matricule, inputCode) {
             if (data && data.code) {
                 if (Date.now() > Number(data.expiresAt)) {
                     try { await ref.delete(); } catch {}
-                    try { localStorage.removeItem('_otp_' + key); } catch {}
+                    try { localStorage.removeItem(LS_OTP_PREFIX + key); } catch {}
                     return { ok: false, error: 'code_expired' };
                 }
                 if (String(data.code).trim() !== String(inputCode).trim()) {
@@ -134,23 +134,23 @@ async function _verifyLoginCode(matricule, inputCode) {
                     return { ok: false, error: 'invalid_code' };
                 }
                 try { await ref.delete(); } catch {}
-                try { localStorage.removeItem('_otp_' + key); } catch {}
+                try { localStorage.removeItem(LS_OTP_PREFIX + key); } catch {}
                 return { ok: true };
             }
         }
     } catch (e) { console.warn('Firestore verify failed, trying localStorage', e); }
     // Fallback to localStorage
     try {
-        const raw = localStorage.getItem('_otp_' + key);
+        const raw = localStorage.getItem(LS_OTP_PREFIX + key);
         if (!raw) return { ok: false, error: 'code_not_found' };
         const data = JSON.parse(raw);
         if (!data || !data.code) return { ok: false, error: 'code_not_found' };
         if (Date.now() > Number(data.expiresAt)) {
-            try { localStorage.removeItem('_otp_' + key); } catch {}
+            try { localStorage.removeItem(LS_OTP_PREFIX + key); } catch {}
             return { ok: false, error: 'code_expired' };
         }
         if (String(data.code).trim() !== String(inputCode).trim()) return { ok: false, error: 'invalid_code' };
-        try { localStorage.removeItem('_otp_' + key); } catch {}
+        try { localStorage.removeItem(LS_OTP_PREFIX + key); } catch {}
         return { ok: true };
     } catch { return { ok: false, error: 'code_not_found' }; }
 }
@@ -249,21 +249,60 @@ function getServerTime() {
 }
 try { window.getServerTime = getServerTime; } catch {}
 
-if (getToken()) _syncServerTime();
+/* ── LocalStorage keys ─────────────────────────────────────────────────
+   cnss-tn.github.io is a SHARED origin: the 'courriers' app (same code base)
+   also uses localStorage. Prefix every campagnes key so the two apps never
+   read or overwrite each other's session / OTP / cached values. */
+const LS_CURRENT_USER = 'campagnes_currentUser';
+const LS_PENDING_OTP = 'campagnes_pendingOTP';
+const LS_OTP_PREFIX = 'campagnes_otp_';
+const LS_SERVER_YEAR = 'campagnes_serverYear';
+
+function _isCampagnesUser(u) {
+    if (!u || typeof u !== 'object') return false;
+    const t = String(u.userType != null ? u.userType : (u.user_type != null ? u.user_type : '')).trim().toLowerCase();
+    return t === 'normal' || t === 'admin' || t === 'visionnaire' || t === 'tester';
+}
+
+function _readCurrentUser() {
+    try {
+        const raw = localStorage.getItem(LS_CURRENT_USER);
+        if (raw) {
+            const u = JSON.parse(raw);
+            return u && typeof u === 'object' ? u : null;
+        }
+    } catch {}
+    // One-time migration: adopt an existing campagnes session stored under the
+    // old shared key, but NEVER the 'courriers' session (different shape).
+    try {
+        const legacy = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        if (legacy && legacy.token && _isCampagnesUser(legacy)) {
+            try { localStorage.setItem(LS_CURRENT_USER, JSON.stringify(legacy)); } catch {}
+            return legacy;
+        }
+    } catch {}
+    return null;
+}
+
+function _writeCurrentUser(u) {
+    try { localStorage.setItem(LS_CURRENT_USER, JSON.stringify(u)); } catch {}
+}
+
+function _clearCurrentUser() {
+    try { localStorage.removeItem(LS_CURRENT_USER); } catch {}
+    try { localStorage.removeItem(LS_PENDING_OTP); } catch {}
+}
 
 function getCurrentUser() {
-    try {
-        const raw = localStorage.getItem('currentUser');
-        if (!raw) return null;
-        const u = JSON.parse(raw);
-        return u && typeof u === 'object' ? u : null;
-    } catch { return null; }
+    return _readCurrentUser();
 }
 
 function getToken() {
     const u = getCurrentUser();
     return u && u.token ? String(u.token) : '';
 }
+
+if (getToken()) _syncServerTime();
 
 function getSessionExpiresAt() {
     const u = getCurrentUser();
@@ -302,7 +341,7 @@ function logoutToLogin() {
     try {
         const u = getCurrentUser();
         token = u && u.token ? u.token : null;
-        localStorage.removeItem('currentUser');
+        _clearCurrentUser();
     } catch {}
     const go = () => { window.location.href = 'index.html'; };
     if (token) {
@@ -339,8 +378,7 @@ function checkSessionNow() {
             var page = String(window.location.pathname || '').split('/').pop() || '';
             if (page !== 'index.html') logoutToLogin();
             else {
-                try { localStorage.removeItem('currentUser'); } catch {}
-                try { localStorage.removeItem('_pendingOTP'); } catch {}
+                _clearCurrentUser();
             }
             return true;
         }
@@ -378,6 +416,8 @@ try {
 } catch {}
 
 try {
+    window.getCurrentUser = getCurrentUser;
+    window._clearCurrentUser = _clearCurrentUser;
     window.getSessionExpiresAt = getSessionExpiresAt;
     window.isSessionExpired = isSessionExpired;
     window.logoutToLogin = logoutToLogin;
@@ -1257,7 +1297,7 @@ let _serverYearPromise = null;
 
 function _getServerYear() {
     try {
-        const cached = localStorage.getItem('_serverYear');
+        const cached = localStorage.getItem(LS_SERVER_YEAR);
         if (cached) {
             const y = parseInt(cached, 10);
             if (y > 2000) return Promise.resolve(y);
@@ -1268,7 +1308,7 @@ function _getServerYear() {
             if (getToken()) await _syncServerTime();
             const now = new Date(getServerTime());
             const year = now.getFullYear();
-            try { localStorage.setItem('_serverYear', String(year)); } catch {}
+            try { localStorage.setItem(LS_SERVER_YEAR, String(year)); } catch {}
             return year;
         } catch {
             return new Date().getFullYear();

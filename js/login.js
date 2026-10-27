@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let pendingMatricule = '';
     let pendingEmail = '';
-    const PENDING_OTP_KEY = '_pendingOTP';
+    const PENDING_OTP_KEY = 'campagnes_pendingOTP';
     function savePendingOTP(matricule, email, emailMasked) {
         try {
             const now = Date.now();
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // don't restore if already has valid session
             const hasSession = (() => {
                 try {
-                    const cu = JSON.parse(localStorage.getItem('currentUser')||'null');
+                    const cu = (typeof window.getCurrentUser === 'function') ? window.getCurrentUser() : null;
                     const exp = cu && Number(cu.sessionExpiresAt);
                     return cu && cu.token && Number.isFinite(exp) && Date.now() < exp;
                 } catch { return false; }
@@ -153,13 +153,12 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {}
 
     try {
-        const existing = localStorage.getItem('currentUser');
-        if (existing) {
-            const u = JSON.parse(existing);
-            const exp = u && typeof u === 'object' ? Number(u.sessionExpiresAt) : NaN;
+        const u = (typeof window.getCurrentUser === 'function') ? window.getCurrentUser() : null;
+        if (u && typeof u === 'object') {
+            const exp = Number(u.sessionExpiresAt);
             // Missing/invalid expiry (legacy session) counts as expired -> force re-login
             const isExpired = !Number.isFinite(exp) || Date.now() >= exp;
-            if (u && typeof u === 'object' && u.token && !isExpired) {
+            if (u.token && !isExpired) {
                 if (isForceRequired(u)) {
                     window.location.href = 'pw-force-change.html';
                 } else {
@@ -167,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 return;
             }
-            localStorage.removeItem('currentUser');
+            if (typeof window._clearCurrentUser === 'function') window._clearCurrentUser();
         }
     } catch {}
 
@@ -229,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     const startedAt = typeof window.getServerTime === 'function' ? window.getServerTime() : Date.now();
                     const ttl = typeof window.SESSION_TTL_MS === 'number' ? window.SESSION_TTL_MS : 240*60*1000;
-                    localStorage.setItem('currentUser', JSON.stringify({ ...res.user, token: res.token || 'force-'+Date.now(), sessionStartedAt: startedAt, sessionExpiresAt: startedAt + ttl }));
+                    localStorage.setItem('campagnes_currentUser', JSON.stringify({ ...res.user, token: res.token || 'force-'+Date.now(), sessionStartedAt: startedAt, sessionExpiresAt: startedAt + ttl }));
                 } catch {}
                 window.location.href = 'pw-force-change.html';
                 return;
@@ -241,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const startedAt = typeof window.getServerTime === 'function' ? window.getServerTime() : Date.now();
             const ttl = typeof window.SESSION_TTL_MS === 'number' ? window.SESSION_TTL_MS : 240*60*1000;
-            localStorage.setItem('currentUser', JSON.stringify({ ...res.user, token: res.token, sessionStartedAt: startedAt, sessionExpiresAt: startedAt + ttl }));
+            localStorage.setItem('campagnes_currentUser', JSON.stringify({ ...res.user, token: res.token, sessionStartedAt: startedAt, sessionExpiresAt: startedAt + ttl }));
         } catch {}
         if (isForceRequired(res.user)) {
             window.location.href = 'pw-force-change.html';
@@ -283,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const startedAt = typeof window.getServerTime === 'function' ? window.getServerTime() : Date.now();
             const ttl = typeof window.SESSION_TTL_MS === 'number' ? window.SESSION_TTL_MS : 240*60*1000;
-            localStorage.setItem('currentUser', JSON.stringify({ ...res.user, token: res.token, sessionStartedAt: startedAt, sessionExpiresAt: startedAt + ttl }));
+            localStorage.setItem('campagnes_currentUser', JSON.stringify({ ...res.user, token: res.token, sessionStartedAt: startedAt, sessionExpiresAt: startedAt + ttl }));
             if (typeof window.scheduleAutoLogout === 'function') window.scheduleAutoLogout();
         } catch {}
         clearPendingOTP();

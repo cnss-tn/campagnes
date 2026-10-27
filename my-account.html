@@ -14,19 +14,19 @@
     <script>
       // 4h session expiry first (server-time based at login, checked here with client clock as fallback)
       try {
-        var _cu0 = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        var _cu0 = JSON.parse(localStorage.getItem('campagnes_currentUser') || 'null');
         if (_cu0 && _cu0.token) {
           var _exp0 = Number(_cu0.sessionExpiresAt);
           if (!Number.isFinite(_exp0) || Date.now() >= _exp0) {
-            try { localStorage.removeItem('currentUser'); } catch (_e0) {}
-            try { localStorage.removeItem('_pendingOTP'); } catch (_e1) {}
+            try { localStorage.removeItem('campagnes_currentUser'); } catch (_e0) {}
+            try { localStorage.removeItem('campagnes_pendingOTP'); } catch (_e1) {}
             window.location.href = 'index.html';
           }
         }
       } catch (_e2) {}
       // force pw change guard (normal users with pw_changed==0 must go to pw-force-change.html)
       try {
-        var _u = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        var _u = JSON.parse(localStorage.getItem('campagnes_currentUser') || '{}');
         if (_u && _u.token) {
           var _isAdmin = String(_u.userType || '').trim().toLowerCase() === 'admin';
           var _pwc = _u.pw_changed; if (_pwc == null && _u.pwChanged != null) _pwc = _u.pwChanged;
@@ -169,11 +169,11 @@
       </div>
     </main>
 
-    <script src="js/api.js?v=20261001"></script>
-    <script src="js/my-account.js?v=20261001"></script>
+    <script src="js/api.js?v=20261020"></script>
+    <script src="js/my-account.js?v=20261020"></script>
     <script>
     (function() {
-        var user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        var user = JSON.parse(localStorage.getItem('campagnes_currentUser') || '{}');
         var _utmn = (user.userType || '').trim().toLowerCase();
         var is_admin = _utmn === 'admin';
         var is_priv = is_admin || _utmn === 'visionnaire';
