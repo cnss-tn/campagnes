@@ -88,6 +88,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     const resultsTableWrap = document.getElementById('results-table-wrap');
     const resultsTableLoader = document.getElementById('results-table-loader');
 
+    /* ── Colonne « إجراءات » figée : ombre de séparation ──────────────────
+       La colonne est sticky (inline-end / gauche en RTL). Tant qu'il reste
+       des colonnes cachées derrière elle, une ombre dégradée marque la
+       frontière ; arrivé au bout du défilement horizontal, plus rien n'est
+       masqué → l'ombre disparaît (classe `at-end`). */
+    let _actionsShadowRaf = 0;
+
+    function syncActionsShadow() {
+        if (!resultsTableWrap) return;
+        const max = resultsTableWrap.scrollWidth - resultsTableWrap.clientWidth;
+        // Aucun défilement possible : la colonne n'est jamais au-dessus du contenu
+        if (max <= 1) {
+            resultsTableWrap.classList.add('at-end');
+            return;
+        }
+        const rtl = getComputedStyle(resultsTableWrap).direction === 'rtl';
+        const pos = Math.abs(resultsTableWrap.scrollLeft);
+        // RTL : départ = 0 (colonnes de tête visibles, actions par-dessus le contenu),
+        //        fin    = |scrollLeft| max (la colonne repose sur son bord naturel).
+        // LTR : l'inverse (la colonne est déjà à son bord naturel au départ).
+        const atEnd = rtl ? pos >= max - 1 : pos <= 1;
+        resultsTableWrap.classList.toggle('at-end', atEnd);
+    }
+
+    function scheduleActionsShadow() {
+        if (!resultsTableWrap) return;
+        if (_actionsShadowRaf) cancelAnimationFrame(_actionsShadowRaf);
+        _actionsShadowRaf = requestAnimationFrame(function () {
+            _actionsShadowRaf = 0;
+            syncActionsShadow();
+        });
+    }
+
+    resultsTableWrap?.addEventListener('scroll', scheduleActionsShadow, { passive: true });
+    window.addEventListener('resize', scheduleActionsShadow);
+
     const filterTypeEl = document.getElementById('filter-type');
     const filterZoneEl = document.getElementById('filter-zone');
     const filterYearEl = document.getElementById('filter-year');
@@ -629,6 +665,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                     th.appendChild(div);
                 }
+                if (colId === 'actions') th.classList.add('action-cell');
                 tr.appendChild(th);
             });
             theadEl.appendChild(tr);
@@ -642,6 +679,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (tfootEl) tfootEl.classList.add('d-none');
             updateTotalUI(rowsAll.length, 0);
             updateResultsPaginationUI(0);
+            scheduleActionsShadow();
             return;
         }
         updateTotalUI(rowsAll.length, rowModel.rows.length);
@@ -666,6 +704,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const td = document.createElement('td');
                 td.innerHTML = flexRender(cell.column.columnDef.cell, cell.getContext());
                 if (cell.column.id === 'actions') {
+                    td.classList.add('action-cell');
                     td.querySelector('[data-action="view"]')?.addEventListener('click', open);
                 }
                 tr.appendChild(td);
@@ -696,6 +735,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (ci > 0 && ci < 2) return;
                 const td = document.createElement('td');
                 const colId = cell.column.id;
+                if (colId === 'actions') td.classList.add('action-cell');
                 if (ci === 0) {
                     td.textContent = 'المجموع الكلي';
                     td.style.fontWeight = '700';
@@ -719,6 +759,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 tfootEl.classList.add('d-none');
             }
         }
+
+        // La largeur du tableau vient de changer → recalcul de l'ombre de la colonne figée
+        scheduleActionsShadow();
     }
 
     function applyFiltersToState() {
