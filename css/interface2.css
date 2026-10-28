@@ -217,10 +217,12 @@ body.page-results thead#results-thead th div {
     box-shadow: none;
 }
 
-/* En-tête : fond opaque (le fond des th est transparent par défaut) */
+/* En-tête : fond opaque blanc + padding latéral demandé */
 .page-results .results-table.composed-table thead th.action-cell {
-    background: #efefef !important;
+    background: #fff !important;
     z-index: 3;
+    padding-right: 0.25em;
+    padding-left: 0.25em;
 }
 /* Corps : fond opaque aligné sur la teinte des lignes (#8080800a sur blanc) */
 .page-results .results-table-wrap tbody td.action-cell {
