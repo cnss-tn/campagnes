@@ -46,18 +46,25 @@ body.page-users main.composed-main {
     --light-bg: #f4f7f6;
 }
 .dev-credit {
-    font-family: 'Tajawal', sans-serif;
+    font-family: Tajawal, sans-serif;
     font-weight: 500;
     text-align: center;
     color: #6c757d;
-    font-size: 0.75rem;
-    padding: 0.35rem 0;
+    font-size: .75rem;
+    padding: .35rem .8rem;
     direction: ltr;
+    pointer-events: none;
     position: fixed;
     bottom: 0;
-    left: 0;
-    right: 0;
+    left: 50%;
+    transform: translate(-50%);
     z-index: 1;
+    background: #fff9;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border-radius: 16px 16px 0 0;
+    width: fit-content;
+    box-shadow: 0 0 12px #0b5a6e26;
 }
 .dev-credit::before {
     content: '';
