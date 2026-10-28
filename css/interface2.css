@@ -201,7 +201,6 @@ body.page-results tbody#results-tbody {
 /* Un seul filet par frontière : haut + début de ligne (droite en RTL).
    On garde `border-collapse: separate` (indispensable au sticky) mais on
    évite le doublement des bordures entre cellules voisines. */
-.page-results .results-table th,
 .page-results .results-table td {
     border-top: 1px solid rgba(11, 90, 110, 0.1) !important;
     border-inline-start: 1px solid rgba(11, 90, 110, 0.1) !important;
