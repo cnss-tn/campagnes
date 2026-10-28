@@ -224,9 +224,9 @@ body.page-results thead#results-thead th div {
     padding-right: 0.25em;
     padding-left: 0.25em;
 }
-/* Corps : fond opaque aligné sur la teinte des lignes (#8080800a sur blanc) */
+/* Corps : fond opaque blanc */
 .page-results .results-table-wrap tbody td.action-cell {
-    background-color: #fafafa;
+    background-color: #fff;
     z-index: 2;
 }
 .page-results .results-table-wrap tbody tr:hover td.action-cell {
