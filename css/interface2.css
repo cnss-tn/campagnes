@@ -185,6 +185,32 @@ body.page-results thead#results-thead th div {
     border-bottom: none !important;
 }
 
+/* ------------------------------------------------------------------ */
+/* Tableau : fond blanc + filets 1px rgba(11,90,110,.1)                 */
+/* ------------------------------------------------------------------ */
+/* Fond blanc du tableau (la teinte grise du tbody est neutralisée) */
+.page-results .results-table,
+body.page-results tbody#results-tbody {
+    background-color: #fff;
+}
+/* Cadre du conteneur assorti aux filets du tableau */
+.page-results .results-table-wrap {
+    border-color: rgba(11, 90, 110, 0.1);
+}
+
+/* Un seul filet par frontière : haut + début de ligne (droite en RTL).
+   On garde `border-collapse: separate` (indispensable au sticky) mais on
+   évite le doublement des bordures entre cellules voisines. */
+.page-results .results-table th,
+.page-results .results-table td {
+    border-top: 1px solid rgba(11, 90, 110, 0.1) !important;
+    border-inline-start: 1px solid rgba(11, 90, 110, 0.1) !important;
+}
+/* Fermeture du cadre en bas du tableau */
+.page-results .results-table {
+    border-bottom: 1px solid rgba(11, 90, 110, 0.1);
+}
+
 /* Row action button (view / edit) */
 .page-results .results-action-btn {
     border: 1px solid rgba(10, 146, 68, 0.22);
