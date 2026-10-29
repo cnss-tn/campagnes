@@ -412,7 +412,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let table = null;
     let tableState = null;
     let rowsAll = [];
-    const RESULTS_PAGE_SIZE = 7;
+    const RESULTS_PAGE_SIZE = 5;
     let resultsPage = 1;
 
     function totalResultsPages(totalRows) {
